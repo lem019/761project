@@ -1,0 +1,31 @@
+{
+  "name": "group8-project",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Group 8 Project with code quality checks",
+  "scripts": {
+    "prepare": "husky",
+    "lint": "npm run lint:frontend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:fix": "npm run lint:fix:frontend",
+    "lint:fix:frontend": "cd frontend && npm run lint:fix",
+    "format": "npm run format:frontend",
+    "format:frontend": "cd frontend && npm run format",
+    "check": "npm run lint && npm run format:check",
+    "format:check": "npm run format:check:frontend",
+    "format:check:frontend": "cd frontend && npm run format:check"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5"
+  },
+  "lint-staged": {
+    "frontend/**/*.{js,jsx}": [
+      "cd frontend && eslint --fix",
+      "cd frontend && prettier --write"
+    ],
+    "frontend/**/*.{less,css,json,md}": [
+      "cd frontend && prettier --write"
+    ]
+  }
+}
