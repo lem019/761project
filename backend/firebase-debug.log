@@ -1,0 +1,132 @@
+[debug] [2025-08-25T07:04:31.556Z] ----------------------------------------------------------------------
+[debug] [2025-08-25T07:04:31.557Z] Command:       /opt/homebrew/Cellar/node/23.10.0_1/bin/node /opt/homebrew/bin/firebase emulators:start --project demo-project-id
+[debug] [2025-08-25T07:04:31.557Z] CLI Version:   14.14.0
+[debug] [2025-08-25T07:04:31.557Z] Platform:      darwin
+[debug] [2025-08-25T07:04:31.557Z] Node Version:  v23.10.0
+[debug] [2025-08-25T07:04:31.557Z] Time:          Mon Aug 25 2025 19:04:31 GMT+1200 (New Zealand Standard Time)
+[debug] [2025-08-25T07:04:31.557Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-25T07:04:31.625Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] Failed to authenticate, have you run firebase login?
+[warn] ⚠  emulators: You are not currently authenticated so some features may not work correctly. Please run firebase login to authenticate the CLI. 
+[debug] [2025-08-25T07:04:31.728Z] openjdk version "17.0.16" 2025-07-15
+
+[debug] [2025-08-25T07:04:31.729Z] OpenJDK Runtime Environment Homebrew (build 17.0.16+0)
+OpenJDK 64-Bit Server VM Homebrew (build 17.0.16+0, mixed mode, sharing)
+
+[debug] [2025-08-25T07:04:31.733Z] Parsed Java major version: 17
+[info] i  emulators: Starting emulators: auth, functions, firestore, extensions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, functions, firestore, extensions"}}
+[info] i  emulators: Detected demo project ID "demo-project-id", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail. {"metadata":{"emulator":{"name":"hub"},"message":"Detected demo project ID \"demo-project-id\", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail."}}
+[debug] [2025-08-25T07:04:31.994Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-25T07:04:31.994Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-25T07:04:31.994Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-25T07:04:31.994Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-25T07:04:31.995Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4001},{"address":"::1","family":"IPv6","port":4001}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8081}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2025-08-25T07:04:31.996Z] [hub] writing locator at /var/folders/xp/nmp36rr96mqf0856yt7qj8t40000gn/T/hub-demo-project-id.json
+[debug] [2025-08-25T07:04:31.998Z] [Extensions] Started Extensions emulator, this is a noop.
+[debug] [2025-08-25T07:04:32.126Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-25T07:04:32.126Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-25T07:04:32.126Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-08-25T07:04:32.126Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4001},{"address":"::1","family":"IPv6","port":4001}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8081}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] ⚠  firestore: Cloud Firestore Emulator does not support multiple databases yet. {"metadata":{"emulator":{"name":"firestore"},"message":"Cloud Firestore Emulator does not support multiple databases yet."}}
+[warn] ⚠  firestore: Did not find a Cloud Firestore rules file specified in a firebase.json config file. {"metadata":{"emulator":{"name":"firestore"},"message":"Did not find a Cloud Firestore rules file specified in a firebase.json config file."}}
+[warn] ⚠  firestore: The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration. {"metadata":{"emulator":{"name":"firestore"},"message":"The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration."}}
+[debug] [2025-08-25T07:04:32.130Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-08-25T07:04:32.130Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2025-08-25T07:04:32.130Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","/Users/yangran/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar","--host","127.0.0.1","--port",8081,"--websocket_port",9150,"--project_id","demo-project-id","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8081} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"/Users/yangran/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar\",\"--host\",\"127.0.0.1\",\"--port\",8081,\"--websocket_port\",9150,\"--project_id\",\"demo-project-id\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8081}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2025-08-25T07:04:32.593Z] Aug 25, 2025 7:04:32 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 25, 2025 7:04:32 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\nINFO: Started WebSocket server on ws://127.0.0.1:9150\n"}}
+[debug] [2025-08-25T07:04:32.601Z] API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://"}}
+[debug] [2025-08-25T07:04:32.601Z] 127.0.0.1:8081
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8081
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8081
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8081\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8081\n\nIf you are running a Firestore in Datastore Mode project, run:\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8081\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\nDev App Server is now running.\n\n"}}
+[info] ✔  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[debug] [2025-08-25T07:04:34.582Z] [Extensions] Connecting Extensions emulator, this is a noop.
+[info] i  functions: Watching "/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions\" for Cloud Functions..."}}
+[debug] [2025-08-25T07:04:34.583Z] Validating nodejs source
+[debug] [2025-08-25T07:04:34.968Z] > [functions] package.json contents: {
+  "dependencies": {
+    "firebase-admin": "^13.4.0",
+    "firebase-functions": "^6.4.0"
+  }
+}
+[debug] [2025-08-25T07:04:34.968Z] Building nodejs source
+[debug] [2025-08-25T07:04:34.968Z] Failed to find version of module node: reached end of search path /Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules
+[warn] ⚠  functions: Your requested "node" version "22" doesn't match your global version "23". Using node@23 from host. 
+[debug] [2025-08-25T07:04:34.969Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-25T07:04:34.971Z] Found firebase-functions binary at '/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8907
+
+[debug] [2025-08-25T07:04:36.236Z] Got response from /__/functions.yaml {"endpoints":{"helloApi":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"helloApi"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] ✔  functions: Loaded functions definitions from source: helloApi. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: helloApi."}}
+[info] ✔  functions[us-central1-helloApi]: http function initialized (http://127.0.0.1:5001/demo-project-id/us-central1/helloApi). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/demo-project-id/us-central1/helloApi)."}}
+[debug] [2025-08-25T07:04:40.263Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4001/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬──────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI              │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4001/auth       │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Functions      │ 127.0.0.1:5001 │ http://127.0.0.1:4001/functions  │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Firestore      │ 127.0.0.1:8081 │ http://127.0.0.1:4001/firestore  │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Extensions     │ 127.0.0.1:5001 │ http://127.0.0.1:4001/extensions │
+└────────────────┴────────────────┴──────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500, 9150
+┌─────────────────────────┬───────────────┬─────────────────────┐
+│ Extension Instance Name │ Extension Ref │ View in Emulator UI │
+└─────────────────────────┴───────────────┴─────────────────────┘
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2025-08-25T07:13:52.634Z] Aug 25, 2025 7:13:52 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 25, 2025 7:13:52 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel\nINFO: Connected to new websocket client\n"}}
+[debug] [2025-08-25T07:15:35.553Z] [work-queue] {"queuedWork":["/demo-project-id/us-central1/helloApi-2025-08-25T07:15:35.553Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-08-25T07:15:35.554Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/demo-project-id/us-central1/helloApi-2025-08-25T07:15:35.553Z"],"workRunningCount":1}
+[debug] [2025-08-25T07:15:35.554Z] Accepted request GET /demo-project-id/us-central1/helloApi --> us-central1-helloApi
+[debug] [2025-08-25T07:15:35.555Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-08-25T07:15:35.556Z] [functions] Got req.url=/demo-project-id/us-central1/helloApi, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/demo-project-id/us-central1/helloApi, mapping to path=/"}}
+[debug] [2025-08-25T07:15:35.559Z] [worker-pool] addWorker(us-central1-helloApi) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-helloApi)"}}
+[debug] [2025-08-25T07:15:35.560Z] [worker-pool] Adding worker with key us-central1-helloApi, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-helloApi, total=1"}}
+[debug] [2025-08-25T07:15:36.051Z] [runtime-status] [4757] Resolved module firebase-admin {"declared":true,"installed":true,"version":"13.4.0","resolution":"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-admin/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"13.4.0\",\"resolution\":\"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-admin/lib/index.js\"}"}}
+[debug] [2025-08-25T07:15:36.052Z] [runtime-status] [4757] Resolved module firebase-functions {"declared":true,"installed":true,"version":"6.4.0","resolution":"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-functions/lib/v2/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"6.4.0\",\"resolution\":\"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-functions/lib/v2/index.js\"}"}}
+[debug] [2025-08-25T07:15:36.052Z] [runtime-status] [4757] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2025-08-25T07:15:36.052Z] [runtime-status] [4757] Resolved module firebase-functions {"declared":true,"installed":true,"version":"6.4.0","resolution":"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-functions/lib/v2/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"6.4.0\",\"resolution\":\"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-functions/lib/v2/index.js\"}"}}
+[debug] [2025-08-25T07:15:36.191Z] [runtime-status] [4757] Checked functions.config() {"config":{}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] Checked functions.config() {\"config\":{}}"}}
+[debug] [2025-08-25T07:15:36.192Z] [runtime-status] [4757] firebase-functions has been stubbed. {"functionsResolution":{"declared":true,"installed":true,"version":"6.4.0","resolution":"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-functions/lib/v2/index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] firebase-functions has been stubbed. {\"functionsResolution\":{\"declared\":true,\"installed\":true,\"version\":\"6.4.0\",\"resolution\":\"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-functions/lib/v2/index.js\"}}"}}
+[debug] [2025-08-25T07:15:36.192Z] [runtime-status] [4757] Resolved module firebase-functions {"declared":true,"installed":true,"version":"6.4.0","resolution":"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-functions/lib/v2/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"6.4.0\",\"resolution\":\"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-functions/lib/v2/index.js\"}"}}
+[debug] [2025-08-25T07:15:36.193Z] [runtime-status] [4757] Resolved module firebase-admin {"declared":true,"installed":true,"version":"13.4.0","resolution":"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-admin/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"13.4.0\",\"resolution\":\"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-admin/lib/index.js\"}"}}
+[debug] [2025-08-25T07:15:36.194Z] [runtime-status] [4757] Resolved module firebase-functions {"declared":true,"installed":true,"version":"6.4.0","resolution":"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-functions/lib/v2/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"6.4.0\",\"resolution\":\"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-functions/lib/v2/index.js\"}"}}
+[debug] [2025-08-25T07:15:36.194Z] [runtime-status] [4757] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"13.4.0","resolution":"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-admin/lib/index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"13.4.0\",\"resolution\":\"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions/node_modules/firebase-admin/lib/index.js\"}}"}}
+[debug] [2025-08-25T07:15:36.196Z] [runtime-status] [4757] Functions runtime initialized. {"cwd":"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions","node_version":"23.10.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] Functions runtime initialized. {\"cwd\":\"/Users/yangran/Documents/UOA/s2/softeng761 agil/group8-project/backend/functions\",\"node_version\":\"23.10.0\"}"}}
+[debug] [2025-08-25T07:15:36.196Z] [runtime-status] [4757] Listening to port: /var/folders/xp/nmp36rr96mqf0856yt7qj8t40000gn/T/fire_emu_6935caf75b0ba479.sock {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[runtime-status] [4757] Listening to port: /var/folders/xp/nmp36rr96mqf0856yt7qj8t40000gn/T/fire_emu_6935caf75b0ba479.sock"}}
+[debug] [2025-08-25T07:15:36.272Z] [worker-us-central1-helloApi-442bdaf0-076b-4d37-bc53-219cb0585cf8]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[worker-us-central1-helloApi-442bdaf0-076b-4d37-bc53-219cb0585cf8]: IDLE"}}
+[debug] [2025-08-25T07:15:36.272Z] [worker-pool] submitRequest(triggerId=us-central1-helloApi) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-helloApi)"}}
+[info] i  functions: Beginning execution of "us-central1-helloApi" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"Beginning execution of \"us-central1-helloApi\""}}
+[debug] [2025-08-25T07:15:36.273Z] [worker-us-central1-helloApi-442bdaf0-076b-4d37-bc53-219cb0585cf8]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[worker-us-central1-helloApi-442bdaf0-076b-4d37-bc53-219cb0585cf8]: BUSY"}}
+[debug] [2025-08-25T07:15:36.275Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-helloApi" in 2.504167ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"Finished \"us-central1-helloApi\" in 2.504167ms"}}
+[debug] [2025-08-25T07:15:36.275Z] [worker-us-central1-helloApi-442bdaf0-076b-4d37-bc53-219cb0585cf8]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"[worker-us-central1-helloApi-442bdaf0-076b-4d37-bc53-219cb0585cf8]: IDLE"}}
+[debug] [2025-08-25T07:15:36.275Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-08-25T07:15:36.275Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-helloApi"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-08-25T07:15:36.275Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2025-08-25T07:15:36.304Z] Functions emulator received unknown request at path /favicon.ico

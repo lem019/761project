@@ -193,7 +193,6 @@ export const seedToken = {
 
 - **admin**: Administrator permissions, can access all features
 - **primary**: Primary user permissions, can access most features
-- **user**: Regular user permissions, basic feature access
 
 ### Route Protection
 

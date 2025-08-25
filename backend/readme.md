@@ -1,3 +1,5 @@
+# dependencies
+1. java version > 11
 # run 
 ```
 cd backend/functions
