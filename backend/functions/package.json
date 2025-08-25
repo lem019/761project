@@ -1,0 +1,11 @@
+{
+  "name": "functions",
+  "scripts": {
+    "start": "firebase emulators:start --only functions --project demo-project-id",
+    "serve": "firebase emulators:start --project demo-project-id"
+  },
+  "dependencies": {
+    "firebase-functions": "^4.5.0",
+    "firebase-admin": "^11.10.1"
+  }
+}
