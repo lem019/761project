@@ -31,17 +31,35 @@ const RegisterForm = () => {
     <Form layout="vertical" onFinish={onFinish} className={styles.custom_form}>
       <div className={styles.form_header}>Register</div>
       
-      <Form.Item name="email" rules={[{ required: true, type: "email" }]}>
+      <Form.Item 
+        name="email" 
+        rules={[
+          { required: true, message: 'Please input your email!' },
+          {
+            pattern: /^[a-zA-Z0-9._%+-]+@thermoflo\.co\.nz$/,
+            message: 'Email must be from @thermoflo.co.nz domain!'
+          }
+        ]}
+      >
         <Input 
           className={styles.input_height} 
           placeholder="Email"
         />
       </Form.Item>
 
-      <Form.Item name="password" rules={[{ required: true, min: 6 }]}>
+      <Form.Item 
+        name="password" 
+        rules={[
+          { required: true, message: 'Please input your password!' },
+          {
+            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+            message: 'Password must be at least 8 characters containing uppercase letters, lowercase letters, and numbers!'
+          }
+        ]}
+      >
         <Input.Password 
           className={styles.input_height} 
-          placeholder="Password"
+          placeholder="Password (min 8 chars, uppercase, lowercase, numbers)"
         />
       </Form.Item>
 
