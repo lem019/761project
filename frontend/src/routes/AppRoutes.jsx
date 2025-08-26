@@ -15,7 +15,7 @@ const AppRoutes = () => {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/sso-login" element={<SsoLogin />} />
 
-      {/* 需要primary权限的路由 */}
+      {/* Routes requiring primary role */}
       <Route
         path="/create-form"
         element={
@@ -25,7 +25,7 @@ const AppRoutes = () => {
         }
       />
 
-      {/* 需要admin权限的路由 */}
+      {/* Routes requiring admin role */}
       <Route
         path="/create-template"
         element={
@@ -35,7 +35,7 @@ const AppRoutes = () => {
         }
       />
 
-       {/* 需要登录的路由 */}
+       {/* Routes requiring authentication */}
        <Route 
         path="/form-list" 
         element={

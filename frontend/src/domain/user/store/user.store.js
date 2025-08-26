@@ -1,20 +1,20 @@
 import { create } from "zustand";
 
 /**
- * 用户状态管理store
+ * User state management store
  */
 export const userStore = create((set, get) => ({
   user: null,
   
   /**
-   * 设置用户信息
-   * @param {Object} user - 用户信息对象
+   * Set user info
+   * @param {Object} user - User object
    */
   setUser: (user) => set({ user }),
   
   /**
-   * 获取用户角色
-   * @returns {string|null} - 用户角色
+   * Get user role
+   * @returns {string|null} - User role
    */
   getUserRole: () => {
     const user = get().user;
@@ -22,9 +22,9 @@ export const userStore = create((set, get) => ({
   },
   
   /**
-   * 检查用户是否有指定角色权限
-   * @param {string} requiredRole - 需要的角色
-   * @returns {boolean} - 是否有权限
+   * Check if user has required role
+   * @param {string} requiredRole - Required role
+   * @returns {boolean} - Whether user has permission
    */
   hasRole: (requiredRole) => {
     const userRole = get().getUserRole();
@@ -42,7 +42,7 @@ export const userStore = create((set, get) => ({
   },
   
   /**
-   * 清除用户信息
+   * Clear user info
    */
   clearUser: () => set({ user: null }),
 }));

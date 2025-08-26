@@ -302,3 +302,15 @@ npm install
 5. Create a Pull Request
 
 
+## fibebase config
+
+1. config used to test sso login   
+``` firebase.js
+  apiKey: "AIzaSyDRARmNsfFszVO6zBKCJwVsG7U5BXuShQ0",
+  authDomain: "group8-backend.firebaseapp.com",
+  projectId: "group8-backend",
+  storageBucket: "group8-backend.firebasestorage.app",
+  messagingSenderId: "767925577514",
+  appId: "1:767925577514:web:f698a9fef6266251aca053",
+  measurementId: "G-6QEVS4PTVJ"
+```

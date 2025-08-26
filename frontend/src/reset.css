@@ -3,6 +3,7 @@
   margin:0;
   box-sizing: border-box;
 }
+
 a {
   text-decoration: none; /* Remove link underline */
   color: inherit; /* Link color inherits from parent element */
