@@ -1,5 +1,7 @@
 # dependencies
-1. java version > 11
+1. npm install -g firebase-tools
+2. make sure your java version > 11 // recommend to use openjdk-17(stable version)
+
 # run 
 ```
 cd backend/functions
