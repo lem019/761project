@@ -6,6 +6,8 @@
 ```
 cd backend/functions
 npm install // install dependencies of functions
+
+cd../   //return to backend folder
 npm run start // start the functions of the  firebase emulations
 npm run serve // start all the server of the firebase emulations
 ```
