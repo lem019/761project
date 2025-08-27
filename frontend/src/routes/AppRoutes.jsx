@@ -4,7 +4,6 @@ import RegisterPage from "@/pages/register";
 import CreateForm from "@/pages/createForm";
 import CreateTemplate from "@/pages/createTemplate";
 import FormList from "@/pages/formList";
-import SsoLogin from "@/pages/ssoLogin";
 import NotFound from "@/pages/404";
 import PrivateRoute from "./PrivateRoute";
 
@@ -13,8 +12,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/sso-login" element={<SsoLogin />} />
-
+      
       {/* Routes requiring primary role */}
       <Route
         path="/create-form"
