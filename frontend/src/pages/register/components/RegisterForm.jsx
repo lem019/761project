@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button } from "antd";
-import { userStore } from "@/domain/user/store/user.store";
+import useUserStore from "@/domain/user/store/user.store"; 
 import { useNavigate } from "react-router-dom";
 import styles from "../index.module.less";
 
@@ -9,7 +9,7 @@ const RegisterForm = () => {
   // This line uses the userStore hook to access the userRegister function from the global user store.
   // The userRegister function is responsible for handling the registration logic (e.g., sending user data to the backend).
   // We assign it to the registerUser variable so we can call it when the form is submitted.
-  const registerUser = userStore((state) => state.userRegister);
+  const registerUser = useUserStore((state) => state.userRegister);
   const navigate = useNavigate();
 
   useEffect(() => {

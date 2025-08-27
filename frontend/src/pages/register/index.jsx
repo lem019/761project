@@ -1,7 +1,6 @@
 import React from "react";
 import Logo from "./components/Logo";
 import RegisterForm from "./components/RegisterForm";
-import ShowcaseImage from "./components/ShowcaseImage";
 import styles from "./index.module.less";
 
 const RegisterPage = () => {
@@ -11,11 +10,10 @@ const RegisterPage = () => {
         <Logo />
         <RegisterForm />
       </div>
-      <div className={styles.right_section}>
-        <ShowcaseImage />
-      </div>
     </div>
   );
 };
 
 export default RegisterPage;
+
+
