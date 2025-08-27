@@ -3,7 +3,7 @@ import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
 import CreateForm from "@/pages/createForm";
 import CreateTemplate from "@/pages/createTemplate";
-import FormList from "@/pages/FormList";
+import FormList from "@/pages/formList";
 import SsoLogin from "@/pages/ssoLogin";
 import NotFound from "@/pages/404";
 import PrivateRoute from "./PrivateRoute";

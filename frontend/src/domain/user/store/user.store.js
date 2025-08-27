@@ -1,48 +1,34 @@
 import { create } from "zustand";
+import { auth } from "@/firebase";
+import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
+import { removeStorage } from "@/utils/helper";
 
-/**
- * User state management store
- */
-export const userStore = create((set, get) => ({
+const useUserStore = create((set) => ({
   user: null,
-  
-  /**
-   * Set user info
-   * @param {Object} user - User object
-   */
   setUser: (user) => set({ user }),
-  
-  /**
-   * Get user role
-   * @returns {string|null} - User role
-   */
-  getUserRole: () => {
-    const user = get().user;
-    return user?.role || user?.userRole || null;
+  logout: () => {
+    // Clear both Firebase auth and localStorage token
+    firebaseSignOut(auth);
+    removeStorage("token");
+    set({ user: null });
   },
-  
-  /**
-   * Check if user has required role
-   * @param {string} requiredRole - Required role
-   * @returns {boolean} - Whether user has permission
-   */
-  hasRole: (requiredRole) => {
-    const userRole = get().getUserRole();
-    if (!userRole) return false;
-    
-    if (requiredRole === "admin") {
-      return userRole === "admin";
-    }
-    
-    if (requiredRole === "primary") {
-      return ["primary", "admin"].includes(userRole);
-    }
-    
-    return false;
-  },
-  
-  /**
-   * Clear user info
-   */
   clearUser: () => set({ user: null }),
 }));
+
+// Listen to Firebase auth state at initialization
+onAuthStateChanged(auth, (user) => {
+  if (user && user.email) {
+    // Check if user email domain matches @thermoflo.co.nz
+      // Set role as admin for @thermoflo.co.nz users
+      const userWithRole = {
+        ...user,
+        role: user.email.endsWith('@thermoflo.co.nz') ? 'admin' : "primary"
+      };
+      useUserStore.getState().setUser(userWithRole);
+    
+  } else {
+    useUserStore.getState().setUser(user);
+  }
+});
+
+export default useUserStore;

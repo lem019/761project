@@ -1,30 +1,34 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { userStore } from "@/domain/user/store/user.store";
+import useUserStore from "@/domain/user/store/user.store";
 import { decodeToken } from "@/utils/helper";
 
 /**
  * Private route component for access control
+ * Supports both SSO (Firebase) and traditional JWT authentication
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Child component
  * @param {string} [props.requiredRole] - Required role (optional)
  * @returns {React.ReactNode} - Rendered component or redirect
  */
 const PrivateRoute = ({ children, requiredRole }) => {
-  const user = userStore((state) => state.user);
+  const { user, setUser } = useUserStore();
   
-  // Check if token exists
+  // Check for both authentication methods
   const token = localStorage.getItem("token");
-  if (!token) {
+  const isFirebaseUser = user && user.uid; // Firebase user has uid property
+  
+  // If no user authenticated via either method, redirect to login
+  if (!user && !token) {
     return <Navigate to="/login" replace />;
   }
   
-  // If no user info in store, try decoding from token
-  if (!user && token) {
+  // If we have a token but no Firebase user, try to decode the token
+  if (!isFirebaseUser && token) {
     const decodedToken = decodeToken(token);
     if (decodedToken) {
       // Store decoded user info in the state store
-      userStore.getState().setUser(decodedToken);
+      setUser(decodedToken);
     } else {
       // Invalid token: clear and redirect to login
       localStorage.removeItem("token");
@@ -34,8 +38,17 @@ const PrivateRoute = ({ children, requiredRole }) => {
   
   // If a specific role is required
   if (requiredRole) {
-    const currentUser = user || decodeToken(token);
-    const userRole = currentUser?.role || currentUser?.userRole;
+    let currentUser = user;
+    let userRole;
+    
+    if (isFirebaseUser) {
+      // Firebase user - check custom claims or default to basic user
+      userRole = user?.role ?? "primary"
+    } else {
+      // JWT token user
+      currentUser = user || decodeToken(token);
+      userRole = currentUser?.role ?? "primary";
+    }
     
     if (!userRole) {
       return <Navigate to="/login" replace />;
