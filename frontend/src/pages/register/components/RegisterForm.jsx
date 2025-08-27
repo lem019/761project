@@ -35,10 +35,7 @@ const RegisterForm = () => {
         name="email" 
         rules={[
           { required: true, message: 'Please input your email!' },
-          {
-            pattern: /^[a-zA-Z0-9._%+-]+@thermoflo\.co\.nz$/,
-            message: 'Email must be from @thermoflo.co.nz domain!'
-          }
+          { type: "email", message: 'Please enter a valid email address!' }
         ]}
       >
         <Input 
@@ -59,7 +56,7 @@ const RegisterForm = () => {
       >
         <Input.Password 
           className={styles.input_height} 
-          placeholder="Password (min 8 chars, uppercase, lowercase, numbers)"
+          placeholder="Password"
         />
       </Form.Item>
 
