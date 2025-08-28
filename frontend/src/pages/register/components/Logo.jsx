@@ -6,7 +6,7 @@ import styles from '../index.module.less';
 export default function Logo() {
   return (
     <div className={styles.logo}>
-      <img src={logo} alt="SportsBuddy Logo" className="logo-img" />
+      <img src={logo} alt="thermo Logo" className={styles.logo_img} />
     </div>
   );
 }

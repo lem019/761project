@@ -1,85 +1,88 @@
 import React, { useState, useEffect } from "react";
-import { getArrayLevel } from "@/utils/helper";
-import { Form, Input, Select, Button, message } from "antd";
-import { userStore } from "@/domain/user/store/user.store";
+import { Form, Input, Button } from "antd";
+import useUserStore from "@/domain/user/store/user.store"; 
 import { useNavigate } from "react-router-dom";
 import styles from "../index.module.less";
-import { homeStore } from "@/domain/home/store/home.store";
 
-const { Option } = Select;
 
 const RegisterForm = () => {
-  const sports = homeStore((state) => state.sports);
-  const getSportsList = homeStore((state) => state.getSportsList);
-  const registerUser = userStore((state) => state.userRegister);
-  const [loading, setLoading] = useState(false);
+  // This line uses the userStore hook to access the userRegister function from the global user store.
+  // The userRegister function is responsible for handling the registration logic (e.g., sending user data to the backend).
+  // We assign it to the registerUser variable so we can call it when the form is submitted.
+  const registerUser = useUserStore((state) => state.userRegister);
   const navigate = useNavigate();
 
   useEffect(() => {
-    getSportsList();
+    // This useEffect hook is used to fetch the email list when the component mounts.
   }, []);
 
   const onFinish = (values) => {
-    setLoading(true);
-    registerUser(values)
+    const { confirmPassword, ...userData } = values;
+    
+    //The user data (email and password) passed to the registerUser function, which is responsible for sending the registration request to the backend.
+    registerUser(userData)
       .then((res) => {
-        message.success({
-          content: res.message,
-          duration: 1.5,
-          onClose: () => {
-            navigate("/login", { replace: true });
-          }
-        });
-      })
-      .finally(() => {
-        setLoading(false);
+        // Registration successful, redirect to login page
+        navigate("/login", { replace: true });
       });
   };
 
   return (
     <Form layout="vertical" onFinish={onFinish} className={styles.custom_form}>
-      <div className={styles.form_header}>Sign up</div>
-      <Form.Item label="Name" name="username" rules={[{ required: true }]}>
-        <Input className={styles.input_height} />
+      <div className={styles.form_header}>Register</div>
+      
+      <Form.Item 
+        name="email" 
+        rules={[
+          { required: true, message: 'Please input your email!' },
+          { type: "email", message: 'Please enter a valid email address!' }
+        ]}
+      >
+        <Input 
+          className={styles.input_height} 
+          placeholder="Email"
+        />
       </Form.Item>
 
-      <Form.Item label="Gender" name="gender" rules={[{ required: true }]}>
-        <Select className={styles.input_height}>
-          <Option value="male">Male</Option>
-          <Option value="female">Female</Option>
-        </Select>
+      <Form.Item 
+        name="password" 
+        rules={[
+          { required: true, message: 'Please input your password!' },
+          {
+            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+            message: 'Password must be at least 8 characters containing uppercase letters, lowercase letters, and numbers!'
+          }
+        ]}
+      >
+        <Input.Password 
+          className={styles.input_height} 
+          placeholder="Password"
+        />
       </Form.Item>
 
-      <Form.Item label="Sport" name="sports" rules={[{ required: true }]}>
-        <Select
-          className={styles.input_height}
-          placeholder="Select a sport"
-          loading={!sports || sports.length === 0}
-        >
-          {sports &&
-            sports.map((sport) => (
-              <Option key={sport._id} value={sport._id}>
-                {sport.name}
-              </Option>
-            ))}
-        </Select>
-      </Form.Item>
-
-      <Form.Item label="Level" name="level" rules={[{ required: true }]}>
-        <Select className={styles.input_height} options={getArrayLevel(5)} />
-      </Form.Item>
-
-      <Form.Item label="Email" name="email" rules={[{ required: true, type: "email" }]}>
-        <Input className={styles.input_height} />
-      </Form.Item>
-
-      <Form.Item label="Password" name="password" rules={[{ required: true }]}>
-        <Input.Password className={styles.input_height} />
+      <Form.Item 
+        name="confirmPassword" 
+        rules={[
+          { required: true },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue('password') === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error('The two passwords do not match!'));
+            },
+          }),
+        ]}
+      >
+        <Input.Password 
+          className={styles.input_height} 
+          placeholder="Comfirm password"
+        />
       </Form.Item>
 
       <Form.Item>
-        <Button type="primary" className={styles.signup_btn} htmlType="submit" loading={loading}>
-          Sign up
+        <Button type="primary" className={styles.signup_btn} htmlType="submit">
+          Register
         </Button>
       </Form.Item>
 
