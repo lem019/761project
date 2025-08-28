@@ -5,23 +5,48 @@ import CreateForm from "@/pages/createForm";
 import CreateTemplate from "@/pages/createTemplate";
 import FormList from "@/pages/formList";
 import NotFound from "@/pages/404";
+import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
 
 const AppRoutes = () => {
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/create-form" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      
-      {/* Routes requiring primary role */}
-      <Route
-        path="/create-form"
-        element={
-          <PrivateRoute requiredRole="primary">
-            <CreateForm />
-          </PrivateRoute>
-        }
-      />
+      <Route path="/sso-login" element={<SsoLogin />} />
+
+      {/* 简化路由配置进行测试 */}
+      <Route path="/create-form" element={<Layout />}>
+        <Route index element={<CreateForm />} />
+      </Route>
+
+      <Route path="/pending-approval" element={<Layout />}>
+        <Route index element={
+          <div style={{ padding: '24px', background: '#fff', borderRadius: '8px' }}>
+            <h2>Pending Approval</h2>
+            <p>This page shows pending approval items.</p>
+          </div>
+        } />
+      </Route>
+
+      <Route path="/approved" element={<Layout />}>
+        <Route index element={
+          <div style={{ padding: '24px', background: '#fff', borderRadius: '8px' }}>
+            <h2>Approved</h2>
+            <p>This page shows approved items.</p>
+          </div>
+        } />
+      </Route>
+
+      <Route path="/rejected" element={<Layout />}>
+        <Route index element={
+          <div style={{ padding: '24px', background: '#fff', borderRadius: '8px' }}>
+            <h2>Rejected</h2>
+            <p>This page shows rejected items.</p>
+          </div>
+        } />
+      </Route>
 
       {/* Routes requiring admin role */}
       <Route

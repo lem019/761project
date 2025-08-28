@@ -3,6 +3,7 @@ import { auth } from "@/firebase";
 import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 import { removeStorage } from "@/utils/helper";
 
+
 const useUserStore = create((set) => ({
   user: null,
   setUser: (user) => set({ user }),
