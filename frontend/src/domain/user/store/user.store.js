@@ -4,7 +4,13 @@ import { create } from "zustand";
  * 用户状态管理store
  */
 export const userStore = create((set, get) => ({
-  user: null,
+  // 设置默认用户数据用于测试
+  user: {
+    name: 'Serati Ma',
+    username: 'serati',
+    role: 'primary',
+    userRole: 'primary'
+  },
   
   /**
    * 设置用户信息
