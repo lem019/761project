@@ -3,8 +3,7 @@ import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
 import CreateForm from "@/pages/createForm";
 import CreateTemplate from "@/pages/createTemplate";
-import FormList from "@/pages/FormList";
-import SsoLogin from "@/pages/ssoLogin";
+import FormList from "@/pages/formList";
 import NotFound from "@/pages/404";
 import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
@@ -49,7 +48,7 @@ const AppRoutes = () => {
         } />
       </Route>
 
-      {/* 需要admin权限的路由 */}
+      {/* Routes requiring admin role */}
       <Route
         path="/create-template"
         element={
@@ -59,7 +58,7 @@ const AppRoutes = () => {
         }
       />
 
-       {/* 需要登录的路由 */}
+       {/* Routes requiring authentication */}
        <Route 
         path="/form-list" 
         element={

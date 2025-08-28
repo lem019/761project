@@ -1,54 +1,35 @@
 import { create } from "zustand";
+import { auth } from "@/firebase";
+import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
+import { removeStorage } from "@/utils/helper";
 
-/**
- * 用户状态管理store
- */
-export const userStore = create((set, get) => ({
-  // 设置默认用户数据用于测试
-  user: {
-    name: 'Serati Ma',
-    username: 'serati',
-    role: 'primary',
-    userRole: 'primary'
-  },
-  
-  /**
-   * 设置用户信息
-   * @param {Object} user - 用户信息对象
-   */
+
+const useUserStore = create((set) => ({
+  user: null,
   setUser: (user) => set({ user }),
-  
-  /**
-   * 获取用户角色
-   * @returns {string|null} - 用户角色
-   */
-  getUserRole: () => {
-    const user = get().user;
-    return user?.role || user?.userRole || null;
+  logout: () => {
+    // Clear both Firebase auth and localStorage token
+    firebaseSignOut(auth);
+    removeStorage("token");
+    set({ user: null });
   },
-  
-  /**
-   * 检查用户是否有指定角色权限
-   * @param {string} requiredRole - 需要的角色
-   * @returns {boolean} - 是否有权限
-   */
-  hasRole: (requiredRole) => {
-    const userRole = get().getUserRole();
-    if (!userRole) return false;
-    
-    if (requiredRole === "admin") {
-      return userRole === "admin";
-    }
-    
-    if (requiredRole === "primary") {
-      return ["primary", "admin"].includes(userRole);
-    }
-    
-    return false;
-  },
-  
-  /**
-   * 清除用户信息
-   */
   clearUser: () => set({ user: null }),
 }));
+
+// Listen to Firebase auth state at initialization
+onAuthStateChanged(auth, (user) => {
+  if (user && user.email) {
+    // Check if user email domain matches @thermoflo.co.nz
+      // Set role as admin for @thermoflo.co.nz users
+      const userWithRole = {
+        ...user,
+        role: user.email.endsWith('@thermoflo.co.nz') ? 'admin' : "primary"
+      };
+      useUserStore.getState().setUser(userWithRole);
+    
+  } else {
+    useUserStore.getState().setUser(user);
+  }
+});
+
+export default useUserStore;

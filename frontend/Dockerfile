@@ -1,4 +1,4 @@
-# 使用 node 构建 React 应用
+# Use node to build React app
 FROM node:18-alpine as build
 
 WORKDIR /app
@@ -9,13 +9,13 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# 使用 nginx 提供静态文件服务
+# Serve static files with nginx
 FROM nginx:alpine
 
-# 拷贝构建好的文件到 nginx 默认网页目录
+# Copy built files to nginx default web directory
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# 拷贝自定义 nginx 配置（支持前端路由跳转）
+# Copy custom nginx config (support SPA routing)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
