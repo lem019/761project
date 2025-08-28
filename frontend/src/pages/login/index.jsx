@@ -13,31 +13,34 @@ const LoginPage = () => {
   const { user, userLogin } = useUserStore();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // 已登录则根据角色跳转（避免停在登录页）
   useEffect(() => {
-    if (user) {
-      navigate("/create-form");
-    }
+    if (user?.role === "admin") navigate("/admin/toreview", { replace: true });
+    if (user?.role === "primary") navigate("/employee/create", { replace: true });
   }, [user, navigate]);
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     setLoading(true);
-
-    userLogin(values)
-      .then(() => {
-        setLoading(false);
-        message.success("Login successful!");
-        navigate("/create-form");
-      })
-      .catch(() => { 
-        setLoading(false);
-      });
+    try {
+      const me = await userLogin(values); // 保存 idToken + /auth/me
+      console.log(me);
+      if (me?.role === "admin") navigate("/create-form", { replace: true });
+      else if (me?.role === "primary") navigate("/create-form", { replace: true });
+      else message.warning("Login succeeded but role is missing. Please set role in Firestore.");
+    } catch (error) {
+      console.error("Login error:", error);
+      message.error("Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithGoogle();
+      await signInWithGoogle(); // onAuthStateChanged 会注入 user；上面的 useEffect 会跳转
     } catch (error) {
+      console.error("Google login failed:", error);
+      message.error("Google login failed");
     }
   };
 
@@ -67,7 +70,6 @@ const LoginPage = () => {
               prefix={<LockOutlined style={{ color: "#1677ff" }} />}
             />
           </Form.Item>
-
           <Form.Item>
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <label className={styles.rememberMe}>

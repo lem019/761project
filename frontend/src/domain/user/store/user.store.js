@@ -4,14 +4,16 @@ import { auth } from "@/firebase";
 import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
 import { removeStorage,saveStorage } from "@/utils/helper";
 
-
-const useUserStore = create((set) => ({
+const useUserStore = create((set, get) => ({
   user: null,
   setUser: (user) => set({ user }),
-  logout: () => {
-    // Clear both Firebase auth and localStorage token
-    firebaseSignOut(auth);
-    removeStorage("token");
+  clearUser: () => set({ user: null }),
+
+  // Clear both Firebase auth and localStorage token
+  logout: async () => {
+    try { await firebaseSignOut(auth); } catch (_) {}
+    try { localStorage.removeItem("idToken"); } catch (_) {}
+    try { removeStorage("token"); } catch (_) {}
     set({ user: null });
   },
   clearUser: () => set({ user: null }),
@@ -39,7 +41,7 @@ const useUserStore = create((set) => ({
 
 }));
 
-// Listen to Firebase auth state at initialization
+// // Listen to Firebase auth state at initialization
 onAuthStateChanged(auth, (user) => {
   if (user && user.email) {
     // Check if user email domain matches @thermoflo.co.nz

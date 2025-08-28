@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, connectAuthEmulator } from "firebase/auth";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
+
 
 const app = initializeApp({
   apiKey: "AIzaSyDRARmNsfFszVO6zBKCJwVsG7U5BXuShQ0",
@@ -14,6 +15,9 @@ const app = initializeApp({
 });
 
 const auth = getAuth(app);
+
+connectAuthEmulator(auth, "http://localhost:9099"); // 让登录注册都走本地
+
 const provider = new GoogleAuthProvider();
 
 // Firestore local
