@@ -17,7 +17,7 @@ const LoginPage = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate('/form-list');
+      navigate('/create-form');
     }
   }, [user, navigate]);
 
@@ -36,7 +36,7 @@ const LoginPage = () => {
         useUserStore.getState().setUser(response.data.user);
         
         message.success('Login successful!');
-        navigate('/form-list');
+        navigate('/');
       } else {
         message.error(response.message || 'Login failed');
       }

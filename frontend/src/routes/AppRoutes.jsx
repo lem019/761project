@@ -14,7 +14,6 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/create-form" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/sso-login" element={<SsoLogin />} />
 
       {/* 简化路由配置进行测试 */}
       <Route path="/create-form" element={<Layout />}>

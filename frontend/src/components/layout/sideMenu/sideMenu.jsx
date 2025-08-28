@@ -9,8 +9,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined
 } from '@ant-design/icons';
-import { userStore } from '@/domain/user/store/user.store';
-import logo from '@/assets/thermoFLO_Final_colour.png';
+import useUserStore from "@/domain/user/store/user.store";
 import styles from './sideMenu.module.less';
 
 const { Sider } = AntLayout;
@@ -19,7 +18,7 @@ const SideMenu = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const user = userStore((state) => state.user);
+  const user = useUserStore((state) => state.user);
   const userRole = user?.role || user?.userRole;
 
   const adminMenuItems = [
