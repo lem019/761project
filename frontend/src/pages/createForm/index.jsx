@@ -344,7 +344,7 @@ const CreateForm = () => {
           <Card className={styles['search-card']} size={isMobile ? 'small' : ''}>
             <Form title={isMobile ? '' : 'Search Form'}>
               <Row gutter={16} align="middle">
-                <Col md={6} xs={24} sm={18}>
+                <Col md={6} xs={24} sm={24}>
                  { isMobile ? '' : <label className={styles['form-name-label']}>
                     Form Type:
                   </label>}
@@ -406,7 +406,7 @@ const CreateForm = () => {
           onScroll={handleScroll}
         >
           <div className={styles['cards-list']}>
-            {allForms.map((form, index) => (
+            {allForms?.map((form, index) => (
               <FormCard key={form.id || index} form={form} />
             ))}
           </div>

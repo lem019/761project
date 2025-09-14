@@ -19,8 +19,8 @@ const useUserStore = create((set, get) => ({
   clearUser: () => set({ user: null }),
 
 
-  registerUser: async (userData) => {
-    await _registerUser(userData).then((res)=>{
+  registerUser: (userData) => {
+    return _registerUser(userData).then((res)=>{
       set({userInfo:res.data})
     }).catch((error)=>{
       throw error;
@@ -28,10 +28,11 @@ const useUserStore = create((set, get) => ({
   },
 
 
-  userLogin: async (userData) => {
-    await _userLogin(userData).then((res)=>{
+  userLogin: (userData) => {
+    return _userLogin(userData).then((res)=>{
       set({user:res.data.user});
       saveStorage('token', res.data.token)
+      return res.data.user;
     }).catch((error)=>{
       console.error("Login failed:", error);
       throw error;

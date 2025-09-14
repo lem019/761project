@@ -8,13 +8,13 @@ export const userRepo = {
 };
 
 export const _registerUser = (params) => {
-  return http.post("/api/user/register",params);
+  return http.post("/user/register",params);
 };
 
 export const _logout = () => {
-  return http.post("/api/user/logout");
+  return http.post("/user/logout");
 };
 
 export const _userLogin = (params) => {
-  return http.post("/api/user/login",params);
+  return http.post("/user/login",params);
 };

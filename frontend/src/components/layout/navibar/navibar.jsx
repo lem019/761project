@@ -10,24 +10,24 @@ const { Header } = Layout;
 
 const Navibar = () => {
   const user = useUserStore((state) => state.user);
-  const userName = user?.name || user?.username || 'Serati Ma';
+  const userName = user?.email;
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
   const menuItems = [
-    {
-      key: 'profile',
-      label: 'Profile',
-    },
-    {
-      key: 'settings',
-      label: 'Settings',
-    },
-    {
-      type: 'divider',
-    },
+    // {
+    //   key: 'profile',
+    //   label: 'Profile',
+    // },
+    // {
+    //   key: 'settings',
+    //   label: 'Settings',
+    // },
+    // {
+    //   type: 'divider',
+    // },
     {
       key: 'logout',
       label: 'Logout',

@@ -15,8 +15,8 @@ const LoginPage = () => {
 
   // 已登录则根据角色跳转（避免停在登录页）
   useEffect(() => {
-    if (user?.role === "admin") navigate("/admin/toreview", { replace: true });
-    if (user?.role === "primary") navigate("/employee/create", { replace: true });
+    if (user?.role === "admin") navigate("/create-form", { replace: true });
+    if (user?.role === "primary") navigate("/create-form", { replace: true });
   }, [user, navigate]);
 
   const onFinish = async (values) => {
