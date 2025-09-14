@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { auth } from "@/firebase";
+  import { _registerUser, _logout, _userLogin } from "../repository/user.repository";
 import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
-import { removeStorage } from "@/utils/helper";
+import { removeStorage,saveStorage } from "@/utils/helper";
 
 
 const useUserStore = create((set) => ({
@@ -14,6 +15,28 @@ const useUserStore = create((set) => ({
     set({ user: null });
   },
   clearUser: () => set({ user: null }),
+
+
+  registerUser: async (userData) => {
+    await _registerUser(userData).then((res)=>{
+      set({userInfo:res.data})
+    }).catch((error)=>{
+      throw error;
+    });
+  },
+
+
+  userLogin: async (userData) => {
+    await _userLogin(userData).then((res)=>{
+      set({user:res.data.user});
+      saveStorage('token', res.data.token)
+    }).catch((error)=>{
+      console.error("Login failed:", error);
+      throw error;
+    });
+  },
+
+
 }));
 
 // Listen to Firebase auth state at initialization

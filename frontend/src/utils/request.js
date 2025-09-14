@@ -70,7 +70,6 @@ service.interceptors.response.use(
       });
       return Promise.reject(new Error("login expired, please login again"));
     }
-    console.log('statusCode:',statusCode)
     const errorMessage = errorResponse.data?.message ?? error?.message ?? errorCode["default"];
     antdMessage.error(errorMessage);
     return Promise.reject(errorMessage);

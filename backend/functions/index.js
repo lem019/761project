@@ -1,6 +1,19 @@
 const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+const express = require('express');
+const cors = require('cors');
 
-// 一个最简单的 API
-exports.helloApi = functions.https.onRequest((req, res) => {
-  res.json({ message: "Hello from Firebase Functions (local)!" });
-});
+// 初始化 Firebase Admin
+admin.initializeApp();
+
+// 创建 Express 应用并启用 CORS 和 JSON 解析
+const app = express();
+app.use(cors({ origin: true }));
+app.use(express.json());
+
+// 挂载业务路由
+const routes = require('./routes');
+app.use('/', routes);
+
+// 导出统一入口
+exports.api = functions.https.onRequest(app);
