@@ -29,7 +29,7 @@ export default defineConfig({
   assetsInclude: ["**/*.svg", "**/*.eot", "**/*.woff", "**/*.woff2", "**/*.ttf"],
   server: {
     port: 90,
-    host: true,
+    host: '0.0.0.0', // 允许外部访问
     open: true,
     proxy: {
       "/api": {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Dropdown, Avatar, Space } from 'antd';
+import { Layout, Dropdown, Avatar, Space, theme } from 'antd';
 import { UserOutlined, DownOutlined } from '@ant-design/icons';
 import useUserStore from "@/domain/user/store/user.store";
 import logo from '@/assets/thermoFLO_Final_colour.png';
@@ -7,9 +7,14 @@ import styles from './navibar.module.less';
 
 const { Header } = Layout;
 
+
 const Navibar = () => {
   const user = useUserStore((state) => state.user);
   const userName = user?.name || user?.username || 'Serati Ma';
+
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
 
   const menuItems = [
     {
@@ -30,7 +35,7 @@ const Navibar = () => {
   ];
 
   return (
-    <Header className={styles.header}>
+    <Header className={styles.header} style={{ backgroundColor: colorBgContainer }}>
       <div className={styles['logo-container']}>
         <img src={logo} alt="SportsBuddy Logo" className={styles['logo-img']} />
       </div>

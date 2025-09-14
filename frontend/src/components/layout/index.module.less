@@ -1,5 +1,6 @@
 .layout-container {
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
 }
 
 .content-area {
@@ -8,11 +9,11 @@
   min-height: 280px;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px);
 }
 
 .outlet-container {
   flex: 1;
+  display: flex;
   overflow-y: hidden;
   padding-right: 8px; /* 为滚动条留出空间 */
 }

@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const express = require('express');
-const cors = require('cors');
+const { FieldValue, Timestamp } = require("firebase-admin/firestore");
+const express = require("express");
+const cors = require("cors");
 
 // 初始化 Firebase Admin
 admin.initializeApp();
@@ -81,144 +82,113 @@ async function emulatorSignInWithPassword(email, password) {
 
 // ======================= FORMS =======================
 // 创建：status=draft, type=a, formId=docId
-app.post("/forms", decodeToken, async (req, res) => {
+app.post("/forms", async (req, res) => {
   try {
-    const uid = req.user.uid;
-    const { title = "", type = "a", data = {} } = req.body || {};
+    // const uid = req.user.uid;
+    const uid = "1234567890";
+    const { type = "a" } = req.body || {};
     const now = Date.now();
     const ref = await db.collection("forms").add({
-      formId: "", // 占位，下面写 docId
-      title,
-      status: "draft",
       type,
-      creatorUid: uid,
-      reviewerUid: "",
-      createdAt: now,
-      submitAt: 0,
-      data,
+      creator: uid,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+      status: 0,
     });
-    await ref.update({ formId: ref.id });
     const snap = await ref.get();
-    return res.status(201).json({ id: ref.id, ...snap.data() });
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
-  }
-});
-
-// 修改（提交前编辑草稿）
-app.patch("/forms/:id", decodeToken, async (req, res) => {
-  try {
-    const uid = req.user.uid;
-    const { id } = req.params;
-    const { title, data, type } = req.body || {};
-    const ref = db.collection("forms").doc(id);
-    const doc = await ref.get();
-    if (!doc.exists) return res.status(404).json({ error: "not_found" });
-    const it = doc.data();
-    if (it.creatorUid !== uid) return res.status(403).json({ error: "forbidden" });
-    if (it.status !== "draft") return res.status(400).json({ error: "only_edit_draft" });
-
-    const patch = {};
-    if (title !== undefined) patch.title = title;
-    if (type !== undefined) patch.type = type;
-    if (data !== undefined) patch.data = data;
-    await ref.update(patch);
-    const fresh = await ref.get();
-    return res.json({ id, ...fresh.data() });
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
-  }
-});
-
-// 提交：draft -> toReview
-app.post("/forms/:id/submit", decodeToken, async (req, res) => {
-  try {
-    const uid = req.user.uid;
-    const { id } = req.params;
-    const ref = db.collection("forms").doc(id);
-    const doc = await ref.get();
-    if (!doc.exists) return res.status(404).json({ error: "not_found" });
-    const it = doc.data();
-    if (it.creatorUid !== uid) return res.status(403).json({ error: "forbidden" });
-    if (it.status !== "draft") return res.status(400).json({ error: "only_submit_draft" });
-
-    await ref.update({ status: "toReview", submitAt: Date.now() });
-    const fresh = await ref.get();
-    return res.json({ id, ...fresh.data() });
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
-  }
-});
-
-// 审核：toReview -> approved/rejected
-app.post("/forms/:id/review", decodeToken, async (req, res) => {
-  try {
-    const uid = req.user.uid;
-    const role = await getUserRole(uid);
-    if (role !== "admin") return res.status(403).json({ error: "admin_only" });
-
-    const { id } = req.params;
-    const { action } = req.body || {}; // "approve" | "reject"
-    if (!["approve", "reject"].includes(action))
-      return res.status(400).json({ error: "invalid_action" });
-
-    const ref = db.collection("forms").doc(id);
-    const doc = await ref.get();
-    if (!doc.exists) return res.status(404).json({ error: "not_found" });
-    const it = doc.data();
-    if (it.status !== "toReview") return res.status(400).json({ error: "only_review_toreview" });
-
-    const to = action === "approve" ? "approved" : "rejected";
-    await ref.update({ status: to, reviewerUid: uid });
-    const fresh = await ref.get();
-    return res.json({ id, ...fresh.data() });
+    return res.status(200).json({ id: ref.id, ...snap.data() });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
 });
 
 // 删除（仅草稿且创建者）
-app.delete("/forms/:id", decodeToken, async (req, res) => {
+app.delete("/forms/:id", async (req, res) => {
   try {
-    const uid = req.user.uid;
+    // const uid = req.user.uid;
+    const uid = "1234567890";
     const { id } = req.params;
     const ref = db.collection("forms").doc(id);
     const doc = await ref.get();
-    if (!doc.exists) return res.status(404).json({ error: "not_found" });
+    if (!doc.exists) return res.status(200).json({ 
+      error: "FORM_NOT_FOUND",
+      code: 1001,
+      message: "The requested form does not exist"
+    });
     const it = doc.data();
-    if (it.creatorUid !== uid) return res.status(403).json({ error: "forbidden" });
-    if (it.status !== "draft") return res.status(400).json({ error: "only_delete_draft" });
+    if (it.creator !== uid) return res.status(200).json({ 
+      error: "FORM_ACCESS_DENIED",
+      code: 1002, 
+      message: "You don't have permission to delete this form"
+    });
+    if (it.status !== 0) return res.status(200).json({ 
+      error: "FORM_NOT_DRAFT",
+      code: 1003,
+      message: "Only draft forms can be deleted"
+    });
 
     await ref.delete();
-    return res.status(204).end();
+    return res.status(200).end();
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
 });
 
-// 查询列表（支持 status & mine）
-app.get("/forms", decodeToken, async (req, res) => {
+// 查询列表（支持 status & mine & 分页）
+app.get("/forms", async (req, res) => {
   try {
-    const uid = req.user.uid;
-    const role = await getUserRole(uid);
-    const { status, mine } = req.query;
+    const uid = "1234567890";
+    // const uid = req.user.uid;
+    // const role = await getUserRole(uid);
+    const { status, formType, page = 1, pageSize = 10 } = req.query;
+    
+    // 转换分页参数为数字
+    const pageNum = parseInt(page, 10);
+    const pageSizeNum = parseInt(pageSize, 10);
+    const offset = (pageNum - 1) * pageSizeNum;
+    
     let q = db.collection("forms");
 
     if (status) q = q.where("status", "==", String(status));
-    if (mine === "true" || role === "primary") {
-      q = q.where("creatorUid", "==", uid);
-    }
+    if (formType) q = q.where("type", "==", String(formType));
+    q = q.where("creator", "==", uid);
 
-    const snap = await q.orderBy("createdAt", "desc").get();
-    const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    return res.json(items);
+    // 先获取总数（用于分页信息）
+    const countQuery = q;
+    const countSnap = await countQuery.get();
+    const total = countSnap.size;
+
+    // 获取分页数据
+    const snap = await q
+      .orderBy("createdAt", "desc")
+      .offset(offset)
+      .limit(pageSizeNum)
+      .get();
+
+    console.log(snap.docs);
+    
+    const items = snap.docs.map((d) => ({ 
+      id: d.id,
+      ...d.data(),
+      createdAt: d.data().createdAt.toDate().toLocaleString() 
+    }));
+    
+    return res.json({
+      items,
+      pagination: {
+        current: pageNum,
+        pageSize: pageSizeNum,
+        total,
+        totalPages: Math.ceil(total / pageSizeNum)
+      }
+    });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
 });
 
 // 获取单条
-app.get("/forms/:id", decodeToken, async (req, res) => {
+app.get("/forms/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const doc = await db.collection("forms").doc(id).get();
