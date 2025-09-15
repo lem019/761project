@@ -39,6 +39,9 @@ export default defineConfig({
       }
     }
   },
+  preview: {
+    allowedHosts: ['t-3886287752---project-project-team-8-w4cn3q3iaq-as.a.run.app'],
+  },
   build: {
     target: "esnext"
   }
