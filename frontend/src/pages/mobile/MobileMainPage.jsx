@@ -7,7 +7,7 @@ const tabs = ["Create", "In Progress", "Approved"];
 const MobileMainPage = () => (
   <>
     <MobileHeader tabs={tabs} />
-    <div style={{ padding: "16px 0" }}>
+    <div style={{ padding: "16px 0", position: "relative" }}>
       <Outlet />
     </div>
   </>
