@@ -7,6 +7,8 @@ import FormList from "@/pages/formList";
 import NotFound from "@/pages/404";
 import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
+import MobileMainPage from "@/pages/mobile/MobileMainPage";
+import ApprovedPage from "@/pages/mobile/mobile-approved/ApprovedPage";
 
 const AppRoutes = () => {
   return (
@@ -45,6 +47,15 @@ const AppRoutes = () => {
             <p>This page shows rejected items.</p>
           </div>
         } />
+      </Route>
+
+      {/* Routes for mobile */}
+      <Route path="/mobile" element={<MobileMainPage />}>
+        <Route path="approved" element={<ApprovedPage />}>
+          <Route path="report/:reportId" element={<div>Report Detail Page</div>} />
+          </Route>
+        <Route path="create" element={<div>Create Page</div>} />
+        <Route path="inprogress" element={<div>In Progress Page</div>} />
       </Route>
 
       {/* Routes requiring admin role */}
