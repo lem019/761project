@@ -51,10 +51,11 @@ const AppRoutes = () => {
 
       {/* Routes for mobile */}
       <Route path="/mobile" element={<MobileMainPage />}>
-        <Route path="approved" element={<ApprovedPage />} />
+        <Route path="approved" element={<ApprovedPage />}>
+          <Route path="report/:reportId" element={<div>Report Detail Page</div>} />
+          </Route>
         <Route path="create" element={<div>Create Page</div>} />
         <Route path="inprogress" element={<div>In Progress Page</div>} />
-        <Route path="report/:reportId" element={<div>Report Detail Page</div>} />
       </Route>
 
       {/* Routes requiring admin role */}
