@@ -7,6 +7,7 @@ import FormList from "@/pages/formList";
 import NotFound from "@/pages/404";
 import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
+import MobileMainPage from "@/pages/mobile/MobileMainPage";
 
 const AppRoutes = () => {
   return (
@@ -46,6 +47,8 @@ const AppRoutes = () => {
           </div>
         } />
       </Route>
+
+      <Route path="/mobile" element={<MobileMainPage />} />
 
       {/* Routes requiring admin role */}
       <Route
