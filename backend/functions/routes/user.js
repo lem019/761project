@@ -124,6 +124,10 @@ router.post('/register', async (req, res) => {
   }
 });
 
+router.get('/list', async (req, res) => {
+    return apiResponse.success({ res, code: 200, message: 'Internal server error' });
+});
+
 module.exports = router;
 
 

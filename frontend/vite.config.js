@@ -33,9 +33,9 @@ export default defineConfig({
     open: true,
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:5001/demo-project-id/us-central1/api/",
+        target: "http://127.0.0.1:5001/demo-project-id/us-central1",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, "")
+        rewrite: (path) => path.replace(/^\/api/, "/api")
       }
     }
   },
