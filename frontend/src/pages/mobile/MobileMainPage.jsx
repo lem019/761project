@@ -1,20 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import MobileHeader from "@/components/mobile/MobileHeader";
-import ApprovedPage from "@/pages/mobile/mobile-approved/ApprovedPage";
+import { Outlet } from "react-router-dom";
 
 const tabs = ["Create", "In Progress", "Approved"];
 
-const MobileMainPage = () => {
-  const [activeTab, setActiveTab] = useState(0);
-
-  return (
-    <>
-      <MobileHeader tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-      {/* {activeTab === 0 && <CreatePage />}
-      {activeTab === 1 && <InProgressPage />} */}
-      {activeTab === 2 && <ApprovedPage />}
-    </>
-  );
-};
+const MobileMainPage = () => (
+  <>
+    <MobileHeader tabs={tabs} />
+    <div style={{ padding: "16px 0" }}>
+      <Outlet />
+    </div>
+  </>
+);
 
 export default MobileMainPage;

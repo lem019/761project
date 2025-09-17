@@ -8,6 +8,7 @@ import NotFound from "@/pages/404";
 import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
 import MobileMainPage from "@/pages/mobile/MobileMainPage";
+import ApprovedPage from "@/pages/mobile/mobile-approved/ApprovedPage";
 
 const AppRoutes = () => {
   return (
@@ -48,7 +49,13 @@ const AppRoutes = () => {
         } />
       </Route>
 
-      <Route path="/mobile" element={<MobileMainPage />} />
+      {/* Routes for mobile */}
+      <Route path="/mobile" element={<MobileMainPage />}>
+        <Route path="approved" element={<ApprovedPage />} />
+        <Route path="create" element={<div>Create Page</div>} />
+        <Route path="inprogress" element={<div>In Progress Page</div>} />
+        <Route path="report/:reportId" element={<div>Report Detail Page</div>} />
+      </Route>
 
       {/* Routes requiring admin role */}
       <Route

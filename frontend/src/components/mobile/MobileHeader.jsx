@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import logo from "@/assets/img/logo.png";
 import useUserStore from "@/domain/user/store/user.store";
 import styles from "./index.module.less";
@@ -7,11 +7,16 @@ import styles from "./index.module.less";
 const userName = "Serati Ma"; // 假设用户名
 // tabs 由父组件传递
 
-const MobileHeader = ({ tabs, activeTab, onTabChange }) => {
+const tabRoutes = ["/mobile/create", "/mobile/inprogress", "/mobile/approved"];
+
+const MobileHeader = ({ tabs}) => {
   const { user } = useUserStore();
   //const userName = user?.email;
   const [showMenu, setShowMenu] = React.useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const activeTab = tabRoutes.findIndex(route => location.pathname.startsWith(route));
 
   const handleLogout = () => {
     navigate("/login");
@@ -38,12 +43,8 @@ const MobileHeader = ({ tabs, activeTab, onTabChange }) => {
         {tabs.map((tab, idx) => (
           <button
             key={tab}
-            className={
-              idx === activeTab
-                ? `${styles.tab} ${styles.active}`
-                : styles.tab
-            }
-            onClick={() => onTabChange(idx)}
+            className={activeTab === idx ? `${styles.tab} ${styles.active}` : styles.tab}
+            onClick={() => navigate(tabRoutes[idx])}
           >
             {tab}
           </button>
