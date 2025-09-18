@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Layout,
   Typography,
@@ -155,10 +156,24 @@ const inspectionItems = [
 ];
 
 const ReviewFormPage = () => {
+  const [searchParams] = useSearchParams();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [overallComment, setOverallComment] = useState('');
   const [itemsData, setItemsData] = useState(inspectionItems);
+
+  // 处理 URL 参数
+  useEffect(() => {
+    const id = searchParams.get('id');
+    const formName = searchParams.get('formName');
+    const mode = searchParams.get('mode');
+    
+    if (id && formName) {
+      console.log('ReviewForm loaded with params:', { id, formName, mode });
+      // 这里可以根据 ID 加载对应的表单数据
+      // 如果是 view 模式，可以设置为只读模式
+    }
+  }, [searchParams]);
 
   const handleRowDoubleClick = (record) => {
     console.log('handleRowDoubleClick triggered', record);

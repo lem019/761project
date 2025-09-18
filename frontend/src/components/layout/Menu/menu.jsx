@@ -36,19 +36,19 @@ const MenuTop = () => {
           key: 'admin-create',
           label: 'Create',
           icon: <PlusOutlined />,
-          path: '/admin-create'
+          path: '/pc/admin-create'
         },
         {
           key: 'admin-in-progress',
           label: 'In Progress',
           icon: <ClockCircleOutlined />,
-          path: '/admin-in-progress'
+          path: '/pc/admin-in-progress'
         },
         {
           key: 'admin-approved',
           label: 'Approved',
           icon: <CheckSquareOutlined />,
-          path: '/admin-approved'
+          path: '/pc/admin-approved'
         },
       ]
     },
@@ -61,13 +61,13 @@ const MenuTop = () => {
           key: 'to-review',
           label: 'To Review',
           icon: <FileTextOutlined />,
-          path: '/to-review'
+          path: '/pc/to-review'
         },
         {
           key: 'reviewed',
           label: 'Reviewed',
           icon: <FileDoneOutlined />,
-          path: '/reviewed'
+          path: '/pc/reviewed'
         }
       ]
     },
@@ -75,10 +75,10 @@ const MenuTop = () => {
 
   const employeeMenuItems = [
     {
-      key: '/admin-create',
+      key: '/pc/admin-create',
       label: 'Create',
       icon: <PlusOutlined />,
-      path: '/admin-create'
+      path: '/pc/admin-create'
     },
     {
       key: '/pending-approval',

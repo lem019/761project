@@ -42,7 +42,7 @@ const AdminCreate = () => {
 
   const handleCardClick = (checkType) => {
     // 跳转到 review-form 页面，并传递检查类型参数
-    navigate(`/review-form?type=${checkType.id}`);
+    navigate(`/pc/review-form?type=${checkType.id}`);
   };
 
   return (

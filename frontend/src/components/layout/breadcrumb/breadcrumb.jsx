@@ -21,8 +21,8 @@ const AppBreadcrumb = () => {
     
     // 根据路径生成面包屑
     const breadcrumbMap = {
-      // Admin Create 页面
-      '/admin-create': [
+      // PC Admin Create 页面
+      '/pc/admin-create': [
         { 
           title: <HomeOutlined />, 
           onClick: () => navigate('/'),
@@ -31,8 +31,8 @@ const AppBreadcrumb = () => {
         { title: 'Inspection' },
         { title: 'Create' }
       ],
-      // Admin In Progress 页面
-      '/admin-in-progress': [
+      // PC Admin In Progress 页面
+      '/pc/admin-in-progress': [
         { 
           title: <HomeOutlined />, 
           onClick: () => navigate('/'),
@@ -41,8 +41,8 @@ const AppBreadcrumb = () => {
         { title: 'Inspection' },
         { title: 'In Progress' }
       ],
-      // Admin Approved 页面
-      '/admin-approved': [
+      // PC Admin Approved 页面
+      '/pc/admin-approved': [
         { 
           title: <HomeOutlined />, 
           onClick: () => navigate('/'),
@@ -51,8 +51,8 @@ const AppBreadcrumb = () => {
         { title: 'Inspection' },
         { title: 'Approved' }
       ],
-      // To Review 页面
-      '/to-review': [
+      // PC To Review 页面
+      '/pc/to-review': [
         { 
           title: <HomeOutlined />, 
           onClick: () => navigate('/'),
@@ -61,8 +61,8 @@ const AppBreadcrumb = () => {
         { title: 'Review Center' },
         { title: 'To Review' }
       ],
-      // Reviewed 页面
-      '/reviewed': [
+      // PC Reviewed 页面
+      '/pc/reviewed': [
         { 
           title: <HomeOutlined />, 
           onClick: () => navigate('/'),
@@ -71,8 +71,8 @@ const AppBreadcrumb = () => {
         { title: 'Review Center' },
         { title: 'Reviewed' }
       ],
-      // Review Form 页面
-      '/review-form': [
+      // PC Review Form 页面
+      '/pc/review-form': [
         { 
           title: <HomeOutlined />, 
           onClick: () => navigate('/'),
@@ -80,8 +80,8 @@ const AppBreadcrumb = () => {
         },
         { title: 'Review Form' }
       ],
-      // To Review Form 页面
-      '/toreview-form': [
+      // PC To Review Form 页面
+      '/pc/toreview-form': [
         { 
           title: <HomeOutlined />, 
           onClick: () => navigate('/'),

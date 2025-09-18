@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Button,
   Input,
@@ -93,6 +94,7 @@ const mockData = [
 ];
 
 const ToReviewList = () => {
+  const navigate = useNavigate();
   const [searchInspectors, setSearchInspectors] = useState('');
   const [searchFormName, setSearchFormName] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -143,7 +145,8 @@ const ToReviewList = () => {
 
   const handleReview = (record) => {
     console.log('Review record:', record);
-    // 这里可以添加跳转到审核页面的逻辑
+    // 跳转到审核页面，传递记录ID作为参数
+    navigate(`/pc/review-form?id=${record.id}&formName=${encodeURIComponent(record.formName)}`);
   };
 
   const columns = [
@@ -206,7 +209,6 @@ const ToReviewList = () => {
   return (
     <div className={styles.container}>
       <Card className={styles.contentCard}>
-        <div className={styles.content}>
           {/* 搜索区域 */}
           <div className={styles.searchSection}>
             <Row gutter={[16, 16]} align="middle">
@@ -278,7 +280,6 @@ const ToReviewList = () => {
               className={styles.pagination}
             />
           </div>
-        </div>
       </Card>
     </div>
   );

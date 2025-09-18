@@ -1,15 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
-import CreateForm from "@/pages/createForm";
-import CreateTemplate from "@/pages/createTemplate";
-import ReviewForm from "@/pages/reviewForm";
-import FormList from "@/pages/formList";
-import AdminCreate from "@/pages/adminCreate";
-import AdminInprogress from "@/pages/adminInprogress";
-import AdminApproved from "@/pages/adminApproved";
-import ToReviewList from "@/pages/toReviewList";
-import ReviewedList from "@/pages/reviewedList";
+import ReviewForm from "@/pages/pc/reviewForm";
+import AdminCreate from "@/pages/pc/adminCreate";
+import AdminInprogress from "@/pages/pc/adminInprogress";
+import AdminApproved from "@/pages/pc/adminApproved";
+import ToReviewList from "@/pages/pc/toReviewList";
+import ReviewedList from "@/pages/pc/reviewedList";
 import NotFound from "@/pages/404";
 import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
@@ -27,71 +24,20 @@ import CreateMenu from "@/pages/mobile/create/CreateMenu";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/admin-create" replace />} />
+      <Route path="/" element={<Navigate to="/pc/admin-create" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      <Route path="/admin-create" element={<Layout />}>
-        <Route index element={<AdminCreate />} />
-      </Route>
-      <Route path="/admin-in-progress" element={<Layout />}>
-        <Route index element={<AdminInprogress />} />
-      </Route>
-      <Route path="/admin-approved" element={<Layout />}>
-        <Route index element={<AdminApproved />} />
-      </Route>
-
-      {/* Review Center routes */}
-      <Route path="/to-review" element={<Layout />}>
-        <Route index element={<ToReviewList />} />
-      </Route>
-      <Route path="/reviewed" element={<Layout />}>
-        <Route index element={<ReviewedList />} />
+      {/* PC Admin routes */}
+      <Route path="/pc" element={<Layout />}>
+        <Route path="admin-create" index element={<AdminCreate />} />
+        <Route path="admin-in-progress" index element={<AdminInprogress />} />
+        <Route path="admin-approved" index element={<AdminApproved />} />
+        <Route path="review-form" index element={<ReviewForm />} />
+        <Route path="reviewed" index element={<ReviewedList />} />
+        <Route path="to-review"  element={<ToReviewList />} />
       </Route>
 
-      {/* 简化路由配置进行测试 */}
-      <Route path="/toreview-form" element={<Layout />}>
-        <Route index element={<CreateForm />} />
-      </Route>
-      <Route path="/review-form" element={<Layout />}>
-        <Route index element={<ReviewForm />} />
-      </Route>
-
-      <Route path="/pending-approval" element={<Layout />}>
-        <Route
-          index
-          element={
-            <div style={{ padding: "24px", background: "#fff", borderRadius: "8px" }}>
-              <h2>Pending Approval</h2>
-              <p>This page shows pending approval items.</p>
-            </div>
-          }
-        />
-      </Route>
-
-      <Route path="/approved" element={<Layout />}>
-        <Route
-          index
-          element={
-            <div style={{ padding: "24px", background: "#fff", borderRadius: "8px" }}>
-              <h2>Approved</h2>
-              <p>This page shows approved items.</p>
-            </div>
-          }
-        />
-      </Route>
-
-      <Route path="/rejected" element={<Layout />}>
-        <Route
-          index
-          element={
-            <div style={{ padding: "24px", background: "#fff", borderRadius: "8px" }}>
-              <h2>Rejected</h2>
-              <p>This page shows rejected items.</p>
-            </div>
-          }
-        />
-      </Route>
 
       {/* ===== Mobile 路由 =====
           注意：MobileMainPage 里需要有 <Outlet/> 才能渲染子路由 */}
@@ -107,36 +53,6 @@ const AppRoutes = () => {
         <Route path="create/new" element={<MobileCreateFormPage />} />
         <Route path="template" element={<TemplatePage />} />
       </Route>
-
-      {/* 仅管理员 */}
-      <Route
-        path="/create-template"
-        element={
-          <PrivateRoute requiredRole="admin">
-            <CreateTemplate />
-          </PrivateRoute>
-        }
-      />
-
-      {/* Routes requiring admin role */}
-      <Route
-        path="/review-form"
-        element={
-          <PrivateRoute requiredRole="admin">
-            <ReviewForm />
-          </PrivateRoute>
-        }
-      />
-
-       {/* Routes requiring authentication */}
-       <Route 
-        path="/form-list" 
-        element={
-          <PrivateRoute>
-            <FormList />
-          </PrivateRoute>
-        }
-      />
 
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -185,7 +185,7 @@ const AdminInprogress = () => {
     <div className={styles.container}>
       <Card className={styles.contentCard}>
         {/* 搜索区域 */}
-        <div className={styles.searchSection}>
+        {/* <div className={styles.searchSection}>
           <Row gutter={[16, 16]} align="middle">
             <Col xs={24} sm={12} md={8}>
               <div className={styles.searchItem}>
@@ -230,7 +230,7 @@ const AdminInprogress = () => {
               </Space>
             </Col>
           </Row>
-        </div>
+        </div> */}
 
         {/* 表格区域 */}
         <div className={styles.tableSection}>
