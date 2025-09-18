@@ -1,11 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './CreateMenu.module.less';
 
 const CreateMenu = () => {
+  const navigate = useNavigate();
   const menuItems = [
-    { formId: 1, formname: 'PMR Maintenance Service Check', onClick: () => console.log('PMR Maintenance Service Check clicked') },
-    { formId: 2, formname: 'Booth Maintenance Service Check', onClick: () => console.log('Booth Maintenance Service Check clicked') },
-    { formId: 3, formname: 'Dynapumps Booth Maintenance Service Check', onClick: () => console.log('Dynapumps Booth Maintenance Service Check clicked') }
+    { formId: 1, formname: 'PMR Maintenance Service Check', onClick: () => navigate('/mobile/template') },
+    { formId: 2, formname: 'Booth Maintenance Service Check', onClick: () => navigate('/mobile/template') },
+    { formId: 3, formname: 'Dynapumps Booth Maintenance Service Check', onClick: () => navigate('/mobile/template') }
   ];
 
   

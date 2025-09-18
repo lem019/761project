@@ -46,7 +46,9 @@ export default function InProgressPage() {
 
   const openEdit = (id) => {
     // 与 AppRoutes 对齐：/mobile/inprogress/:id
-    nav(`/mobile/inprogress/${id}`);
+    // nav(`/mobile/inprogress/${id}`);
+    // todo 暂时到 template 页面
+    nav(`/mobile/template`);
   };
 
   return (
