@@ -5,6 +5,11 @@ import CreateForm from "@/pages/createForm";
 import CreateTemplate from "@/pages/createTemplate";
 import ReviewForm from "@/pages/reviewForm";
 import FormList from "@/pages/formList";
+import AdminCreate from "@/pages/adminCreate";
+import AdminInprogress from "@/pages/adminInprogress";
+import AdminApproved from "@/pages/adminApproved";
+import ToReviewList from "@/pages/toReviewList";
+import ReviewedList from "@/pages/reviewedList";
 import NotFound from "@/pages/404";
 import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
@@ -22,13 +27,30 @@ import CreateMenu from "@/pages/mobile/create/CreateMenu";
 const AppRoutes = () => {
   return (
     <Routes>
-
-      <Route path="/" element={<Navigate to="/create-form" replace />} />
+      <Route path="/" element={<Navigate to="/admin-create" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
+      <Route path="/admin-create" element={<Layout />}>
+        <Route index element={<AdminCreate />} />
+      </Route>
+      <Route path="/admin-in-progress" element={<Layout />}>
+        <Route index element={<AdminInprogress />} />
+      </Route>
+      <Route path="/admin-approved" element={<Layout />}>
+        <Route index element={<AdminApproved />} />
+      </Route>
+
+      {/* Review Center routes */}
+      <Route path="/to-review" element={<Layout />}>
+        <Route index element={<ToReviewList />} />
+      </Route>
+      <Route path="/reviewed" element={<Layout />}>
+        <Route index element={<ReviewedList />} />
+      </Route>
+
       {/* 简化路由配置进行测试 */}
-      <Route path="/create-form" element={<Layout />}>
+      <Route path="/toreview-form" element={<Layout />}>
         <Route index element={<CreateForm />} />
       </Route>
       <Route path="/review-form" element={<Layout />}>
