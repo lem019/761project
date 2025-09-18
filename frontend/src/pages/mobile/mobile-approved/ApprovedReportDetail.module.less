@@ -1,0 +1,69 @@
+.detailPage {
+  min-height: 100vh;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;     /* 居中内容列 */
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;            /* 控制内容宽度，四周留白 */
+  padding: 16px;               /* ← 关键：左右内边距 */
+  box-sizing: border-box;
+}
+
+/* 标题：灰、小、居中 */
+.titleWrap {
+  margin: 12px 0 8px;
+  text-align: center;          /* ← 关键：居中 */
+  color: #666;
+  font-size: 13px;
+}
+
+/* 卡片外观 */
+.formCard {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  padding: 14px;
+}
+
+/* 表单行间距 */
+.formItem {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.label {
+  font-size: 13px;
+  color: #555;
+}
+
+/* 输入外观（圆角更柔） */
+.input {
+  border-radius: 12px !important;
+}
+
+/* 禁用态：浅灰底、无描边 */
+:global(.ant-input[disabled]),
+:global(.ant-input-affix-wrapper-disabled) {
+  background: #f2f2f2 !important;
+  color: #666 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  opacity: 1;
+}
+
+/* 文本域也统一灰底+圆角 */
+.textarea {
+  border-radius: 12px !important;
+}
+:global(.ant-input-textarea[disabled] .ant-input) {
+  background: #f2f2f2 !important;
+  color: #666 !important;
+  border: none !important;
+  border-radius: 12px;
+  padding: 10px 12px;
+}

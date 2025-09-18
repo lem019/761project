@@ -9,11 +9,18 @@ import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
 import MobileMainPage from "@/pages/mobile/MobileMainPage";
 import ApprovedPage from "@/pages/mobile/mobile-approved/ApprovedPage";
+
+
+// 👇 新增：引入你刚建的两个页面
+import InProgressPage from "@/pages/mobile/in-progress/InProgressPage";
+import ApprovedReportDetail from "@/pages/mobile/mobile-approved/ApprovedReportDetail";
+import MobileCreateFormPage from "@/pages/mobile/create/MobileCreateFormPage";
 import CreateMenu from "@/pages/mobile/create/CreateMenu";
 
 const AppRoutes = () => {
   return (
     <Routes>
+      
       <Route path="/" element={<Navigate to="/create-form" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -24,42 +31,58 @@ const AppRoutes = () => {
       </Route>
 
       <Route path="/pending-approval" element={<Layout />}>
-        <Route index element={
-          <div style={{ padding: '24px', background: '#fff', borderRadius: '8px' }}>
-            <h2>Pending Approval</h2>
-            <p>This page shows pending approval items.</p>
-          </div>
-        } />
+        <Route
+          index
+          element={
+            <div style={{ padding: "24px", background: "#fff", borderRadius: "8px" }}>
+              <h2>Pending Approval</h2>
+              <p>This page shows pending approval items.</p>
+            </div>
+          }
+        />
       </Route>
 
       <Route path="/approved" element={<Layout />}>
-        <Route index element={
-          <div style={{ padding: '24px', background: '#fff', borderRadius: '8px' }}>
-            <h2>Approved</h2>
-            <p>This page shows approved items.</p>
-          </div>
-        } />
+        <Route
+          index
+          element={
+            <div style={{ padding: "24px", background: "#fff", borderRadius: "8px" }}>
+              <h2>Approved</h2>
+              <p>This page shows approved items.</p>
+            </div>
+          }
+        />
       </Route>
 
       <Route path="/rejected" element={<Layout />}>
-        <Route index element={
-          <div style={{ padding: '24px', background: '#fff', borderRadius: '8px' }}>
-            <h2>Rejected</h2>
-            <p>This page shows rejected items.</p>
-          </div>
-        } />
+        <Route
+          index
+          element={
+            <div style={{ padding: "24px", background: "#fff", borderRadius: "8px" }}>
+              <h2>Rejected</h2>
+              <p>This page shows rejected items.</p>
+            </div>
+          }
+        />
       </Route>
 
-      {/* Routes for mobile */}
+      {/* ===== Mobile 路由 =====
+          注意：MobileMainPage 里需要有 <Outlet/> 才能渲染子路由 */}
       <Route path="/mobile" element={<MobileMainPage />}>
-        <Route path="approved" element={<ApprovedPage />}>
-          <Route path="report/:reportId" element={<div>Report Detail Page</div>} />
-          </Route>
-        <Route path="create" element={<CreateMenu />} />
-        <Route path="inprogress" element={<div>In Progress Page</div>} />
-      </Route>
+  <Route index element={<Navigate to="approved" replace />} />
 
-      {/* Routes requiring admin role */}
+  <Route path="approved" element={<ApprovedPage />} />
+  <Route path="approved/:reportId" element={<ApprovedReportDetail />} />
+  <Route path="approved/report/:reportId" element={<ApprovedReportDetail />} />
+
+  <Route path="inprogress" element={<InProgressPage />} />
+  <Route path="inprogress/:id" element={<div>TODO: Edit Form Page</div>} />
+
+  <Route path="create" element={<CreateMenu />} />
+  <Route path="create/new" element={<MobileCreateFormPage />} />
+</Route>
+
+      {/* 仅管理员 */}
       <Route
         path="/create-template"
         element={
@@ -69,17 +92,19 @@ const AppRoutes = () => {
         }
       />
 
-       {/* Routes requiring authentication */}
-       <Route 
-        path="/form-list" 
+      {/* 需要登录 */}
+      <Route
+        path="/form-list"
         element={
           <PrivateRoute>
             <FormList />
           </PrivateRoute>
-        } 
+        }
       />
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
+
 export default AppRoutes;
