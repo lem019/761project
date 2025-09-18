@@ -6,16 +6,17 @@ import {
   FileTextOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined
+  SearchOutlined,
+  ClockCircleOutlined,
+  CheckSquareOutlined,
+  EyeOutlined,
+  FileDoneOutlined
 } from '@ant-design/icons';
 import useUserStore from "@/domain/user/store/user.store";
-import styles from './sideMenu.module.less';
+import styles from './menu.module.less';
 
-const { Sider } = AntLayout;
 
-const SideMenu = () => {
-  const [collapsed, setCollapsed] = useState(false);
+const MenuTop = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useUserStore((state) => state.user);
@@ -26,9 +27,50 @@ const SideMenu = () => {
   } = theme.useToken();
 
   const adminMenuItems = [
-    { key: '1', label: 'Admin Dashboard' },
-    { key: '2', label: 'User Management' },
-    { key: '3', label: 'Settings' },
+    { 
+      key: 'inspection', 
+      label: 'Inspection',
+      icon: <SearchOutlined />,
+      children: [
+        {
+          key: 'create-form',
+          label: 'Create Form',
+          icon: <PlusOutlined />,
+          path: '/create-form'
+        },
+        {
+          key: 'in-progress',
+          label: 'In Progress',
+          icon: <ClockCircleOutlined />,
+          path: '/in-progress'
+        },
+        {
+          key: 'approved',
+          label: 'Approved',
+          icon: <CheckSquareOutlined />,
+          path: '/approved'
+        },
+      ]
+    },
+    { 
+      key: 'review-center', 
+      label: 'Review Center',
+      icon: <EyeOutlined />,
+      children: [
+        {
+          key: 'to-review',
+          label: 'To Review',
+          icon: <FileTextOutlined />,
+          path: '/to-review'
+        },
+        {
+          key: 'reviewed',
+          label: 'Reviewed',
+          icon: <FileDoneOutlined />,
+          path: '/reviewed'
+        }
+      ]
+    },
   ];
 
   const employeeMenuItems = [
@@ -58,7 +100,8 @@ const SideMenu = () => {
     },
   ];
 
-  const menuItems = userRole === 'admin' ? adminMenuItems : employeeMenuItems;
+  
+  const menuItems = userRole === 'employee' ?  employeeMenuItems : adminMenuItems;
 
   const handleMenuClick = ({ key }) => {
     const menuItem = menuItems.find(item => item.key === key);
@@ -68,37 +111,17 @@ const SideMenu = () => {
   };
 
   return (
-    <Sider
-      trigger={null}
-      collapsible
-      collapsed={collapsed}
-      className={styles.sider}
-      style={{ backgroundColor: colorBgContainer }}
-      onCollapse={(value) => setCollapsed(value)}
-      breakpoint="sm"
-      collapsedWidth={60}
-    >
-      <div className={styles['side-menu-container']}>
+
+      <div className={styles['top-menu-container']}>
         <Menu
-          mode="inline"
+          mode="horizontal"
           selectedKeys={[location.pathname]}
           onClick={handleMenuClick}
           className={styles.menu}
-          items={menuItems.map(item => ({
-            key: item.key,
-            icon: item.icon,
-            label: item.label,
-          }))}
+          items={menuItems}
         />
-
-        <div className={styles['collapse-button']}>
-          <div onClick={() => setCollapsed(!collapsed)}>
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          </div>
-        </div>
       </div>
-    </Sider>
   );
 };
 
-export default SideMenu;
+export default MenuTop;

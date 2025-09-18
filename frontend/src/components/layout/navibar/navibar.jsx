@@ -4,6 +4,8 @@ import { UserOutlined, DownOutlined } from '@ant-design/icons';
 import useUserStore from "@/domain/user/store/user.store";
 import logo from '@/assets/thermoFLO_Final_colour.png';
 import styles from './navibar.module.less';
+import MenuTop from '@/components/layout/Menu/menu';
+
 
 const { Header } = Layout;
 
@@ -39,21 +41,27 @@ const Navibar = () => {
       <div className={styles['logo-container']}>
         <img src={logo} alt="SportsBuddy Logo" className={styles['logo-img']} />
       </div>
-      <Dropdown
-        menu={{ items: menuItems }}
-        placement="bottomRight"
-        arrow
-      >
-        <Space className={styles['user-dropdown']}>
-          <Avatar 
-            size="small" 
-            icon={<UserOutlined />}
-            style={{ backgroundColor: '#1890ff' }}
-          />
-          <span style={{ color: '#333' }}>{userName}</span>
-          <DownOutlined style={{ fontSize: '12px', color: '#666' }} />
-        </Space>
-      </Dropdown>
+      <div className={styles['menu-container']}>
+        <MenuTop />
+      </div>
+      <div className={styles['switch-container']}>
+        <Dropdown
+          menu={{ items: menuItems }}
+          placement="bottomRight"
+          arrow
+        >
+          <Space className={styles['user-dropdown']}>
+            <Avatar
+              size="small"
+              icon={<UserOutlined />}
+              style={{ backgroundColor: '#1890ff' }}
+            />
+            <span style={{ color: '#333' }}>{userName}</span>
+            <DownOutlined style={{ fontSize: '12px', color: '#666' }} />
+          </Space>
+        </Dropdown>
+      </div>
+
     </Header>
   );
 };

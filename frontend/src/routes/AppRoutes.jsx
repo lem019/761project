@@ -3,6 +3,7 @@ import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
 import CreateForm from "@/pages/createForm";
 import CreateTemplate from "@/pages/createTemplate";
+import ReviewForm from "@/pages/reviewForm";
 import FormList from "@/pages/formList";
 import NotFound from "@/pages/404";
 import Layout from "@/components/layout/index";
@@ -29,6 +30,9 @@ const AppRoutes = () => {
       {/* 简化路由配置进行测试 */}
       <Route path="/create-form" element={<Layout />}>
         <Route index element={<CreateForm />} />
+      </Route>
+      <Route path="/review-form" element={<Layout />}>
+        <Route index element={<ReviewForm />} />
       </Route>
 
       <Route path="/pending-approval" element={<Layout />}>
@@ -92,9 +96,19 @@ const AppRoutes = () => {
         }
       />
 
-      {/* 需要登录 */}
+      {/* Routes requiring admin role */}
       <Route
-        path="/form-list"
+        path="/review-form"
+        element={
+          <PrivateRoute requiredRole="admin">
+            <ReviewForm />
+          </PrivateRoute>
+        }
+      />
+
+       {/* Routes requiring authentication */}
+       <Route 
+        path="/form-list" 
         element={
           <PrivateRoute>
             <FormList />

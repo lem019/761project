@@ -1,7 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Layout as AntLayout } from 'antd';
-import SideMenu from '@/components/layout/sideMenu/sideMenu';
 import Navibar from '@/components/layout/navibar/navibar';
 import AppBreadcrumb from '@/components/layout/breadcrumb/breadcrumb.jsx';
 import styles from './index.module.less';
@@ -13,7 +12,6 @@ const Layout = () => {
     <AntLayout className={styles['layout-container']}>
       <Navibar />
       <AntLayout className={styles['layout-content']}>
-        <SideMenu />
         <Content className={styles['content-area']}>
           <AppBreadcrumb />
           <div className={styles['outlet-container']}>
