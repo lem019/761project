@@ -8,6 +8,7 @@ import NotFound from "@/pages/404";
 import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
 import MobileMainPage from "@/pages/mobile/MobileMainPage";
+import TemplatePage from "@/pages/mobile/Template";
 import ApprovedPage from "@/pages/mobile/mobile-approved/ApprovedPage";
 
 const AppRoutes = () => {
@@ -56,6 +57,7 @@ const AppRoutes = () => {
           </Route>
         <Route path="create" element={<div>Create Page</div>} />
         <Route path="inprogress" element={<div>In Progress Page</div>} />
+        <Route path="template" element={<TemplatePage/>}/>
       </Route>
 
       {/* Routes requiring admin role */}
