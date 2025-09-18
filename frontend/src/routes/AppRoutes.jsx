@@ -8,6 +8,7 @@ import NotFound from "@/pages/404";
 import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
 import MobileMainPage from "@/pages/mobile/MobileMainPage";
+import TemplatePage from "@/pages/mobile/Template";
 import ApprovedPage from "@/pages/mobile/mobile-approved/ApprovedPage";
 
 
@@ -20,7 +21,7 @@ import CreateMenu from "@/pages/mobile/create/CreateMenu";
 const AppRoutes = () => {
   return (
     <Routes>
-      
+
       <Route path="/" element={<Navigate to="/create-form" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -69,18 +70,17 @@ const AppRoutes = () => {
       {/* ===== Mobile 路由 =====
           注意：MobileMainPage 里需要有 <Outlet/> 才能渲染子路由 */}
       <Route path="/mobile" element={<MobileMainPage />}>
-  <Route index element={<Navigate to="approved" replace />} />
+        <Route path="approved" element={<ApprovedPage />} />
+        <Route path="approved/:reportId" element={<ApprovedReportDetail />} />
+        <Route path="approved/report/:reportId" element={<ApprovedReportDetail />} />
 
-  <Route path="approved" element={<ApprovedPage />} />
-  <Route path="approved/:reportId" element={<ApprovedReportDetail />} />
-  <Route path="approved/report/:reportId" element={<ApprovedReportDetail />} />
+        <Route path="inprogress" element={<InProgressPage />} />
+        <Route path="inprogress/:id" element={<div>TODO: Edit Form Page</div>} />
 
-  <Route path="inprogress" element={<InProgressPage />} />
-  <Route path="inprogress/:id" element={<div>TODO: Edit Form Page</div>} />
-
-  <Route path="create" element={<CreateMenu />} />
-  <Route path="create/new" element={<MobileCreateFormPage />} />
-</Route>
+        <Route path="create" element={<CreateMenu />} />
+        <Route path="create/new" element={<MobileCreateFormPage />} />
+        <Route path="template" element={<TemplatePage />} />
+      </Route>
 
       {/* 仅管理员 */}
       <Route
