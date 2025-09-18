@@ -9,6 +9,7 @@ import Layout from "@/components/layout/index";
 import PrivateRoute from "./PrivateRoute";
 import MobileMainPage from "@/pages/mobile/MobileMainPage";
 import ApprovedPage from "@/pages/mobile/mobile-approved/ApprovedPage";
+import CreateMenu from "@/pages/mobile/create/CreateMenu";
 
 const AppRoutes = () => {
   return (
@@ -54,7 +55,7 @@ const AppRoutes = () => {
         <Route path="approved" element={<ApprovedPage />}>
           <Route path="report/:reportId" element={<div>Report Detail Page</div>} />
           </Route>
-        <Route path="create" element={<div>Create Page</div>} />
+        <Route path="create" element={<CreateMenu />} />
         <Route path="inprogress" element={<div>In Progress Page</div>} />
       </Route>
 
