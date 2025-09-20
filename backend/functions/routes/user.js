@@ -2,8 +2,10 @@ const express = require('express');
 const admin = require('firebase-admin');
 const router = express.Router();
 const apiResponse = require('../middleware/apiResponse');
-const { toIso, deriveRole, validateEmail } = require('../helper');
+const { toIso, validateEmail } = require('../helper');
 
+// todo 为什么要自己处理账户密码 完全没必要！ 完全没必要使用这种登录方式!!
+// todo 仔细研究下登录流程
 
 /**
  * 用户模块路由
@@ -30,6 +32,7 @@ router.post('/login', async (req, res) => {
       return apiResponse.error({ res, code: 400, message: 'Invalid email format' });
     }
 
+    // todo 调用 user-service 处理 query
     const db = admin.firestore();
     const usersRef = db.collection('users');
     const query = await usersRef.where('email', '==', email).limit(1).get();
@@ -104,7 +107,7 @@ router.post('/register', async (req, res) => {
       return apiResponse.error({ res, code: 409, message: 'User with this email already exists' });
     }
 
-    const { buildUserDoc } = require('../schemas/user');
+    const { buildUserDoc } = require('../services/user-service');
     const newUser = buildUserDoc(email, password);
 
     const userRef = await usersRef.add(newUser);

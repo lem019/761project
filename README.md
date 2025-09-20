@@ -47,15 +47,20 @@ npm run fix
 npm run format:check
 ```
 
-## 预期结果
+TODO: 错误的实践方式，使用自动格式化可能会造成大量的代码变动，有些对齐方式是精心调整的
 
-- ✅ 正常代码可以成功提交
-- ❌ 有语法错误的代码会被阻止提交
-- ❌ 格式错误的提交信息会被拒绝
-- 🔧 代码会自动格式化（如果可能的话）
+# firebase dependencies
 
-## 测试建议
+1. npm install -g firebase-tools
+2. make sure your java version > 11 // recommend to use openjdk-17(stable version)
 
-1. 先测试正常情况，确保基本功能正常
-2. 再测试错误情况，验证保护机制是否生效
-3. 最后测试修复功能，确保问题可以被解决
+# run 
+
+```
+cd backend/functions
+npm install // install dependencies of functions
+
+cd../   //return to backend folder
+npm run start // start the functions of the  firebase emulations
+npm run serve // start all the server of the firebase emulations
+```

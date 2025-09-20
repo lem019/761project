@@ -4,6 +4,16 @@ const router = express.Router();
 const { FieldValue, Timestamp } = require("firebase-admin/firestore");
 const db = admin.firestore();
 
+/**
+ * todo
+ * 1. get form template list
+ * 2. get specific form template detail
+ * 3. save form data (create or update) (review also use this api - as we use NOSQL database)
+ * 4. change form status (submit, decline, approve)
+ * 5. get inspector form list (all, draft, pending, declined, approved)
+ * 6. search form by text
+ */
+
 // 创建：status=draft, type=a, formId=docId
 router.post("/add", async (req, res) => {
   try {

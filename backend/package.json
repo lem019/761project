@@ -1,6 +1,0 @@
-{
-  "scripts": {
-    "start": "firebase emulators:start --only functions --project demo-project-id",
-    "serve": "firebase emulators:start --project demo-project-id"
-  }
-}

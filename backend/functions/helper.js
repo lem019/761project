@@ -1,17 +1,4 @@
 /**
- * 根据邮箱后缀推导用户角色
- * 规则：
- * - 邮箱以 @thermoflo.co.nz 结尾 => 'admin'
- * - 其他邮箱 => 'primary'
- * @param {string} email
- * @returns {'primary'|'admin'}
- */
-function deriveRole(email) {
-  const domain = String(email).split('@')[1] || '';
-  return domain.toLowerCase() === 'thermoflo.co.nz' ? 'admin' : 'primary';
-}
-
-/**
  * 校验邮箱格式
  * @param {string} email
  * @returns {boolean}
@@ -39,7 +26,6 @@ function toIso(value) {
 }
 
 module.exports = {
-  deriveRole,
   validateEmail,
   toIso
 };

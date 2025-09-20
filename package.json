@@ -13,7 +13,11 @@
     "format:frontend": "cd frontend && npm run format",
     "check": "npm run lint && npm run format:check",
     "format:check": "npm run format:check:frontend",
-    "format:check:frontend": "cd frontend && npm run format:check"
+    "format:check:frontend": "cd frontend && npm run format:check",
+    "build": "cd backend/functions && npm install && cd ../../frontend && npm install && npm run build",
+    "clean_build": "rm -rf frontend/dist && rm -rf frontend/node_modules && rm -rf frontend/package-lock.json && rm -rf backend/functions/node_modules && rm -rf backend/functions/package-lock.json",
+    "backend:serve": "firebase emulators:start",
+    "deploy": "npm run clean_build && firebase deploy"
   },
   "devDependencies": {
     "husky": "^9.1.7",
