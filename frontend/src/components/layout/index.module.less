@@ -1,0 +1,30 @@
+.layout-container {
+  height: 100%;
+  overflow: hidden;
+}
+
+.content-area {
+  padding: 24px;
+  padding-top: 0;
+  background: #f5f5f5;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.outlet-container {
+  flex: 1;
+  display: flex;
+  overflow-y: hidden;
+  padding-right: 8px; /* 为滚动条留出空间 */
+}
+
+@media (max-width: @breakpoint-sm) {
+  .content-area {
+    padding: 8px;
+  }
+
+  .outlet-container {
+    padding-right: 0px;
+  }
+}

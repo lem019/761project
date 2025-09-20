@@ -1,0 +1,16 @@
+{
+  "id": "5007685",
+  "name": "group8-uoa",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "11983544",
+      "name": "google",
+      "font_class": "google",
+      "unicode": "ea0c",
+      "unicode_decimal": 59916
+    }
+  ]
+}

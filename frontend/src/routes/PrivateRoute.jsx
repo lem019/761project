@@ -1,54 +1,67 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { userStore } from "@/domain/user/store/user.store";
+import useUserStore from "@/domain/user/store/user.store";
 import { decodeToken } from "@/utils/helper";
 
 /**
- * 私有路由组件，用于权限校验
- * @param {Object} props - 组件属性
- * @param {React.ReactNode} props.children - 子组件
- * @param {string} [props.requiredRole] - 需要的角色权限（可选）
- * @returns {React.ReactNode} - 渲染的组件或重定向
+ * Private route component for access control
+ * Supports both SSO (Firebase) and traditional JWT authentication
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child component
+ * @param {string} [props.requiredRole] - Required role (optional)
+ * @returns {React.ReactNode} - Rendered component or redirect
  */
 const PrivateRoute = ({ children, requiredRole }) => {
-  const user = userStore((state) => state.user);
+  const { user, setUser } = useUserStore();
   
-  // 检查是否有token
+  // Check for both authentication methods
   const token = localStorage.getItem("token");
-  if (!token) {
+  const isFirebaseUser = user && user.uid; // Firebase user has uid property
+  
+  // If no user authenticated via either method, redirect to login
+  if (!user && !token) {
     return <Navigate to="/login" replace />;
   }
   
-  // 如果没有用户信息，尝试从token解析
-  if (!user && token) {
+  // If we have a token but no Firebase user, try to decode the token
+  if (!isFirebaseUser && token) {
     const decodedToken = decodeToken(token);
     if (decodedToken) {
-      // 将解析的用户信息存储到store中
-      userStore.getState().setUser(decodedToken);
+      // Store decoded user info in the state store
+      setUser(decodedToken);
     } else {
-      // token无效，清除并重定向到登录页
+      // Invalid token: clear and redirect to login
       localStorage.removeItem("token");
       return <Navigate to="/login" replace />;
     }
   }
   
-  // 如果需要特定角色权限
+  // If a specific role is required
   if (requiredRole) {
-    const currentUser = user || decodeToken(token);
-    const userRole = currentUser?.role || currentUser?.userRole;
+    let currentUser = user;
+    let userRole;
+    
+    if (isFirebaseUser) {
+      // Firebase user - check custom claims or default to basic user
+      userRole = user?.role ?? "primary"
+    } else {
+      // JWT token user
+      currentUser = user || decodeToken(token);
+      userRole = currentUser?.role ?? "primary";
+    }
     
     if (!userRole) {
       return <Navigate to="/login" replace />;
     }
     
-    // 角色权限检查
+    // Role permission check
     if (requiredRole === "admin" && userRole !== "admin") {
-      // 非admin用户尝试访问admin页面，重定向到首页或显示403
+      // Non-admin accessing admin page: redirect to home or show 403
       return <Navigate to="/" replace />;
     }
     
     if (requiredRole === "primary" && !["primary", "admin"].includes(userRole)) {
-      // 非primary用户尝试访问primary页面，重定向到首页
+      // Non-primary accessing primary page: redirect to home
       return <Navigate to="/" replace />;
     }
   }
@@ -57,3 +70,4 @@ const PrivateRoute = ({ children, requiredRole }) => {
 };
 
 export default PrivateRoute;
+

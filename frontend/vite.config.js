@@ -29,14 +29,18 @@ export default defineConfig({
   assetsInclude: ["**/*.svg", "**/*.eot", "**/*.woff", "**/*.woff2", "**/*.ttf"],
   server: {
     port: 90,
-    host: true,
+    host: '0.0.0.0', // 允许外部访问
     open: true,
     proxy: {
       "/api": {
-        target: "http://localhost:5000", //http://192.168.1.111:7878？
-        changeOrigin: true
+        target: "http://127.0.0.1:5001/demo-project-id/us-central1",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, "/api")
       }
     }
+  },
+  preview: {
+    allowedHosts: ['t-3886287752---project-project-team-8-w4cn3q3iaq-as.a.run.app'],
   },
   build: {
     target: "esnext"

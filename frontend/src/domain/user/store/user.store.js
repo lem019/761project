@@ -1,48 +1,61 @@
 import { create } from "zustand";
+import { auth } from "@/firebase";
+  import { _registerUser, _logout, _userLogin } from "../repository/user.repository";
+import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
+import { removeStorage,saveStorage } from "@/utils/helper";
 
-/**
- * 用户状态管理store
- */
-export const userStore = create((set, get) => ({
+const useUserStore = create((set, get) => ({
   user: null,
-  
-  /**
-   * 设置用户信息
-   * @param {Object} user - 用户信息对象
-   */
   setUser: (user) => set({ user }),
-  
-  /**
-   * 获取用户角色
-   * @returns {string|null} - 用户角色
-   */
-  getUserRole: () => {
-    const user = get().user;
-    return user?.role || user?.userRole || null;
-  },
-  
-  /**
-   * 检查用户是否有指定角色权限
-   * @param {string} requiredRole - 需要的角色
-   * @returns {boolean} - 是否有权限
-   */
-  hasRole: (requiredRole) => {
-    const userRole = get().getUserRole();
-    if (!userRole) return false;
-    
-    if (requiredRole === "admin") {
-      return userRole === "admin";
-    }
-    
-    if (requiredRole === "primary") {
-      return ["primary", "admin"].includes(userRole);
-    }
-    
-    return false;
-  },
-  
-  /**
-   * 清除用户信息
-   */
   clearUser: () => set({ user: null }),
+
+  // Clear both Firebase auth and localStorage token
+  logout: async () => {
+    try { await firebaseSignOut(auth); } catch (_) {}
+    try { localStorage.removeItem("idToken"); } catch (_) {}
+    try { removeStorage("token"); } catch (_) {}
+    set({ user: null });
+  },
+  clearUser: () => set({ user: null }),
+
+
+  registerUser: (userData) => {
+    return _registerUser(userData).then((res)=>{
+      set({userInfo:res.data})
+    }).catch((error)=>{
+      throw error;
+    });
+  },
+
+
+  userLogin: (userData) => {
+    return _userLogin(userData).then((res)=>{
+      set({user:res.data.user});
+      saveStorage('token', res.data.token)
+      return res.data.user;
+    }).catch((error)=>{
+      console.error("Login failed:", error);
+      throw error;
+    });
+  },
+
+
 }));
+
+// // Listen to Firebase auth state at initialization
+onAuthStateChanged(auth, (user) => {
+  if (user && user.email) {
+    // Check if user email domain matches @thermoflo.co.nz
+      // Set role as admin for @thermoflo.co.nz users
+      const userWithRole = {
+        ...user,
+        role: user.email.endsWith('@thermoflo.co.nz') ? 'admin' : "primary"
+      };
+      useUserStore.getState().setUser(userWithRole);
+    
+  } else {
+    useUserStore.getState().setUser(user);
+  }
+});
+
+export default useUserStore;

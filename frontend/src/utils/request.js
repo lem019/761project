@@ -79,6 +79,7 @@ service.interceptors.response.use(
 
 export const http = {
   get(url, params, config) {
+    console.log('get url:', url);
     return service.get(url, { ...config, params });
   },
 

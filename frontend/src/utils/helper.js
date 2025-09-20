@@ -12,6 +12,21 @@ export const removeStorage = (key) => {
   localStorage.removeItem(key);
 };
 
+export const saveSessionStorage = (key, value) => {
+  if (typeof value === "string" && value.length > 0) {
+    sessionStorage.setItem(key, value);
+  }
+};
+
+
+export const getSessionStorage = (key) => {
+  return sessionStorage.getItem(key);
+};
+
+export const removeSessionStorage = (key) => {
+  sessionStorage.removeItem(key);
+};
+
 /**
  * Decode JWT token and return payload
  * @param {string} token - JWT token
@@ -31,7 +46,6 @@ export const decodeToken = (token) => {
     );
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error("Failed to decode token:", error);
     return null;
   }
 };

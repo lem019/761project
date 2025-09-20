@@ -1,0 +1,49 @@
+.menu {
+  position: absolute;
+  top: 0;
+  left: 5%;
+  background: #fff;
+  border: 0.0625rem solid #e0e0e0;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+  /* 让菜单更宽，保留左右 5% 边距 */
+  width: 90vw;
+  max-width: none;
+}
+
+.menuItem {
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: none;
+  border-bottom: 0.0625rem solid #f0f0f0;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:hover {
+    background: #f8f9fa;
+    color: #000;
+  }
+  
+  &:active {
+    background: #e9ecef;
+  }
+}
