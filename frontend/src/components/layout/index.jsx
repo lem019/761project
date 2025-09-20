@@ -7,7 +7,7 @@ import styles from './index.module.less';
 
 const { Content } = AntLayout;
 
-const Layout = () => {
+const Layout = ({ children }) => {
   return (
     <AntLayout className={styles['layout-container']}>
       <Navibar />
@@ -15,7 +15,7 @@ const Layout = () => {
         <Content className={styles['content-area']}>
           <AppBreadcrumb />
           <div className={styles['outlet-container']}>
-            <Outlet />
+            {children || <Outlet />}  {/* 支持 children 或 Outlet */}
           </div>
         </Content>
       </AntLayout>

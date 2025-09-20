@@ -22,7 +22,7 @@ const AppBreadcrumb = () => {
     // 根据路径生成面包屑
     const breadcrumbMap = {
       // PC Admin Create 页面
-      '/pc/admin-create': [
+      '/pc/create': [
         { 
           title: <HomeOutlined />, 
           onClick: () => navigate('/'),
@@ -32,7 +32,7 @@ const AppBreadcrumb = () => {
         { title: 'Create' }
       ],
       // PC Admin In Progress 页面
-      '/pc/admin-in-progress': [
+      '/pc/inprogress': [
         { 
           title: <HomeOutlined />, 
           onClick: () => navigate('/'),
@@ -42,7 +42,7 @@ const AppBreadcrumb = () => {
         { title: 'In Progress' }
       ],
       // PC Admin Approved 页面
-      '/pc/admin-approved': [
+      '/pc/approved': [
         { 
           title: <HomeOutlined />, 
           onClick: () => navigate('/'),

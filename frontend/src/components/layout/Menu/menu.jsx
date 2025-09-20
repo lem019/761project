@@ -33,22 +33,22 @@ const MenuTop = () => {
       icon: <SearchOutlined />,
       children: [
         {
-          key: 'admin-create',
+          key: 'create',
           label: 'Create',
           icon: <PlusOutlined />,
-          path: '/pc/admin-create'
+          path: '/pc/create'
         },
         {
-          key: 'admin-in-progress',
+          key: 'inprogress',
           label: 'In Progress',
           icon: <ClockCircleOutlined />,
-          path: '/pc/admin-in-progress'
+          path: '/pc/inprogress'
         },
         {
-          key: 'admin-approved',
+          key: 'approved',
           label: 'Approved',
           icon: <CheckSquareOutlined />,
-          path: '/pc/admin-approved'
+          path: '/pc/approved'
         },
       ]
     },
@@ -75,10 +75,10 @@ const MenuTop = () => {
 
   const employeeMenuItems = [
     {
-      key: '/pc/admin-create',
+      key: '/pc/create',
       label: 'Create',
       icon: <PlusOutlined />,
-      path: '/pc/admin-create'
+      path: '/pc/create'
     },
     {
       key: '/pending-approval',
