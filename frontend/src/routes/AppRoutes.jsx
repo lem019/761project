@@ -11,11 +11,10 @@ import ReviewedList from "@/pages/pc/reviewedList";
 import NotFound from "@/pages/404";
 import Layout from "@/components/layout/index";
 import MobileMainPage from "@/pages/mobile/MobileMainPage";
-import TemplatePage from "@/pages/mobile/Template";
+import TemplatePage from "@/pages/mobile/template";
 import ApprovedPage from "@/pages/mobile/mobile-approved/ApprovedPage";
 import InProgressPage from "@/pages/mobile/in-progress/InProgressPage";
 import ApprovedReportDetail from "@/pages/mobile/mobile-approved/ApprovedReportDetail";
-import MobileCreateFormPage from "@/pages/mobile/create/MobileCreateFormPage";
 import CreateMenu from "@/pages/mobile/create/CreateMenu";
 
 // 宽度小于768时，切换到移动端路由
@@ -57,8 +56,11 @@ const AppRoutes = () => {
       <Route path="/register" element={<RegisterPage />} />
 
       {/* pages which have different layout for mobile and pc */}
+      {/* One problem: pc path can not be visited in mobile mode. eg: visit /pc/create in mobile mode will be redirected to 404 */}
       <Route path={isMobile ? "/mobile" : "/pc"} element={isMobile ? <MobileMainPage /> : <Layout />}>
+        <Route path="" element={<Navigate to={isMobile ? "/mobile/create" : "/pc/create"} replace />}></Route>
         <Route path="create" element={isMobile ? <CreateMenu /> : <AdminCreate />} />
+        <Route path="template" element={<TemplatePage />} />
         <Route path="inprogress" element={isMobile ? <InProgressPage /> : <AdminInprogress />} />
         <Route path="approved" element={isMobile ? <ApprovedPage /> : <AdminApproved />} />
 
@@ -70,8 +72,6 @@ const AppRoutes = () => {
         {/* interceptor */}
         <Route path="approved/:reportId" element={<ApprovedReportDetail />} />
         <Route path="approved/report/:reportId" element={<ApprovedReportDetail />} />
-        <Route path="create/new" element={<MobileCreateFormPage />} />
-        <Route path="template" element={<TemplatePage />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
