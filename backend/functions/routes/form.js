@@ -3,6 +3,10 @@ const admin = require('firebase-admin');
 const router = express.Router();
 const { FieldValue, Timestamp } = require("firebase-admin/firestore");
 const db = admin.firestore();
+const authMiddleware = require('../middleware/auth');
+
+// 应用认证中间件到所有路由
+router.use(authMiddleware);
 
 /**
  * todo
@@ -17,8 +21,7 @@ const db = admin.firestore();
 // 创建：status=draft, type=a, formId=docId
 router.post("/add", async (req, res) => {
   try {
-    // const uid = req.user.uid;
-    const uid = "1234567890";
+    const uid = req.user.uid; // 从认证中间件获取真实用户ID
     const { type = "a" } = req.body || {};
     const now = Date.now();
     const ref = await db.collection("forms").add({
@@ -38,8 +41,7 @@ router.post("/add", async (req, res) => {
 // 删除（仅草稿且创建者）
 router.delete("/delete/:id", async (req, res) => {
   try {
-    // const uid = req.user.uid;
-    const uid = "1234567890";
+    const uid = req.user.uid; // 从认证中间件获取真实用户ID
     const { id } = req.params;
     const ref = db.collection("forms").doc(id);
     const doc = await ref.get();
@@ -70,9 +72,8 @@ router.delete("/delete/:id", async (req, res) => {
 // 查询列表（支持 status & mine & 分页）
 router.get("/list", async (req, res) => {
   try {
-    const uid = "1234567890";
-    // const uid = req.user.uid;
-    // const role = await getUserRole(uid);
+    const uid = req.user.uid; // 从认证中间件获取真实用户ID
+    const role = req.user.role; // 从认证中间件获取用户角色
     const { status, formType, page = 1, pageSize = 10 } = req.query;
     
     // 转换分页参数为数字

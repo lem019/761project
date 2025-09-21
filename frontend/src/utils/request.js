@@ -2,7 +2,7 @@
 import axios from "axios";
 import errorCode from "./errorCode";
 import { message as antdMessage, Modal } from "antd";
-import { removeStorage,getStorage } from "./helper";
+// 移除了自定义 JWT 相关的导入，现在使用 Firebase ID Token
 
 // Create instance and configure base URL
 const service = axios.create({
@@ -19,10 +19,10 @@ service.interceptors.request.use(
     // Standardize headers object
     config.headers = config.headers || {};
 
-    // Add Token
-    const token = getStorage("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // 使用 Firebase ID Token
+    const idToken = localStorage.getItem("idToken");
+    if (idToken) {
+      config.headers.Authorization = `Bearer ${idToken}`;
     }
 
     return config;
@@ -41,7 +41,7 @@ service.interceptors.response.use(
         title: "login expired",
         content: "login expired, please login again",
         onOk: () => {
-          removeStorage("token");
+          localStorage.removeItem("idToken");
           window.location.href = "/login";
         }
       });
@@ -64,7 +64,7 @@ service.interceptors.response.use(
         title: "login expired",
         content: "login expired, please login again",
         onOk: () => {
-          removeStorage("token");
+          localStorage.removeItem("idToken");
           window.location.href = "/login";
         }
       });

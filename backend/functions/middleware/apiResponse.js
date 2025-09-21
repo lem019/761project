@@ -1,6 +1,6 @@
 
 const apiResponse = {
-  success: ({ res, data = null, message = "Success", code = 200 }) => {
+  success: ({ res, message = "Success", code = 200, data = null }) => {
     return res.status(code).json({ code, message, data });
   },
   error: ({ res, message = "Error", code = 500, errors = null }) => {
