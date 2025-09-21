@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { authMiddleware } = require('../middleware/auth');
+
+// 应用认证中间件到所有用户路由
+router.use(authMiddleware);
 
 /**
  * 用户模块路由 - 现在只提供用户信息接口

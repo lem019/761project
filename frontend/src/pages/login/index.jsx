@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, message, Divider } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import useUserStore from "@/domain/user/store/user.store";
 import styles from "./index.module.less";
 import logo from "@/assets/img/logo.png";
@@ -12,21 +12,28 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const { user, userLogin } = useUserStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // 已登录则根据角色跳转（避免停在登录页）
+  // 获取登录前要跳转的路径
+  const from = location.state?.from?.pathname || '/pc/create';
+
+  // 已登录则跳转到目标页面
   useEffect(() => {
-    if (user?.role === "admin") navigate("/create-form", { replace: true });
-    if (user?.role === "primary") navigate("/create-form", { replace: true });
-  }, [user, navigate]);
+    if (user?.role === "admin" || user?.role === "primary") {
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, from]);
 
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const me = await userLogin(values); // 保存 idToken + /auth/me
+      const me = await userLogin(values);
       console.log(me);
-      if (me?.role === "admin") navigate("/create-form", { replace: true });
-      else if (me?.role === "primary") navigate("/create-form", { replace: true });
-      else message.warning("Login succeeded but role is missing. Please set role in Firestore.");
+      if (me?.role === "admin" || me?.role === "primary") {
+        navigate(from, { replace: true });
+      } else {
+        message.warning("Login succeeded but role is missing. Please set role in Firestore.");
+      }
     } catch (error) {
       console.error("Login error:", error);
       message.error("Login failed");

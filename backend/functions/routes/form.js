@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 const router = express.Router();
 const { FieldValue, Timestamp } = require("firebase-admin/firestore");
 const db = admin.firestore();
-const authMiddleware = require('../middleware/auth');
+const { authMiddleware, checkAdmin } = require('../middleware/auth');
 
 // 应用认证中间件到所有路由
 router.use(authMiddleware);
@@ -128,6 +128,51 @@ router.get("/get/:id", async (req, res) => {
     const doc = await db.collection("forms").doc(id).get();
     if (!doc.exists) return res.status(404).json({ error: "not_found" });
     return res.json({ id: doc.id, ...doc.data() });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+// 管理员专用：更新表单状态（审核通过/拒绝）
+router.put("/admin/status/:id", checkAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, comment } = req.body;
+    
+    if (!status) {
+      return res.status(400).json({ 
+        code: 400, 
+        message: "Status is required" 
+      });
+    }
+
+    const ref = db.collection("forms").doc(id);
+    const doc = await ref.get();
+    
+    if (!doc.exists) {
+      return res.status(404).json({ 
+        code: 404, 
+        message: "Form not found" 
+      });
+    }
+
+    const updateData = {
+      status: parseInt(status),
+      updatedAt: FieldValue.serverTimestamp(),
+      reviewedBy: req.user.uid,
+      reviewedAt: FieldValue.serverTimestamp()
+    };
+
+    if (comment) {
+      updateData.reviewComment = comment;
+    }
+
+    await ref.update(updateData);
+    
+    return res.json({
+      code: 200,
+      message: "Form status updated successfully"
+    });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }

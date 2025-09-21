@@ -11,7 +11,9 @@ import {
 
 const useUserStore = create((set, get) => ({
   user: null,
+  isAuthLoading: true, // 添加认证加载状态
   setUser: (user) => set({ user }),
+  setAuthLoading: (loading) => set({ isAuthLoading: loading }),
   clearUser: () => set({ user: null }),
 
   // 使用 Firebase Auth 的邮箱密码登录
@@ -89,6 +91,8 @@ onAuthStateChanged(auth, (user) => {
   } else {
     useUserStore.getState().setUser(user);
   }
+  // 认证状态检查完成
+  useUserStore.getState().setAuthLoading(false);
 });
 
 export default useUserStore;
