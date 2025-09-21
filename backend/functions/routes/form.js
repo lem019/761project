@@ -4,19 +4,47 @@ const router = express.Router();
 const { FieldValue, Timestamp } = require("firebase-admin/firestore");
 const db = admin.firestore();
 const { authMiddleware, checkAdmin } = require('../middleware/auth');
+const { getTemplates } = require('../services/form-service');
 
 // 应用认证中间件到所有路由
 router.use(authMiddleware);
 
 /**
  * todo
- * 1. get form template list
+ * 1. get form template list ✓
  * 2. get specific form template detail
  * 3. save form data (create or update) (review also use this api - as we use NOSQL database)
  * 4. change form status (submit, decline, approve)
  * 5. get inspector form list (all, draft, pending, declined, approved)
  * 6. search form by text
  */
+
+// 获取表单模板列表
+router.get("/templates", async (req, res) => {
+  try {
+    const { isActive } = req.query;
+    
+    const options = {};
+    if (isActive !== undefined) {
+      options.isActive = isActive === 'true';
+    }
+    
+    const templates = await getTemplates(options);
+
+    return res.json({
+      code: 200,
+      message: 'Success',
+      data: templates
+    });
+  } catch (e) {
+    console.error('获取模板列表失败:', e);
+    return res.status(500).json({ 
+      code: 500,
+      message: 'Internal Server Error',
+      error: e.message 
+    });
+  }
+});
 
 // 创建：status=draft, type=a, formId=docId
 router.post("/add", async (req, res) => {

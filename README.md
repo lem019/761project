@@ -56,11 +56,20 @@ TODO: 错误的实践方式，使用自动格式化可能会造成大量的代�
 
 # run 
 
-```
-cd backend/functions
-npm install // install dependencies of functions
+首次运行执行初始化数据
 
-cd../   //return to backend folder
-npm run start // start the functions of the  firebase emulations
-npm run serve // start all the server of the firebase emulations
+```
+# 根目录执行
+# 安装依赖
+npm install --save-dev firebase-admin
+# 在运行初始化脚本之前,需要先启动Firebase模拟器
+npm run backend:serve
+npm run init:data
+```
+
+正常开发,启动后端本地开发的 firebase 模拟器
+
+```
+# 根目录执行
+npm run backend:serve
 ```

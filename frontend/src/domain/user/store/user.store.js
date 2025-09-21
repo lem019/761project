@@ -25,6 +25,8 @@ const useUserStore = create((set, get) => ({
       
       // 获取 ID Token 并保存到 localStorage
       const idToken = await user.getIdToken();
+      console.log('ID Token obtained:', idToken ? 'Success' : 'Failed');
+      console.log('ID Token length:', idToken.length);
       localStorage.setItem("idToken", idToken);
       
       // 设置用户状态（onAuthStateChanged 会自动处理）
@@ -80,8 +82,17 @@ const useUserStore = create((set, get) => ({
 }));
 
 // 监听 Firebase Auth 状态变化
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user && user.email) {
+    // 获取并保存ID Token
+    try {
+      const idToken = await user.getIdToken();
+      console.log('Auth state changed - ID Token obtained:', idToken ? 'Success' : 'Failed');
+      localStorage.setItem("idToken", idToken);
+    } catch (error) {
+      console.error('Failed to get ID Token:', error);
+    }
+    
     // 检查用户邮箱域名以确定角色
     const userWithRole = {
       ...user,
@@ -89,7 +100,9 @@ onAuthStateChanged(auth, (user) => {
     };
     useUserStore.getState().setUser(userWithRole);
   } else {
-    useUserStore.getState().setUser(user);
+    // 用户未登录，清除用户状态和本地存储
+    useUserStore.getState().setUser(null);
+    localStorage.removeItem("idToken");
   }
   // 认证状态检查完成
   useUserStore.getState().setAuthLoading(false);

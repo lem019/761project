@@ -8,7 +8,10 @@ const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     
+    console.log('Auth header:', authHeader ? 'Present' : 'Missing');
+    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('No valid authorization header');
       return res.status(401).json({ 
         code: 401, 
         message: 'No authorization token provided' 
@@ -16,9 +19,11 @@ const authMiddleware = async (req, res, next) => {
     }
 
     const idToken = authHeader.split('Bearer ')[1];
+    console.log('ID Token length:', idToken.length);
     
     // 验证 Firebase ID Token
     const decodedToken = await admin.auth().verifyIdToken(idToken);
+    console.log('Token verified successfully for user:', decodedToken.email);
     
     // 将用户信息添加到请求对象
     req.user = {
@@ -30,6 +35,11 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
+    console.error('Error details:', {
+      code: error.code,
+      message: error.message,
+      stack: error.stack
+    });
     return res.status(401).json({ 
       code: 401, 
       message: 'Invalid or expired token' 

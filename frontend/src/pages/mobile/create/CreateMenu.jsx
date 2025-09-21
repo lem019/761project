@@ -1,26 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Spin, message } from 'antd';
 import styles from './CreateMenu.module.less';
+import { getFormTemplates } from '@/services/form-service';
 
 const CreateMenu = () => {
   const navigate = useNavigate();
-  const menuItems = [
-    { formId: 1, formname: 'PMR Maintenance Service Check', onClick: () => navigate('/mobile/template') },
-    { formId: 2, formname: 'Booth Maintenance Service Check', onClick: () => navigate('/mobile/template') },
-    { formId: 3, formname: 'Dynapumps Booth Maintenance Service Check', onClick: () => navigate('/mobile/template') }
-  ];
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        setLoading(true);
+        const data = await getFormTemplates();
+        setTemplates(data);
+      } catch (error) {
+        message.error('获取模板列表失败');
+        console.error('获取模板列表失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
+
+  const handleTemplateClick = (template) => {
+    // 跳转到模板页面，传递模板信息
+    navigate('/mobile/template', { 
+      state: { template } 
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   // renders a menu with several items. Each item is represented as a button
   return (
     <div className={styles.menu}>
-      {menuItems.map((item) => (
+      {templates.map((template) => (
         <button
-          key={item.formId}
+          key={template.id}
           className={styles.menuItem}
-          onClick={item.onClick}
+          onClick={() => handleTemplateClick(template)}
         >
-          {item.formname}
+          {template.name}
         </button>
       ))}
     </div>
