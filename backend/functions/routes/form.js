@@ -4,7 +4,7 @@ const router = express.Router();
 const { FieldValue, Timestamp } = require("firebase-admin/firestore");
 const db = admin.firestore();
 const { authMiddleware, checkAdmin } = require('../middleware/auth');
-const { getTemplates } = require('../services/form-service');
+const { getTemplates, getTemplateById } = require('../services/form-service');
 
 // 应用认证中间件到所有路由
 router.use(authMiddleware);
@@ -14,7 +14,7 @@ router.use(authMiddleware);
  * 1. get form template list ✓
  * 2. get specific form template detail
  * 3. save form data (create or update) (review also use this api - as we use NOSQL database)
- * 4. change form status (submit, decline, approve)
+ * 4. change form status (submit, decline, approve) - name: form operate
  * 5. get inspector form list (all, draft, pending, declined, approved)
  * 6. search form by text
  */
@@ -38,6 +38,36 @@ router.get("/templates", async (req, res) => {
     });
   } catch (e) {
     console.error('获取模板列表失败:', e);
+    return res.status(500).json({ 
+      code: 500,
+      message: 'Internal Server Error',
+      error: e.message 
+    });
+  }
+});
+
+// 获取特定模板详情
+router.get("/templates/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const template = await getTemplateById(id);
+    
+    if (!template) {
+      return res.status(404).json({
+        code: 404,
+        message: 'Template not found',
+        data: null
+      });
+    }
+
+    return res.json({
+      code: 200,
+      message: 'Success',
+      data: template
+    });
+  } catch (e) {
+    console.error('获取模板详情失败:', e);
     return res.status(500).json({ 
       code: 500,
       message: 'Internal Server Error',

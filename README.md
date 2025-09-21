@@ -73,3 +73,7 @@ npm run init:data
 # 根目录执行
 npm run backend:serve
 ```
+
+# 如何配置新的 form template
+
+todo 我们可以写一份简单文档，让 po 以后去使用 gpt 生成，避免复杂的表单生成引擎

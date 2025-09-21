@@ -51,8 +51,8 @@ const AdminCreate = () => {
   }, [user]);
 
   const handleCardClick = (template) => {
-    // 跳转到 review-form 页面，并传递检查类型参数
-    navigate(`/pc/review-form?type=${template.id}`);
+    // 跳转到模板页面，传递模板ID
+    navigate(`/pc/template/${template.id}`);
   };
 
   if (loading) {

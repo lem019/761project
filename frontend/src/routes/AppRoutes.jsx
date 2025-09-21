@@ -72,7 +72,7 @@ const AppRoutes = () => {
         >
           <Route path="" element={<Navigate to={isMobile ? "/mobile/create" : "/pc/create"} replace />}></Route>
           <Route path="create" element={isMobile ? <CreateMenu /> : <AdminCreate />} />
-          <Route path="template" element={<TemplatePage />} />
+          <Route path="template/:templateId" element={<TemplatePage />} />
           <Route path="inprogress" element={isMobile ? <InProgressPage /> : <AdminInprogress />} />
           <Route path="approved" element={isMobile ? <ApprovedPage /> : <AdminApproved />} />
 

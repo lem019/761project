@@ -27,10 +27,8 @@ const CreateMenu = () => {
   }, []);
 
   const handleTemplateClick = (template) => {
-    // 跳转到模板页面，传递模板信息
-    navigate('/mobile/template', { 
-      state: { template } 
-    });
+    // 跳转到模板页面，传递模板ID
+    navigate(`/mobile/template/${template.id}`);
   };
 
   if (loading) {

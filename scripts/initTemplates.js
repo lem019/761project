@@ -34,6 +34,146 @@ const templates = [
     color: '#1890ff',
     gradient: 'linear-gradient(135deg, #1890ff 0%, #40a9ff 100%)',
     isActive: true,
+    // 表单字段配置
+    formFields: [
+      {
+        name: 'inspector',
+        label: 'Inspector',
+        type: 'input',
+        required: true,
+        placeholder: 'Please enter inspector name',
+        validation: { required: true, message: 'Please enter inspector name' }
+      },
+      {
+        name: 'inspectorMobile',
+        label: 'Inspector Mobile',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter inspector mobile number',
+        validation: { pattern: '^[0-9+\\-\\s()]+$', message: 'Please enter a valid mobile number' }
+      },
+      {
+        name: 'date',
+        label: 'Date',
+        type: 'datePicker',
+        required: true,
+        placeholder: 'dd/mm/yyyy',
+        format: 'DD/MM/YYYY',
+        validation: { required: true, message: 'Please select inspection date' }
+      },
+      {
+        name: 'locationDetails',
+        label: 'Locations Details',
+        type: 'textarea',
+        required: false,
+        placeholder: 'Please enter location details',
+        rows: 3
+      },
+      {
+        name: 'contactPerson',
+        label: 'Contact Person',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter contact person name'
+      },
+      {
+        name: 'businessName',
+        label: 'Business Name',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter business name'
+      },
+      {
+        name: 'address',
+        label: 'Address',
+        type: 'textarea',
+        required: false,
+        placeholder: 'Please enter business address',
+        rows: 3
+      },
+      {
+        name: 'suburb',
+        label: 'Suburb',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter suburb/area'
+      },
+      {
+        name: 'phone',
+        label: 'Phone',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter phone number',
+        validation: { pattern: '^[0-9+\\-\\s()]+$', message: 'Please enter a valid phone number' }
+      },
+      {
+        name: 'email',
+        label: 'Email',
+        type: 'input',
+        required: true,
+        placeholder: 'Please enter email address',
+        validation: { 
+          required: true, 
+          message: 'Please enter email address',
+          type: 'email',
+          message: 'Please enter a valid email address'
+        }
+      }
+    ],
+    // 检查项配置
+    inspectionItems: [
+      {
+        key: 'sprayBoothMake',
+        name: 'Spray Booth Make',
+        type: 'visual',
+        tag: 'visual',
+        required: true
+      },
+      {
+        key: 'purgeCycles',
+        name: 'Purge Cycles',
+        type: 'operation',
+        tag: 'Operation',
+        required: true
+      },
+      {
+        key: 'exhaustAirflow',
+        name: 'Exhaust Airflow Spraybooth Downdraught spray booth',
+        type: 'measurement',
+        tag: 'hot wire probe',
+        required: true
+      }
+    ],
+    // 指导内容配置
+    guidanceContent: {
+      sprayBoothMake: {
+        checklist: [
+          "Check the overall structure of the spray booth for integrity, confirm all panels are securely connected",
+          "View inspection diagram",
+          "Verify the ventilation system is working properly, check fan operation sounds",
+          "Watch guidance video"
+        ],
+        image: "/api/placeholder/400/300"
+      },
+      purgeCycles: {
+        checklist: [
+          "Check purge cycle timing and frequency settings",
+          "View purge system diagram",
+          "Verify purge valve operation and pressure readings",
+          "Watch purge cycle demonstration video"
+        ],
+        image: "/api/placeholder/400/300"
+      },
+      exhaustAirflow: {
+        checklist: [
+          "Check exhaust fan operation and airflow direction",
+          "View airflow measurement diagram",
+          "Verify downdraught system functionality",
+          "Watch airflow testing video"
+        ],
+        image: "/api/placeholder/400/300"
+      }
+    },
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   },
@@ -46,6 +186,146 @@ const templates = [
     color: '#52c41a',
     gradient: 'linear-gradient(135deg, #52c41a 0%, #73d13d 100%)',
     isActive: true,
+    // 表单字段配置
+    formFields: [
+      {
+        name: 'inspector',
+        label: 'Inspector',
+        type: 'input',
+        required: true,
+        placeholder: 'Please enter inspector name',
+        validation: { required: true, message: 'Please enter inspector name' }
+      },
+      {
+        name: 'inspectorMobile',
+        label: 'Inspector Mobile',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter inspector mobile number',
+        validation: { pattern: '^[0-9+\\-\\s()]+$', message: 'Please enter a valid mobile number' }
+      },
+      {
+        name: 'date',
+        label: 'Date',
+        type: 'datePicker',
+        required: true,
+        placeholder: 'dd/mm/yyyy',
+        format: 'DD/MM/YYYY',
+        validation: { required: true, message: 'Please select inspection date' }
+      },
+      {
+        name: 'locationDetails',
+        label: 'Locations Details',
+        type: 'textarea',
+        required: false,
+        placeholder: 'Please enter location details',
+        rows: 3
+      },
+      {
+        name: 'contactPerson',
+        label: 'Contact Person',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter contact person name'
+      },
+      {
+        name: 'businessName',
+        label: 'Business Name',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter business name'
+      },
+      {
+        name: 'address',
+        label: 'Address',
+        type: 'textarea',
+        required: false,
+        placeholder: 'Please enter business address',
+        rows: 3
+      },
+      {
+        name: 'suburb',
+        label: 'Suburb',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter suburb/area'
+      },
+      {
+        name: 'phone',
+        label: 'Phone',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter phone number',
+        validation: { pattern: '^[0-9+\\-\\s()]+$', message: 'Please enter a valid phone number' }
+      },
+      {
+        name: 'email',
+        label: 'Email',
+        type: 'input',
+        required: true,
+        placeholder: 'Please enter email address',
+        validation: { 
+          required: true, 
+          message: 'Please enter email address',
+          type: 'email',
+          message: 'Please enter a valid email address'
+        }
+      }
+    ],
+    // 检查项配置
+    inspectionItems: [
+      {
+        key: 'boothStructure',
+        name: 'Booth Structure Inspection',
+        type: 'visual',
+        tag: 'visual',
+        required: true
+      },
+      {
+        key: 'electricalSystem',
+        name: 'Electrical System Check',
+        type: 'electrical',
+        tag: 'electrical',
+        required: true
+      },
+      {
+        key: 'safetyEquipment',
+        name: 'Safety Equipment Verification',
+        type: 'safety',
+        tag: 'safety',
+        required: true
+      }
+    ],
+    // 指导内容配置
+    guidanceContent: {
+      boothStructure: {
+        checklist: [
+          "Inspect booth frame for structural integrity",
+          "Check panel connections and fastenings",
+          "Verify door and window functionality",
+          "Examine weatherproofing seals"
+        ],
+        image: "/api/placeholder/400/300"
+      },
+      electricalSystem: {
+        checklist: [
+          "Test all electrical outlets and connections",
+          "Check lighting system functionality",
+          "Verify power distribution panel",
+          "Test emergency lighting systems"
+        ],
+        image: "/api/placeholder/400/300"
+      },
+      safetyEquipment: {
+        checklist: [
+          "Verify fire extinguisher placement and condition",
+          "Check emergency exit signage and lighting",
+          "Test smoke detection systems",
+          "Inspect first aid equipment"
+        ],
+        image: "/api/placeholder/400/300"
+      }
+    },
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   },
@@ -58,6 +338,146 @@ const templates = [
     color: '#722ed1',
     gradient: 'linear-gradient(135deg, #722ed1 0%, #9254de 100%)',
     isActive: true,
+    // 表单字段配置
+    formFields: [
+      {
+        name: 'inspector',
+        label: 'Inspector',
+        type: 'input',
+        required: true,
+        placeholder: 'Please enter inspector name',
+        validation: { required: true, message: 'Please enter inspector name' }
+      },
+      {
+        name: 'inspectorMobile',
+        label: 'Inspector Mobile',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter inspector mobile number',
+        validation: { pattern: '^[0-9+\\-\\s()]+$', message: 'Please enter a valid mobile number' }
+      },
+      {
+        name: 'date',
+        label: 'Date',
+        type: 'datePicker',
+        required: true,
+        placeholder: 'dd/mm/yyyy',
+        format: 'DD/MM/YYYY',
+        validation: { required: true, message: 'Please select inspection date' }
+      },
+      {
+        name: 'locationDetails',
+        label: 'Locations Details',
+        type: 'textarea',
+        required: false,
+        placeholder: 'Please enter location details',
+        rows: 3
+      },
+      {
+        name: 'contactPerson',
+        label: 'Contact Person',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter contact person name'
+      },
+      {
+        name: 'businessName',
+        label: 'Business Name',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter business name'
+      },
+      {
+        name: 'address',
+        label: 'Address',
+        type: 'textarea',
+        required: false,
+        placeholder: 'Please enter business address',
+        rows: 3
+      },
+      {
+        name: 'suburb',
+        label: 'Suburb',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter suburb/area'
+      },
+      {
+        name: 'phone',
+        label: 'Phone',
+        type: 'input',
+        required: false,
+        placeholder: 'Please enter phone number',
+        validation: { pattern: '^[0-9+\\-\\s()]+$', message: 'Please enter a valid phone number' }
+      },
+      {
+        name: 'email',
+        label: 'Email',
+        type: 'input',
+        required: true,
+        placeholder: 'Please enter email address',
+        validation: { 
+          required: true, 
+          message: 'Please enter email address',
+          type: 'email',
+          message: 'Please enter a valid email address'
+        }
+      }
+    ],
+    // 检查项配置
+    inspectionItems: [
+      {
+        key: 'pumpSystem',
+        name: 'Pump System Operation',
+        type: 'mechanical',
+        tag: 'mechanical',
+        required: true
+      },
+      {
+        key: 'controlPanel',
+        name: 'Control Panel Check',
+        type: 'electrical',
+        tag: 'electrical',
+        required: true
+      },
+      {
+        key: 'safetyValves',
+        name: 'Safety Valves Inspection',
+        type: 'safety',
+        tag: 'safety',
+        required: true
+      }
+    ],
+    // 指导内容配置
+    guidanceContent: {
+      pumpSystem: {
+        checklist: [
+          "Check pump operation and pressure readings",
+          "Inspect pump motor and drive system",
+          "Verify fluid levels and circulation",
+          "Test pump performance under load"
+        ],
+        image: "/api/placeholder/400/300"
+      },
+      controlPanel: {
+        checklist: [
+          "Test control panel functionality",
+          "Check alarm and indicator systems",
+          "Verify pressure and flow sensors",
+          "Test emergency stop systems"
+        ],
+        image: "/api/placeholder/400/300"
+      },
+      safetyValves: {
+        checklist: [
+          "Inspect pressure relief valves",
+          "Check valve operation and settings",
+          "Verify safety interlock systems",
+          "Test emergency shutdown procedures"
+        ],
+        image: "/api/placeholder/400/300"
+      }
+    },
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   }
