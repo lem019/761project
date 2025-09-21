@@ -17,6 +17,7 @@ import ApprovedPage from "@/pages/mobile/mobile-approved/ApprovedPage";
 import InProgressPage from "@/pages/mobile/in-progress/InProgressPage";
 import ApprovedReportDetail from "@/pages/mobile/mobile-approved/ApprovedReportDetail";
 import CreateMenu from "@/pages/mobile/create/CreateMenu";
+import SubmitSuccessPage from "@/pages/mobile/submit-success";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AuthLoader from "@/components/AuthLoader";
 
@@ -73,6 +74,7 @@ const AppRoutes = () => {
           <Route path="" element={<Navigate to={isMobile ? "/mobile/create" : "/pc/create"} replace />}></Route>
           <Route path="create" element={isMobile ? <CreateMenu /> : <AdminCreate />} />
           <Route path="template/:templateId" element={<TemplatePage />} />
+          <Route path="submit-success/:formId" element={<SubmitSuccessPage />} />
           <Route path="inprogress" element={isMobile ? <InProgressPage /> : <AdminInprogress />} />
           <Route path="approved" element={isMobile ? <ApprovedPage /> : <AdminApproved />} />
 

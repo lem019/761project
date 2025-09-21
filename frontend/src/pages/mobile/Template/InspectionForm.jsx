@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Form, Button, Card, Typography, message, Spin } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import DynamicFormField from './DynamicFormField';
 import GuidanceContent from './GuidanceContent';
-import { saveFormData } from '@/services/form-service';
+import { saveFormData, submitForm } from '@/services/form-service';
 import styles from './InspectionForm.module.less';
 import { FORM_STATUS } from '@/constants/formStatus';
 
@@ -18,6 +19,7 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState({});
   const [lastSaved, setLastSaved] = useState(null);
   const autoSaveTimeoutRef = useRef(null);
@@ -96,7 +98,7 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
 
   // 监听表单变化，实现自动保存
   const handleFormChange = (changedValues, allValues) => {
-    console.log('Form changed:', changedValues, allValues); // 添加调试日志
+    // console.log('Form changed:', changedValues, allValues); // 添加调试日志
 
     // 清除之前的定时器
     if (autoSaveTimeoutRef.current) {
@@ -151,20 +153,28 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
 
       console.log('Form submit data:', formattedValues);
 
-      // TODO: Add real API call here
-      // await submitInspectionData(formattedValues);
+      // 调用真实的API提交表单
+      const result = await submitForm(formattedValues);
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Show success message
-      message.success('Submit successful');
-
-      // Reset form after successful submit
-      form.resetFields();
+      if (result.success) {
+        // 显示成功消息
+        message.success('表单提交成功！');
+        
+        // 跳转到提交成功页面
+        navigate(`/mobile/submit-success/${result.id}`, {
+          state: {
+            formId: result.id,
+            templateName: template.name,
+            submittedAt: new Date().toLocaleString()
+          }
+        });
+      } else {
+        message.error(result.message || '提交失败，请重试');
+      }
 
     } catch (error) {
       console.error('Submit failed:', error);
+      message.error(error.message || '提交失败，请重试');
     } finally {
       setLoading(false);
     }

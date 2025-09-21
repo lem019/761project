@@ -175,9 +175,109 @@ async function assignForm(formId, adminUid) {
   }
 }
 
+// 表单状态操作（提交、批准、拒绝等）
+async function operateForm(formId, action, uid, role, comment = '') {
+  const ref = db.collection("forms").doc(formId);
+  const doc = await ref.get();
+
+  if (!doc.exists) {
+    throw new Error('Form not found');
+  }
+
+  const formData = doc.data();
+  const currentStatus = formData.status;
+  let newStatus;
+  let updateData = {
+    updatedAt: FieldValue.serverTimestamp()
+  };
+
+  // 根据操作类型和当前状态确定新状态和权限验证
+  switch (action) {
+    case 'submit':
+      // 只有创建者可以提交，且只能从草稿状态提交
+      if (formData.creator !== uid) {
+        throw new Error('Only the form creator can submit this form');
+      }
+      if (currentStatus !== FORM_STATUS.DRAFT) {
+        throw new Error('Only draft forms can be submitted');
+      }
+      newStatus = FORM_STATUS.PENDING;
+      updateData.status = newStatus;
+      updateData.submittedAt = FieldValue.serverTimestamp();
+      break;
+
+    case 'approve':
+      // 只有管理员可以批准
+      if (role !== 'admin') {
+        throw new Error('Only administrators can approve forms');
+      }
+      if (currentStatus !== FORM_STATUS.PENDING) {
+        throw new Error('Only pending forms can be approved');
+      }
+      newStatus = FORM_STATUS.APPROVED;
+      updateData.status = newStatus;
+      updateData.reviewedBy = uid;
+      updateData.reviewedAt = FieldValue.serverTimestamp();
+      if (comment) {
+        updateData.reviewComment = comment;
+      }
+      break;
+
+    case 'decline':
+      // 只有管理员可以拒绝
+      if (role !== 'admin') {
+        throw new Error('Only administrators can decline forms');
+      }
+      if (currentStatus !== FORM_STATUS.PENDING) {
+        throw new Error('Only pending forms can be declined');
+      }
+      newStatus = FORM_STATUS.DECLINED;
+      updateData.status = newStatus;
+      updateData.reviewedBy = uid;
+      updateData.reviewedAt = FieldValue.serverTimestamp();
+      if (comment) {
+        updateData.reviewComment = comment;
+      }
+      break;
+
+    case 'assign':
+      // 只有管理员可以分配
+      if (role !== 'admin') {
+        throw new Error('Only administrators can assign forms');
+      }
+      if (currentStatus !== FORM_STATUS.PENDING) {
+        throw new Error('Only pending forms can be assigned');
+      }
+      newStatus = FORM_STATUS.ASSIGNED;
+      updateData.status = newStatus;
+      updateData.assignedTo = uid;
+      updateData.assignedAt = FieldValue.serverTimestamp();
+      break;
+
+    default:
+      throw new Error('Invalid action. Supported actions: submit, approve, decline, assign');
+  }
+
+  await ref.update(updateData);
+  const updatedDoc = await ref.get();
+
+  return {
+    success: true,
+    data: {
+      formId: formId,
+      oldStatus: currentStatus,
+      newStatus: newStatus,
+      action: action,
+      ...updatedDoc.data()
+    },
+    message: `Form ${action} successfully`
+  };
+}
+
 module.exports = {
   getTemplates,
   getTemplateById,
   saveForm,
   assignForm,
+  operateForm,
 };

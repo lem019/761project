@@ -93,6 +93,7 @@
   border: 1px solid #d9d9d9;
   background-color: #ffffff;
   color: #333;
+  min-width: 0;
 
   &:hover {
     border-color: #1890ff;
@@ -110,6 +111,7 @@
   font-weight: 500;
   background: linear-gradient(135deg, #1890ff, #40a9ff);
   border: none;
+  min-width: 0;
 
   &:hover {
     background: linear-gradient(135deg, #40a9ff, #69c0ff);
@@ -227,14 +229,20 @@
   }
 
   .buttonGroup {
-    flex-direction: column;
-    gap: 8px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
   }
 
   .saveBtn,
   .submitBtn {
-    height: 44px;
-    font-size: 15px;
+    height: 56px !important;
+    font-size: 16px !important;
+    width: 100% !important;
+    min-height: 56px !important;
+    flex: none !important;
+    display: block !important;
   }
 
   .inspectionItems {
@@ -282,14 +290,20 @@
   }
 
   .buttonGroup {
-    flex-direction: column;
-    gap: 6px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
   }
 
   .saveBtn,
   .submitBtn {
-    height: 40px;
-    font-size: 14px;
+    height: 52px !important;
+    font-size: 15px !important;
+    width: 100% !important;
+    min-height: 52px !important;
+    flex: none !important;
+    display: block !important;
   }
 
   .inspectionItems {

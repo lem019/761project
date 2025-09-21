@@ -4,7 +4,7 @@ const router = express.Router();
 const { FieldValue, Timestamp } = require("firebase-admin/firestore");
 const db = admin.firestore();
 const { authMiddleware, checkAdmin } = require('../middleware/auth');
-const { getTemplates, getTemplateById, saveForm, assignForm } = require('../services/form-service');
+const { getTemplates, getTemplateById, saveForm, operateForm } = require('../services/form-service');
 const { FORM_STATUS } = require('../constants/formStatus');
 
 // 应用认证中间件到所有路由
@@ -16,7 +16,7 @@ router.use(authMiddleware);
  * 2. get specific form template detail ✓
  * 2.1 edit draft form item (与上面2不同的是，这里有 id 字段有数据)
  * 2.2 edit decline form item (与上面2和2.1不同的是，这里有 id 字段有数据 有评论)
- * 3. save form data (create or update) (review also use this api - as we use NOSQL database) ✓
+ * 3. save form data (create or update)  ✓ (review also use this api - as we use NOSQL database)
  * 4. change form status (submit, decline, approve) - name: form operate
  * 5. get inspector form list (all, draft, pending, declined, approved)
  * 6. search form by text
@@ -76,57 +76,6 @@ router.get("/templates/:id", async (req, res) => {
       message: 'Internal Server Error',
       error: e.message 
     });
-  }
-});
-
-// 创建：status=draft, type=a, formId=docId
-router.post("/add", async (req, res) => {
-  try {
-    const uid = req.user.uid; // 从认证中间件获取真实用户ID
-    const { type = "a" } = req.body || {};
-    const now = Date.now();
-    const ref = await db.collection("forms").add({
-      type,
-      creator: uid,
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-      status: FORM_STATUS.DRAFT,
-    });
-    const snap = await ref.get();
-    return res.status(200).json({ id: ref.id, ...snap.data() });
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
-  }
-});
-
-// 删除（仅草稿且创建者）
-router.delete("/delete/:id", async (req, res) => {
-  try {
-    const uid = req.user.uid; // 从认证中间件获取真实用户ID
-    const { id } = req.params;
-    const ref = db.collection("forms").doc(id);
-    const doc = await ref.get();
-    if (!doc.exists) return res.status(200).json({ 
-      error: "FORM_NOT_FOUND",
-      code: 1001,
-      message: "The requested form does not exist"
-    });
-    const it = doc.data();
-    if (it.creator !== uid) return res.status(200).json({ 
-      error: "FORM_ACCESS_DENIED",
-      code: 1002, 
-      message: "You don't have permission to delete this form"
-    });
-    if (it.status !== FORM_STATUS.DRAFT) return res.status(200).json({ 
-      error: "FORM_NOT_DRAFT",
-      code: 1003,
-      message: "Only draft forms can be deleted"
-    });
-
-    await ref.delete();
-    return res.status(200).end();
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
   }
 });
 
@@ -216,48 +165,35 @@ router.post("/save", async (req, res) => {
   }
 });
 
-// 管理员专用：更新表单状态（审核通过/拒绝）
-router.put("/admin/status/:id", checkAdmin, async (req, res) => {
+// 表单状态操作（提交、拒绝、批准等）
+router.post("/operate/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, comment } = req.body;
+    const { action, comment } = req.body;
+    const uid = req.user.uid;
+    const role = req.user.role;
     
-    if (!status) {
+    if (!action) {
       return res.status(400).json({ 
         code: 400, 
-        message: "Status is required" 
+        message: "Action is required" 
       });
     }
 
-    const ref = db.collection("forms").doc(id);
-    const doc = await ref.get();
-    
-    if (!doc.exists) {
-      return res.status(404).json({ 
-        code: 404, 
-        message: "Form not found" 
-      });
-    }
-
-    const updateData = {
-      status: status,
-      updatedAt: FieldValue.serverTimestamp(),
-      reviewedBy: req.user.uid,
-      reviewedAt: FieldValue.serverTimestamp()
-    };
-
-    if (comment) {
-      updateData.reviewComment = comment;
-    }
-
-    await ref.update(updateData);
+    const result = await operateForm(id, action, uid, role, comment);
     
     return res.json({
       code: 200,
-      message: "Form status updated successfully"
+      message: result.message,
+      data: result.data
     });
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    console.error('表单状态操作失败:', e);
+    return res.status(500).json({ 
+      code: 500,
+      message: e.message,
+      error: e.message 
+    });
   }
 });
 
