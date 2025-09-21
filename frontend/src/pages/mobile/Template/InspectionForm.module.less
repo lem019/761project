@@ -54,8 +54,56 @@
   margin-bottom: 0;
 }
 
-.submitBtn {
+.saveStatus {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.savingIndicator {
+  color: #1890ff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.lastSaved {
+  color: #52c41a;
+  font-size: 12px;
+  background-color: #f6ffed;
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid #b7eb8f;
+  display: inline-block;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
   width: 100%;
+}
+
+.saveBtn {
+  flex: 1;
+  height: 48px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  border: 1px solid #d9d9d9;
+  background-color: #ffffff;
+  color: #333;
+
+  &:hover {
+    border-color: #1890ff;
+    color: #1890ff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+  }
+}
+
+.submitBtn {
+  flex: 1;
   height: 48px;
   border-radius: 8px;
   font-size: 16px;
@@ -178,6 +226,12 @@
     margin-bottom: 24px !important;
   }
 
+  .buttonGroup {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .saveBtn,
   .submitBtn {
     height: 44px;
     font-size: 15px;
@@ -227,6 +281,12 @@
     margin-bottom: 20px;
   }
 
+  .buttonGroup {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .saveBtn,
   .submitBtn {
     height: 40px;
     font-size: 14px;

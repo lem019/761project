@@ -10,18 +10,21 @@ const mockRows = [
     title: "IND80 Booth Maintenance Service Report",
     date: "2024-12-09 09:15",
     status: "Pending", // Draft | Pending | Declined
+    templateId: "booth",
   },
   {
     id: "IP-240915-002",
     title: "IND81 PMR Maintenance Service Report",
     date: "2024-12-09 09:15",
     status: "Draft",
+    templateId: "pmr",
   },
   {
     id: "IP-240915-003",
     title: "IND80 Dynapumps Booth Maintenance Service Report",
     date: "2024-12-09 09:15",
     status: "Declined",
+    templateId: "booth",
   },
 ];
 
@@ -44,11 +47,11 @@ export default function InProgressPage() {
     return rows;
   }, [q, filter]);
 
-  const openEdit = (id) => {
-    // 与 AppRoutes 对齐：/mobile/inprogress/:id
-    // nav(`/mobile/inprogress/${id}`);
-    // todo 暂时到 template 页面
-    nav(`/mobile/template`);
+  const openEdit = (item) => {
+    // 跳转到编辑页面，使用查询参数传递id
+    // 从item中获取templateId，如果没有则使用默认值
+    const templateId = item.templateId || "pmr"; // 使用默认模板ID
+    nav(`/mobile/template/${templateId}?id=${item.id}`);
   };
 
   return (
@@ -87,7 +90,7 @@ export default function InProgressPage() {
             <Empty description="No records" />
           ) : (
             filtered.map((item) => (
-              <InProgressCard key={item.id} item={item} onEdit={openEdit} />
+              <InProgressCard key={item.id} item={item} onEdit={() => openEdit(item)} />
             ))
           )}
         </div>

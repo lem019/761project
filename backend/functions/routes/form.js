@@ -4,7 +4,8 @@ const router = express.Router();
 const { FieldValue, Timestamp } = require("firebase-admin/firestore");
 const db = admin.firestore();
 const { authMiddleware, checkAdmin } = require('../middleware/auth');
-const { getTemplates, getTemplateById } = require('../services/form-service');
+const { getTemplates, getTemplateById, saveForm, assignForm } = require('../services/form-service');
+const { FORM_STATUS } = require('../constants/formStatus');
 
 // 应用认证中间件到所有路由
 router.use(authMiddleware);
@@ -12,8 +13,10 @@ router.use(authMiddleware);
 /**
  * todo
  * 1. get form template list ✓
- * 2. get specific form template detail
- * 3. save form data (create or update) (review also use this api - as we use NOSQL database)
+ * 2. get specific form template detail ✓
+ * 2.1 edit draft form item (与上面2不同的是，这里有 id 字段有数据)
+ * 2.2 edit decline form item (与上面2和2.1不同的是，这里有 id 字段有数据 有评论)
+ * 3. save form data (create or update) (review also use this api - as we use NOSQL database) ✓
  * 4. change form status (submit, decline, approve) - name: form operate
  * 5. get inspector form list (all, draft, pending, declined, approved)
  * 6. search form by text
@@ -87,7 +90,7 @@ router.post("/add", async (req, res) => {
       creator: uid,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
-      status: 0,
+      status: FORM_STATUS.DRAFT,
     });
     const snap = await ref.get();
     return res.status(200).json({ id: ref.id, ...snap.data() });
@@ -114,7 +117,7 @@ router.delete("/delete/:id", async (req, res) => {
       code: 1002, 
       message: "You don't have permission to delete this form"
     });
-    if (it.status !== 0) return res.status(200).json({ 
+    if (it.status !== FORM_STATUS.DRAFT) return res.status(200).json({ 
       error: "FORM_NOT_DRAFT",
       code: 1003,
       message: "Only draft forms can be deleted"
@@ -191,6 +194,28 @@ router.get("/get/:id", async (req, res) => {
   }
 });
 
+// 保存表单数据（创建或更新）
+router.post("/save", async (req, res) => {
+  try {
+    const uid = req.user.uid; // 从认证中间件获取真实用户ID
+    const result = await saveForm(uid, req.body);
+
+    return res.json({
+      code: 200,
+      message: result.message,
+      data: result.data
+    });
+  } catch (e) {
+    console.error('保存表单数据失败:', e);
+
+    return res.status(500).json({ 
+      code: 500,
+      message: e.message,
+      error: e.message 
+    });
+  }
+});
+
 // 管理员专用：更新表单状态（审核通过/拒绝）
 router.put("/admin/status/:id", checkAdmin, async (req, res) => {
   try {
@@ -215,7 +240,7 @@ router.put("/admin/status/:id", checkAdmin, async (req, res) => {
     }
 
     const updateData = {
-      status: parseInt(status),
+      status: status,
       updatedAt: FieldValue.serverTimestamp(),
       reviewedBy: req.user.uid,
       reviewedAt: FieldValue.serverTimestamp()
