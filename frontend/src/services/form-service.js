@@ -65,7 +65,7 @@ export const submitForm = async (formData) => {
     // 先保存表单数据
     const saveResult = await saveFormData(formData);
     console.log('submitForm saveResult:', saveResult);
-    
+
     // 如果保存成功且有formId，则提交表单
     if (saveResult && saveResult.id) {
       const submitResult = await operateForm(saveResult.id, 'submit');
@@ -80,9 +80,28 @@ export const submitForm = async (formData) => {
         message: saveResult.message,
         success: false
       };
-    } 
+    }
   } catch (error) {
     console.error('提交表单失败:', error);
+    throw error;
+  }
+};
+
+// 获取表单列表
+export const getFormList = async (params = {}) => {
+  try {
+    const { status = 'all', page = 1, pageSize = 20, viewMode = 'inspector' } = params;
+    console.log("form list query ft", params);
+    console.log("form list query ft request", status, page, pageSize, viewMode);
+    const response = await http.get('/form/form-list', {
+      status,
+      page,
+      pageSize,
+      viewMode
+    });
+    return response.data;
+  } catch (error) {
+    console.error('获取表单列表失败:', error);
     throw error;
   }
 };
@@ -93,5 +112,6 @@ export default {
   saveFormData,
   getFormData,
   operateForm,
-  submitForm
+  submitForm,
+  getFormList
 };

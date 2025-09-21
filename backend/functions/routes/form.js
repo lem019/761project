@@ -1,11 +1,9 @@
 const express = require('express');
 const admin = require('firebase-admin');
 const router = express.Router();
-const { FieldValue, Timestamp } = require("firebase-admin/firestore");
 const db = admin.firestore();
-const { authMiddleware, checkAdmin } = require('../middleware/auth');
-const { getTemplates, getTemplateById, saveForm, operateForm } = require('../services/form-service');
-const { FORM_STATUS } = require('../constants/formStatus');
+const { authMiddleware } = require('../middleware/auth');
+const { getTemplates, getTemplateById, saveForm, operateForm, getFormList, getFormById } = require('../services/form-service');
 
 // 应用认证中间件到所有路由
 router.use(authMiddleware);
@@ -17,8 +15,8 @@ router.use(authMiddleware);
  * 2.1 edit draft form item (与上面2不同的是，这里有 id 字段有数据)
  * 2.2 edit decline form item (与上面2和2.1不同的是，这里有 id 字段有数据 有评论)
  * 3. save form data (create or update)  ✓ (review also use this api - as we use NOSQL database)
- * 4. change form status (submit, decline, approve) - name: form operate
- * 5. get inspector form list (all, draft, pending, declined, approved)
+ * 4. change form status (submit ✓, decline, approve) - name: form operate
+ * 5. get inspector form list (all, draft, pending-inspector-view, pending-reviewer-view, declined, approved-inspector-view, reviewed-approved-reviewer-view)
  * 6. search form by text
  */
 
@@ -79,55 +77,33 @@ router.get("/templates/:id", async (req, res) => {
   }
 });
 
-// 查询列表（支持 status & mine & 分页）
-router.get("/list", async (req, res) => {
+// 获取表单列表（支持按状态过滤：all, draft, pending, declined, approved）
+router.get("/form-list", async (req, res) => {
   try {
     const uid = req.user.uid; // 从认证中间件获取真实用户ID
     const role = req.user.role; // 从认证中间件获取用户角色
-    const { status, formType, page = 1, pageSize = 10 } = req.query;
+    console.log("form list query", req.query);
+    const { status, page = 1, pageSize = 10, viewMode } = req.query;
     
-    // 转换分页参数为数字
-    const pageNum = parseInt(page, 10);
-    const pageSizeNum = parseInt(pageSize, 10);
-    const offset = (pageNum - 1) * pageSizeNum;
-    
-    let q = db.collection("forms");
-
-    if (status) q = q.where("status", "==", String(status));
-    if (formType) q = q.where("type", "==", String(formType));
-    q = q.where("creator", "==", uid);
-
-    // 先获取总数（用于分页信息）
-    const countQuery = q;
-    const countSnap = await countQuery.get();
-    const total = countSnap.size;
-
-    // 获取分页数据
-    const snap = await q
-      .orderBy("createdAt", "desc")
-      .offset(offset)
-      .limit(pageSizeNum)
-      .get();
-
-    console.log(snap.docs);
-    
-    const items = snap.docs.map((d) => ({ 
-      id: d.id,
-      ...d.data(),
-      createdAt: d.data().createdAt.toDate().toLocaleString() 
-    }));
+    const result = await getFormList(uid, role, {
+      status: status || 'all',
+      page: page || 1,
+      pageSize: pageSize || 20,
+      viewMode: viewMode || 'inspector'
+    });
     
     return res.json({
-      items,
-      pagination: {
-        current: pageNum,
-        pageSize: pageSizeNum,
-        total,
-        totalPages: Math.ceil(total / pageSizeNum)
-      }
+      code: 200,
+      message: 'Success',
+      data: result.data
     });
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    console.error('获取检查员表单列表失败:', e);
+    return res.status(500).json({ 
+      code: 500,
+      message: 'Internal Server Error',
+      error: e.message 
+    });
   }
 });
 
@@ -135,10 +111,13 @@ router.get("/list", async (req, res) => {
 router.get("/get/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const doc = await db.collection("forms").doc(id).get();
-    if (!doc.exists) return res.status(404).json({ error: "not_found" });
-    return res.json({ id: doc.id, ...doc.data() });
+    const form = await getFormById(id);
+    if (!form) {
+      return res.status(404).json({ error: "not_found" });
+    }
+    return res.json(form);
   } catch (e) {
+    console.error('获取表单详情失败:', e);
     return res.status(500).json({ error: e.message });
   }
 });

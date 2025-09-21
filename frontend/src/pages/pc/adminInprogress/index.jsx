@@ -10,84 +10,24 @@ import {
   Tag,
   Typography,
   Row,
-  Col
+  Col,
+  Spin,
+  message
 } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
+import { getFormList } from '@/services/form-service';
 import styles from './index.module.less';
 
 const { Search } = Input;
 const { Option } = Select;
 const { Text } = Typography;
 
-// 模拟数据
-const mockData = [
-  {
-    id: 1,
-    formName: 'IND81 PMR Maintenance Service Report',
-    status: 'Pending',
-    createTime: '2024-01-15 14:30:22'
-  },
-  {
-    id: 2,
-    formName: 'IND80 Dynapumps Booth Maintenance Service Report',
-    status: 'Draft',
-    createTime: '2024-01-14 09:15:45'
-  },
-  {
-    id: 3,
-    formName: 'IND80 Booth Maintenance Service Report',
-    status: 'Declined',
-    createTime: '2024-01-13 16:22:18'
-  },
-  {
-    id: 4,
-    formName: 'IND81 PMR Maintenance Service Report',
-    status: 'Pending',
-    createTime: '2024-01-12 11:08:33'
-  },
-  {
-    id: 5,
-    formName: 'IND80 Dynapumps Booth Maintenance Service Report',
-    status: 'Draft',
-    createTime: '2024-01-11 13:45:07'
-  },
-  {
-    id: 6,
-    formName: 'IND80 Booth Maintenance Service Report',
-    status: 'Pending',
-    createTime: '2024-01-10 10:12:56'
-  },
-  {
-    id: 7,
-    formName: 'IND82 PMR Maintenance Service Report',
-    status: 'Draft',
-    createTime: '2024-01-09 15:30:12'
-  },
-  {
-    id: 8,
-    formName: 'IND81 Dynapumps Booth Maintenance Service Report',
-    status: 'Pending',
-    createTime: '2024-01-08 09:45:33'
-  },
-  {
-    id: 9,
-    formName: 'IND83 Booth Maintenance Service Report',
-    status: 'Declined',
-    createTime: '2024-01-07 14:20:45'
-  },
-  {
-    id: 10,
-    formName: 'IND82 PMR Maintenance Service Report',
-    status: 'Draft',
-    createTime: '2024-01-06 11:15:22'
-  }
-];
-
+// 状态映射
 const statusMap = {
-  'Pending': { color: '#faad14', text: 'Pending' },
-  'Draft': { color: '#1890ff', text: 'Draft' },
-  'Declined': { color: '#ff4d4f', text: 'Declined' },
-  'Approved': { color: '#52c41a', text: 'Approved' }
+  'pending': { color: '#faad14', text: 'Pending' },
+  'draft': { color: '#1890ff', text: 'Draft' },
+  'declined': { color: '#ff4d4f', text: 'Declined' },
+  'approved': { color: '#52c41a', text: 'Approved' }
 };
 
 const AdminInprogress = () => {
@@ -95,37 +35,46 @@ const AdminInprogress = () => {
   const [statusFilter, setStatusFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [filteredData, setFilteredData] = useState(mockData);
+  const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
 
-  // 过滤数据
+  // 获取表单列表数据
+  const fetchFormList = async () => {
+    try {
+      setLoading(true);
+      const status = statusFilter === 'All' ? 'all' : statusFilter.toLowerCase();
+      const response = await getFormList({
+        status,
+        page: currentPage,
+        pageSize
+      });
+
+      if (response) {
+        const items = response.items || [];
+        setFilteredData(items.map(item => ({
+          id: item.id,
+          formName: item.templateName || 'Unknown Form',
+          status: item.status,
+          createTime: item.createdAt || ''
+        })));
+        setTotal(response.pagination?.total || 0);
+      }
+    } catch (error) {
+      console.error('获取表单列表失败:', error);
+      message.error('获取表单列表失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 初始加载和筛选条件变化时重新获取数据
   useEffect(() => {
-    let filtered = mockData;
-
-    // 按表单名称过滤
-    if (searchFormName) {
-      filtered = filtered.filter(item =>
-        item.formName.toLowerCase().includes(searchFormName.toLowerCase())
-      );
-    }
-
-    // 按状态过滤
-    if (statusFilter !== 'All') {
-      filtered = filtered.filter(item => item.status === statusFilter);
-    }
-
-    setFilteredData(filtered);
-    setCurrentPage(1); // 重置到第一页
-  }, [searchFormName, statusFilter]);
+    fetchFormList();
+  }, [currentPage, pageSize, statusFilter]);
 
   // 分页数据
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const handleSearch = () => {
-    // 搜索逻辑已在 useEffect 中处理
-  };
+  const paginatedData = filteredData;
 
   const handleReset = () => {
     setSearchFormName('');
@@ -153,7 +102,7 @@ const AdminInprogress = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status) => {
-        const statusInfo = statusMap[status];
+        const statusInfo = statusMap[status] || { color: '#999', text: status };
         return (
           <Tag color={statusInfo.color}>
             {statusInfo.text}
@@ -241,6 +190,7 @@ const AdminInprogress = () => {
             pagination={false}
             className={styles.dataTable}
             size="middle"
+            loading={loading}
           />
         </div>
 
@@ -249,7 +199,7 @@ const AdminInprogress = () => {
           <Pagination
             current={currentPage}
             pageSize={pageSize}
-            total={filteredData.length}
+            total={total}
             onChange={handlePageChange}
             onShowSizeChange={handlePageChange}
             showSizeChanger

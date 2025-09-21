@@ -2,6 +2,7 @@ const admin = require('firebase-admin');
 const { FieldValue } = require("firebase-admin/firestore");
 const db = admin.firestore();
 const { FORM_STATUS } = require('../constants/formStatus');
+// const { debugFirestoreQuery } = require('../helper');
 
 // 将 Firestore 文档数据转换为模板对象
 function mapTemplateData(doc) {
@@ -274,10 +275,121 @@ async function operateForm(formId, action, uid, role, comment = '') {
   };
 }
 
+// 获取表单列表（支持按状态过滤：all, draft, pending, declined, approved）
+async function getFormList(uid, role, options = {}) {
+  try {
+    const { status, page = 1, pageSize = 10, viewMode } = options;
+
+    // 转换分页参数为数字
+    const pageNum = parseInt(page, 10);
+    const pageSizeNum = parseInt(pageSize, 10);
+    const offset = (pageNum - 1) * pageSizeNum;
+
+    let q = db.collection("forms");
+
+    // 1. 不管是什么角色 role 看 inprogress 状态的表单也就是 draft, pending, declined, approved 都是限定 creator == uid
+    // 2. 只有 admin 角色可以看 to review 和 reviewed 的表单，也就是 to review 是 creator 是所有人，然后 状态是 pending。也就是 reviewed 是 reviewer 是 uid 自己，然后 状态是 approved。
+
+    // 根据用户角色、状态和viewMode决定查询条件
+    if (viewMode === 'reviewer' && role === 'admin') {
+      // reviewer 模式：按照注释中的逻辑
+      if (role === 'admin') {
+        // 管理员在 reviewer 模式下
+        if (status === 'pending') {
+          // to review: creator 是所有人，状态是 pending
+          q = q.where("status", "==", "pending");
+        } else if (status === 'approved') {
+          // reviewed: reviewer 是自己，状态是 approved
+          q = q.where("status", "==", "approved").where("reviewedBy", "==", uid);
+        }
+      } else {
+        // 检查员在 reviewer 模式下：只能看到自己创建的表单
+        q = q.where("creator", "==", uid);
+        if (status && status !== 'all') {
+          q = q.where("status", "==", String(status));
+        }
+      }
+    } else {
+      // 检查员只能看到自己创建的表单
+      q = q.where("creator", "==", uid);
+      if (status && status !== 'all') {
+        q = q.where("status", "==", String(status));
+      }
+    }
+
+    // 调试查询条件
+    // console.log("form query before debug firestore query", status, viewMode);
+    // debugFirestoreQuery(q, { uid, role, status, viewMode, page: pageNum, pageSize: pageSizeNum });
+
+    // 先获取总数（用于分页信息）
+    const countQuery = q;
+    const countSnap = await countQuery.get();
+    const total = countSnap.size;
+
+    // 获取分页数据
+    const snap = await q
+      .orderBy("createdAt", "desc")
+      .offset(offset)
+      .limit(pageSizeNum)
+      .get();
+
+    const items = snap.docs.map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        ...data,
+        createdAt: data.createdAt ? data.createdAt.toDate().toLocaleString() : '',
+        submittedAt: data.submittedAt ? data.submittedAt.toDate().toLocaleString() : '',
+        reviewedAt: data.reviewedAt ? data.reviewedAt.toDate().toLocaleString() : ''
+      };
+    });
+
+    return {
+      success: true,
+      data: {
+        items,
+        pagination: {
+          current: pageNum,
+          pageSize: pageSizeNum,
+          total,
+          totalPages: Math.ceil(total / pageSizeNum)
+        }
+      }
+    };
+  } catch (error) {
+    console.error('获取检查员表单列表失败:', error);
+    throw error;
+  }
+}
+
+// 获取单个表单
+async function getFormById(formId) {
+  try {
+    const doc = await db.collection("forms").doc(formId).get();
+    if (!doc.exists) {
+      return null;
+    }
+
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      createdAt: data.createdAt ? data.createdAt.toDate().toLocaleString() : '',
+      submittedAt: data.submittedAt ? data.submittedAt.toDate().toLocaleString() : '',
+      reviewedAt: data.reviewedAt ? data.reviewedAt.toDate().toLocaleString() : ''
+    };
+  } catch (error) {
+    console.error('获取表单详情失败:', error);
+    throw error;
+  }
+}
+
 module.exports = {
   getTemplates,
   getTemplateById,
   saveForm,
   assignForm,
   operateForm,
+  getFormList,
+  getFormById,
 };

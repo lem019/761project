@@ -1,51 +1,74 @@
-import React, { useMemo, useState } from "react";
-import { Input, Empty, Space } from "antd";
+import React, { useMemo, useState, useEffect } from "react";
+import { Input, Empty, Space, Spin, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import InProgressCard from "./InProgressCard";
+import { getFormList } from "@/services/form-service";
 import styles from "./InProgressPage.module.less";
 
-const mockRows = [
-  {
-    id: "IP-240915-001",
-    title: "IND80 Booth Maintenance Service Report",
-    date: "2024-12-09 09:15",
-    status: "Pending", // Draft | Pending | Declined
-    templateId: "booth",
-  },
-  {
-    id: "IP-240915-002",
-    title: "IND81 PMR Maintenance Service Report",
-    date: "2024-12-09 09:15",
-    status: "Draft",
-    templateId: "pmr",
-  },
-  {
-    id: "IP-240915-003",
-    title: "IND80 Dynapumps Booth Maintenance Service Report",
-    date: "2024-12-09 09:15",
-    status: "Declined",
-    templateId: "booth",
-  },
-];
-
 const FILTERS = ["ALL", "Draft", "Pending", "Declined"];
+
+// 状态映射
+const statusMap = {
+  'draft': 'Draft',
+  'pending': 'Pending', 
+  'declined': 'Declined',
+  'approved': 'Approved'
+};
 
 export default function InProgressPage() {
   const nav = useNavigate();
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("ALL");
+  const [loading, setLoading] = useState(false);
+  const [formList, setFormList] = useState([]);
+
+  // 获取表单列表数据
+  const fetchFormList = async () => {
+    try {
+      setLoading(true);
+      const status = filter === "ALL" ? "all" : filter.toLowerCase();
+      const response = await getFormList({
+        status,
+        page: 1,
+        pageSize: 20
+      });
+      
+      if (response) {
+        setFormList(response.items || []);
+      }
+    } catch (error) {
+      console.error('获取表单列表失败:', error);
+      message.error('获取表单列表失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 初始加载和筛选条件变化时重新获取数据
+  useEffect(() => {
+    fetchFormList();
+  }, [filter]);
 
   const filtered = useMemo(() => {
-    let rows = mockRows;
-    if (filter !== "ALL") rows = rows.filter((r) => r.status === filter);
+    let rows = formList.map(item => ({
+      id: item.id,
+      title: item.templateName || 'Unknown Form',
+      date: item.createdAt || '',
+      status: statusMap[item.status] || item.status,
+      templateId: item.templateId || 'pmr',
+      formData: item
+    }));
+
+    // 客户端搜索过滤 todo 后续更改成服务端
     if (q.trim()) {
-      const kw = q.toLowerCase();
-      rows = rows.filter((r) =>
-        [r.id, r.title].join(" ").toLowerCase().includes(kw)
+      const searchTerm = q.toLowerCase();
+      rows = rows.filter(item =>
+        [item.id, item.title].join(" ").toLowerCase().includes(searchTerm)
       );
     }
+
     return rows;
-  }, [q, filter]);
+  }, [formList, q]);
 
   const openEdit = (item) => {
     // 跳转到编辑页面，使用查询参数传递id
@@ -65,6 +88,7 @@ export default function InProgressPage() {
           placeholder="Search by ID, booth or location"
           value={q}
           onChange={(e) => setQ(e.target.value)}
+          loading={loading}
         />
 
         {/* 二级筛选 chips */}
@@ -77,6 +101,7 @@ export default function InProgressPage() {
                   filter === f ? styles.active : ""
                 }`}
                 onClick={() => setFilter(f)}
+                disabled={loading}
               >
                 {f}
               </button>
@@ -86,7 +111,11 @@ export default function InProgressPage() {
 
         {/* 列表区域 */}
         <div className={styles.list}>
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <Spin size="large" />
+            </div>
+          ) : filtered.length === 0 ? (
             <Empty description="No records" />
           ) : (
             filtered.map((item) => (

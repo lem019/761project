@@ -1,46 +1,63 @@
 import React, { useEffect, useState } from "react";
-import { http } from "@/utils/request"; 
+import { http } from "@/utils/request";
+import { getFormList } from "@/services/form-service";
 import styles from "./index.module.less";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
-
-
-const approvedList = [
-  {
-    reportId: "123",
-    title: "IND80 Booth Maintenance Service Report",
-    completed: "2025-09-17 14:00",
-  },
-  {
-    reportId: "124",
-    title: "IND80 Booth Maintenance Service Report",
-    completed: "2025-09-17 14:00",
-  },
-  {
-    reportId: "125",
-    title: "IND80 Booth Maintenance Service Report",
-    completed: "2025-09-17 14:00",
-  },
-  
-];
+import { Spin, message } from "antd";
 
 const ApprovedPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isDetail = location.pathname.includes("/report/");
-  // const [approvedList, setApprovedList] = useState([]);
+  const [approvedList, setApprovedList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   // 假设后端接口为 /api/approved
-  //   http.get("/api/approved").then(res => {
-  //     setApprovedList(res.data); // 根据实际返回结构调整
-  //   });
-  // }, []);
+  // 获取已批准的表单列表
+  const fetchApprovedList = async () => {
+    try {
+      setLoading(true);
+      const response = await getFormList({
+        status: 'approved',
+        page: 1,
+        pageSize: 20
+      });
+
+      if (response) {
+        const approvedForms = response.items || [];
+        setApprovedList(approvedForms.map(item => ({
+          reportId: item.id,
+          title: item.templateName || 'Unknown Form',
+          completed: item.reviewedAt || item.createdAt || ''
+        })));
+      }
+    } catch (error) {
+      console.error('获取已批准表单列表失败:', error);
+      message.error('获取已批准表单列表失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isDetail) {
+      fetchApprovedList();
+    }
+  }, [isDetail]);
   return (
-      <>
-        {!isDetail && (
-          <div className={styles.cardList}>
-            {approvedList.map((item, idx) => (
+    <>
+      {!isDetail && (
+        <div className={styles.cardList}>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <Spin size="large" />
+            </div>
+          ) : approvedList.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '50px', color: '#999' }}>
+              暂无已批准的表单
+            </div>
+          ) : (
+            approvedList.map((item, idx) => (
               <div
                 className={styles.card}
                 key={item.reportId}
@@ -52,12 +69,13 @@ const ApprovedPage = () => {
                   Completed: {item.completed}
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-        <Outlet />
-      </>
-    );
-  };
+            ))
+          )}
+        </div>
+      )}
+      <Outlet />
+    </>
+  );
+};
 
 export default ApprovedPage;

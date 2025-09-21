@@ -9,95 +9,60 @@ import {
   Select,
   Typography,
   Row,
-  Col
+  Col,
+  Spin,
+  message
 } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
+import { getFormList } from '@/services/form-service';
 import styles from './index.module.less';
 
 const { Search } = Input;
 const { Option } = Select;
 const { Text } = Typography;
 
-// 模拟数据
-const mockData = [
-  {
-    id: 1,
-    formName: 'IND81 PMR Maintenance Service Report',
-    completedTime: '2021-02-05 08:28:36'
-  },
-  {
-    id: 2,
-    formName: 'IND80 Booth Maintenance Service Report',
-    completedTime: '2021-02-03 19:49:33'
-  },
-  {
-    id: 3,
-    formName: 'IND80 Dynapumps Booth Maintenance Service Report',
-    completedTime: '2021-02-02 19:17:15'
-  },
-  {
-    id: 4,
-    formName: 'Report 4',
-    completedTime: '2021-02-02 09:46:33'
-  },
-  {
-    id: 5,
-    formName: 'Report 5',
-    completedTime: '2021-02-02 07:57:01'
-  },
-  {
-    id: 6,
-    formName: 'Report 94',
-    completedTime: '2021-02-02 05:01:54'
-  },
-  {
-    id: 7,
-    formName: 'IND82 PMR Maintenance Service Report',
-    completedTime: '2021-02-01 16:30:22'
-  },
-  {
-    id: 8,
-    formName: 'IND81 Dynapumps Booth Maintenance Service Report',
-    completedTime: '2021-02-01 14:15:45'
-  },
-  {
-    id: 9,
-    formName: 'IND83 Booth Maintenance Service Report',
-    completedTime: '2021-01-31 11:20:18'
-  },
-  {
-    id: 10,
-    formName: 'IND82 PMR Maintenance Service Report',
-    completedTime: '2021-01-31 09:45:33'
-  }
-];
-
 const AdminApproved = () => {
   const [searchFormName, setSearchFormName] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [filteredData, setFilteredData] = useState(mockData);
+  const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
 
-  // 过滤数据
-  useEffect(() => {
-    let filtered = mockData;
+  // 获取已批准表单列表数据
+  const fetchApprovedList = async () => {
+    try {
+      setLoading(true);
+      const response = await getFormList({
+        status: 'approved',
+        page: currentPage,
+        pageSize
+      });
 
-    // 按表单名称过滤
-    if (searchFormName) {
-      filtered = filtered.filter(item =>
-        item.formName.toLowerCase().includes(searchFormName.toLowerCase())
-      );
+      if (response) {
+        const items = response.items || [];
+        setFilteredData(items.map(item => ({
+          id: item.id,
+          formName: item.templateName || 'Unknown Form',
+          completedTime: item.reviewedAt || item.createdAt || ''
+        })));
+        setTotal(response.pagination?.total || 0);
+      }
+    } catch (error) {
+      console.error('获取已批准表单列表失败:', error);
+      message.error('获取已批准表单列表失败');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setFilteredData(filtered);
-    setCurrentPage(1); // 重置到第一页
-  }, [searchFormName]);
+  // 初始加载和分页变化时重新获取数据
+  useEffect(() => {
+    fetchApprovedList();
+  }, [currentPage, pageSize]);
 
   // 分页数据
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const paginatedData = filteredData;
 
   const handleSearch = () => {
     // 搜索逻辑已在 useEffect 中处理
@@ -175,6 +140,7 @@ const AdminApproved = () => {
             pagination={false}
             className={styles.dataTable}
             size="middle"
+            loading={loading}
           />
         </div>
 
@@ -183,7 +149,7 @@ const AdminApproved = () => {
           <Pagination
             current={currentPage}
             pageSize={pageSize}
-            total={filteredData.length}
+            total={total}
             onChange={handlePageChange}
             onShowSizeChange={handlePageChange}
             showSizeChanger
