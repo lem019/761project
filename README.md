@@ -65,6 +65,9 @@ npm install --save-dev firebase-admin
 # 在运行初始化脚本之前,需要先启动Firebase模拟器
 npm run backend:serve
 npm run init:data
+# 在页面google登录创建一个邮箱为 raccoon.panda.384@thermoflo.co.nz 的名为 AdminMocker 的用户
+# 在浏览器访问 http://127.0.0.1:4000/auth 查看 AdminMocker 的 uid 复制出来
+# 转移 mock 数据: 替换后面网址的 uid 并且在浏览器访问 http://localhost:5001/demo-project-id/us-central1/api/admin/transfer-forms?fromUid=admin-mocker-384&toUid={yourUid}
 ```
 
 正常开发,启动后端本地开发的 firebase 模拟器
