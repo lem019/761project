@@ -84,7 +84,7 @@ router.get("/form-list", async (req, res) => {
   try {
     const uid = req.user.uid; // 从认证中间件获取真实用户ID
     const role = req.user.role; // 从认证中间件获取用户角色
-    console.log("form list query", req.query);
+    console.log("form list query", req.query, uid, role);
     const { status, page = 1, pageSize = 10, viewMode } = req.query;
     
     const result = await getFormList(uid, role, {
@@ -140,7 +140,11 @@ router.get("/get/:id", async (req, res) => {
 router.post("/save", async (req, res) => {
   try {
     const uid = req.user.uid; // 从认证中间件获取真实用户ID
-    const result = await saveForm(uid, req.body);
+    const userInfo = {
+      email: req.user.email,
+      name: req.user.name || req.user.email // 如果没有name，使用email作为name
+    };
+    const result = await saveForm(uid, req.body, userInfo);
 
     return res.json({
       code: 200,
@@ -189,5 +193,6 @@ router.post("/operate/:id", async (req, res) => {
     });
   }
 });
+
 
 module.exports = router;

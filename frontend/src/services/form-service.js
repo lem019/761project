@@ -91,8 +91,8 @@ export const submitForm = async (formData) => {
 export const getFormList = async (params = {}) => {
   try {
     const { status = 'all', page = 1, pageSize = 20, viewMode = 'inspector' } = params;
-    console.log("form list query ft", params);
-    console.log("form list query ft request", status, page, pageSize, viewMode);
+    // console.log("form list query ft", params);
+    // console.log("form list query ft request", status, page, pageSize, viewMode);
     const response = await http.get('/form/form-list', {
       status,
       page,

@@ -54,271 +54,152 @@ const mockUsers = [
   }
 ];
 
-// 初始化表单数据
-// template 需要对应 initTemplates.js 中的模板
-const forms = [
-  {
-    // PMR 维护服务检查表单 - 草稿状态
-    type: 'pmr',
-    // template 需要对应 initTemplates.js 中的模板
-    templateId: 'pmr',
-    templateName: 'PMR Maintenance Service Check',
-    metaData: {
-      inspector: 'John Smith',
-      inspectorMobile: '0408 742 659',
-      date: '17/09/2025',
-      locationDetails: 'Main workshop area, Building A',
-      contactPerson: 'Andrew Buck',
-      businessName: 'DYNAPUMPS',
-      address: '22 Homestead Drive',
-      suburb: 'StaplYton QLD 4207',
-      phone: '0459 578 705',
-      email: 'Andrew.Buck@dynapumps.com'
+// 测试数据生成器
+function generateTestData(templateId, status, user, index) {
+  const baseData = {
+    inspector: `test-inspector-${status}-${index}`,
+    inspectorMobile: `0400 ${String(index).padStart(3, '0')} ${String(index + 100).padStart(3, '0')}`,
+    date: `${String(15 + index).padStart(2, '0')}/09/2025`,
+    locationDetails: `test-location-${status}-${index} - ${templateId} inspection area`,
+    contactPerson: `test-contact-${status}-${index}`,
+    businessName: `TEST-${status.toUpperCase()}-${templateId.toUpperCase()}-${index}`,
+    address: `${index} Test Street, ${status} District`,
+    suburb: `Test-${status} QLD ${4000 + index}`,
+    phone: `07 ${String(3000 + index).padStart(4, '0')} ${String(1000 + index).padStart(4, '0')}`,
+    email: `test-${status}-${index}@${templateId}.test.com`
+  };
+
+  return baseData;
+}
+
+// 生成检查项数据
+function generateInspectionData(templateId, status, index, formCreatedAt) {
+  const inspectionTemplates = {
+    pmr: {
+      sprayBoothMake: 'Spray Booth Make',
+      purgeCycles: 'Purge Cycles',
+      exhaustAirflow: 'Exhaust Airflow'
     },
-    inspectionData: {
-      sprayBoothMake: {
-        status: 'completed',
-        notes: 'Booth structure appears in good condition',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      purgeCycles: {
-        status: 'completed', 
-        notes: 'Purge cycles operating within normal parameters',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      exhaustAirflow: {
-        status: 'completed',
-        notes: 'Airflow measurements within acceptable range',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
+    booth: {
+      boothStructure: 'Booth Structure',
+      electricalSystem: 'Electrical System',
+      safetyEquipment: 'Safety Equipment'
+    },
+    dynapumps: {
+      pumpSystem: 'Pump System',
+      controlPanel: 'Control Panel',
+      safetyValves: 'Safety Valves'
+    }
+  };
+
+  const template = inspectionTemplates[templateId] || {};
+  const inspectionData = {};
+
+  Object.keys(template).forEach(key => {
+    const statuses = ['completed', 'in_progress', 'pending'];
+    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+    
+    let completedAt = null;
+    if (randomStatus === 'completed') {
+      // 完成时间在表单创建时间之后1-5天
+      const completedDaysAfter = Math.floor(Math.random() * 5) + 1;
+      const completedDate = new Date(formCreatedAt.toDate());
+      completedDate.setDate(completedDate.getDate() + completedDaysAfter);
+      completedAt = admin.firestore.Timestamp.fromDate(completedDate);
+    }
+    
+    inspectionData[key] = {
+      status: randomStatus,
+      notes: `test-${status}-notes-${index}: ${template[key]} inspection completed with ${randomStatus} status`,
+      images: randomStatus === 'completed' ? ['/api/placeholder/400/300'] : [],
+      completedAt: completedAt
+    };
+  });
+
+  return inspectionData;
+}
+
+// 生成表单数据
+function generateForms() {
+  const forms = [];
+  const templates = ['pmr', 'booth', 'dynapumps'];
+  const statuses = [FORM_STATUS.DRAFT, FORM_STATUS.PENDING, FORM_STATUS.ASSIGNED, FORM_STATUS.APPROVED, FORM_STATUS.DECLINED];
+  
+  // 计算1-2个月前的时间范围
+  const twoMonthsAgo = new Date();
+  twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  
+  // 为每个用户生成表单
+  mockUsers.forEach((user, userIndex) => {
+    // 每个用户每种状态生成 2-3 个表单
+    statuses.forEach(status => {
+      const formCount = Math.floor(Math.random() * 2) + 2; // 2-3 个表单
+      
+      for (let i = 0; i < formCount; i++) {
+        const templateId = templates[Math.floor(Math.random() * templates.length)];
+        const formIndex = userIndex * 20 + statuses.indexOf(status) * 3 + i + 1;
+        
+        // 为每个表单生成不同的时间（1-2个月前的随机时间）
+        const randomDaysAgo = Math.floor(Math.random() * 30); // 0-29天前
+        const formCreatedAt = new Date(twoMonthsAgo);
+        formCreatedAt.setDate(formCreatedAt.getDate() + randomDaysAgo);
+        const formCreatedAtTimestamp = admin.firestore.Timestamp.fromDate(formCreatedAt);
+        
+        const form = {
+          type: templateId,
+          templateId: templateId,
+          templateName: getTemplateName(templateId),
+          metaData: generateTestData(templateId, status, user, formIndex),
+          inspectionData: generateInspectionData(templateId, status, formIndex, formCreatedAtTimestamp),
+          status: status,
+          creator: user.uid,
+          creatorName: user.name || user.email || 'Unknown User',
+          creatorEmail: user.email || '',
+          createdAt: formCreatedAtTimestamp,
+          updatedAt: formCreatedAtTimestamp
+        };
+
+        // 根据状态添加额外字段
+        if (status === FORM_STATUS.APPROVED || status === FORM_STATUS.DECLINED) {
+          form.reviewedBy = 'admin-mocker-384';
+          // 审核时间在创建时间之后1-7天
+          const reviewDaysAfter = Math.floor(Math.random() * 7) + 1;
+          const reviewDate = new Date(formCreatedAtTimestamp.toDate());
+          reviewDate.setDate(reviewDate.getDate() + reviewDaysAfter);
+          form.reviewedAt = admin.firestore.Timestamp.fromDate(reviewDate);
+          form.reviewComment = status === FORM_STATUS.APPROVED 
+            ? `test-approval-comment-${formIndex}: All inspections completed satisfactorily.`
+            : `test-decline-comment-${formIndex}: Multiple issues identified requiring immediate attention.`;
+        }
+
+        if (status === FORM_STATUS.ASSIGNED) {
+          form.assignedTo = 'admin-mocker-384';
+          // 分配时间在创建时间之后1-3天
+          const assignDaysAfter = Math.floor(Math.random() * 3) + 1;
+          const assignDate = new Date(formCreatedAtTimestamp.toDate());
+          assignDate.setDate(assignDate.getDate() + assignDaysAfter);
+          form.assignedAt = admin.firestore.Timestamp.fromDate(assignDate);
+        }
+
+        forms.push(form);
       }
-    },
-    status: FORM_STATUS.DRAFT,
-    creator: 'grass-otter-309',
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp()
-  },
-  {
-    // 展位维护服务检查表单 - 待审核状态
-    type: 'booth',
-    templateId: 'booth', 
-    templateName: 'Booth Maintenance Service Check',
-    metaData: {
-      inspector: 'Sarah Johnson',
-      inspectorMobile: '0412 345 678',
-      date: '16/09/2025',
-      locationDetails: 'Production floor, Section B',
-      contactPerson: 'Mike Wilson',
-      businessName: 'AUTO SPRAY SOLUTIONS',
-      address: '45 Industrial Way',
-      suburb: 'Brisbane QLD 4000',
-      phone: '07 3000 1234',
-      email: 'mike.wilson@autospray.com.au'
-    },
-    inspectionData: {
-      boothStructure: {
-        status: 'completed',
-        notes: 'Structural integrity verified, minor wear on door seals',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      electricalSystem: {
-        status: 'completed',
-        notes: 'All electrical systems functioning properly',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      safetyEquipment: {
-        status: 'completed',
-        notes: 'Safety equipment in place and functional',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      }
-    },
-    status: FORM_STATUS.PENDING,
-    creator: 'admin-mocker-384',
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp()
-  },
-  {
-    // Dynapumps 展位维护服务检查表单 - 已批准状态
-    type: 'dynapumps',
-    templateId: 'dynapumps',
-    templateName: 'Dynapumps Booth Maintenance Service Check', 
-    metaData: {
-      inspector: 'John Smith',
-      inspectorMobile: '0408 742 659',
-      date: '15/09/2025',
-      locationDetails: 'Pump station area, Ground floor',
-      contactPerson: 'Andrew Buck',
-      businessName: 'DYNAPUMPS',
-      address: '22 Homestead Drive',
-      suburb: 'StaplYton QLD 4207',
-      phone: '0459 578 705',
-      email: 'Andrew.Buck@dynapumps.com'
-    },
-    inspectionData: {
-      pumpSystem: {
-        status: 'completed',
-        notes: 'Pump system operating efficiently, pressure readings normal',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      controlPanel: {
-        status: 'completed',
-        notes: 'Control panel functioning correctly, all indicators green',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      safetyValves: {
-        status: 'completed',
-        notes: 'Safety valves tested and operating within specifications',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      }
-    },
-    status: FORM_STATUS.APPROVED,
-    creator: 'grass-otter-309',
-    reviewedBy: 'admin-mocker-384',
-    reviewComment: 'All inspections completed satisfactorily. System operating within normal parameters.',
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    reviewedAt: admin.firestore.FieldValue.serverTimestamp()
-  },
-  {
-    // PMR 维护服务检查表单 - 已拒绝状态
-    type: 'pmr',
-    templateId: 'pmr',
-    templateName: 'PMR Maintenance Service Check',
-    metaData: {
-      inspector: 'Sarah Johnson',
-      inspectorMobile: '0412 345 678',
-      date: '14/09/2025',
-      locationDetails: 'Secondary workshop, Building C',
-      contactPerson: 'Lisa Brown',
-      businessName: 'INDUSTRIAL MAINTENANCE CO',
-      address: '78 Factory Street',
-      suburb: 'Gold Coast QLD 4215',
-      phone: '07 5555 9876',
-      email: 'lisa.brown@indmaintenance.com.au'
-    },
-    inspectionData: {
-      sprayBoothMake: {
-        status: 'completed',
-        notes: 'Booth structure shows signs of wear, panels need replacement',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      purgeCycles: {
-        status: 'completed',
-        notes: 'Purge cycle timing needs adjustment',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      exhaustAirflow: {
-        status: 'completed',
-        notes: 'Airflow below minimum requirements',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      }
-    },
-    status: FORM_STATUS.DECLINED,
-    creator: 'admin-mocker-384',
-    reviewedBy: 'admin-mocker-384',
-    reviewComment: 'Multiple issues identified requiring immediate attention. Please address structural concerns and airflow problems before resubmission.',
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    reviewedAt: admin.firestore.FieldValue.serverTimestamp()
-  },
-  {
-    // 展位维护服务检查表单 - 草稿状态（部分填写）
-    type: 'booth',
-    templateId: 'booth',
-    templateName: 'Booth Maintenance Service Check',
-    metaData: {
-      inspector: 'John Smith',
-      inspectorMobile: '0408 742 659',
-      date: '18/09/2025',
-      locationDetails: 'New installation area',
-      contactPerson: 'Tom Anderson',
-      businessName: 'PREMIUM AUTO SERVICES',
-      address: '123 Service Road',
-      suburb: 'Melbourne VIC 3000',
-      phone: '03 9000 5555',
-      email: 'tom.anderson@premiumauto.com.au'
-    },
-    inspectionData: {
-      boothStructure: {
-        status: 'in_progress',
-        notes: 'Initial inspection started',
-        images: [],
-        completedAt: null
-      },
-      electricalSystem: {
-        status: 'pending',
-        notes: '',
-        images: [],
-        completedAt: null
-      },
-      safetyEquipment: {
-        status: 'pending',
-        notes: '',
-        images: [],
-        completedAt: null
-      }
-    },
-    status: FORM_STATUS.DRAFT,
-    creator: 'tech-specialist-001',
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp()
-  },
-  {
-    // 展位维护服务检查表单 - 已分配状态
-    type: 'booth',
-    templateId: 'booth',
-    templateName: 'Booth Maintenance Service Check',
-    metaData: {
-      inspector: 'Sarah Johnson',
-      inspectorMobile: '0412 345 678',
-      date: '19/09/2025',
-      locationDetails: 'Maintenance workshop, Building D',
-      contactPerson: 'David Wilson',
-      businessName: 'INDUSTRIAL SERVICES LTD',
-      address: '99 Factory Road',
-      suburb: 'Sydney NSW 2000',
-      phone: '02 9000 8888',
-      email: 'david.wilson@industrialservices.com.au'
-    },
-    inspectionData: {
-      boothStructure: {
-        status: 'completed',
-        notes: 'Initial inspection completed, awaiting detailed review',
-        images: ['/api/placeholder/400/300'],
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      electricalSystem: {
-        status: 'pending',
-        notes: '',
-        images: [],
-        completedAt: null
-      },
-      safetyEquipment: {
-        status: 'pending',
-        notes: '',
-        images: [],
-        completedAt: null
-      }
-    },
-    status: FORM_STATUS.ASSIGNED,
-    creator: 'admin-mocker-384',
-    assignedTo: 'admin-mocker-384',
-    assignedAt: admin.firestore.FieldValue.serverTimestamp(),
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp()
-  }
-];
+    });
+  });
+
+  return forms;
+}
+
+// 获取模板名称
+function getTemplateName(templateId) {
+  const templateNames = {
+    pmr: 'PMR Maintenance Service Check',
+    booth: 'Booth Maintenance Service Check',
+    dynapumps: 'Dynapumps Booth Maintenance Service Check'
+  };
+  return templateNames[templateId] || 'Unknown Template';
+}
 
 // 初始化表单数据到数据库
 async function initForms() {
@@ -334,10 +215,15 @@ async function initForms() {
     const batch = db.batch();
     
     // 清空现有的表单数据
+    console.log('🗑️  清空现有表单数据...');
     const existingForms = await db.collection('forms').get();
     existingForms.forEach(doc => {
       batch.delete(doc.ref);
     });
+    
+    // 生成新的表单数据
+    console.log('📝 生成测试表单数据...');
+    const forms = generateForms();
     
     // 添加新的表单数据
     forms.forEach(form => {
@@ -347,10 +233,32 @@ async function initForms() {
     
     await batch.commit();
     console.log('✅ 表单数据初始化成功！');
-    console.log(`📝 已添加 ${forms.length} 个表单:`);
+    console.log(`📊 已添加 ${forms.length} 个表单`);
     
-    // 按状态分组显示
-    const statusGroups = {
+    // 按用户和状态分组显示
+    const userGroups = {};
+    forms.forEach((form, index) => {
+      const user = mockUsers.find(u => u.uid === form.creator);
+      const userName = user ? user.name : 'Unknown User';
+      
+      if (!userGroups[userName]) {
+        userGroups[userName] = {};
+      }
+      
+      if (!userGroups[userName][form.status]) {
+        userGroups[userName][form.status] = [];
+      }
+      
+      userGroups[userName][form.status].push({
+        index: index + 1,
+        templateName: form.templateName,
+        inspector: form.metaData.inspector,
+        businessName: form.metaData.businessName
+      });
+    });
+    
+    // 状态显示名称
+    const statusNames = {
       [FORM_STATUS.DRAFT]: 'Draft (草稿)',
       [FORM_STATUS.PENDING]: 'Pending (待审核)',
       [FORM_STATUS.ASSIGNED]: 'Assigned (已分配)',
@@ -358,20 +266,30 @@ async function initForms() {
       [FORM_STATUS.DECLINED]: 'Declined (已拒绝)'
     };
     
-    const groupedForms = forms.reduce((acc, form, index) => {
-      const status = form.status;
-      if (!acc[status]) acc[status] = [];
-      acc[status].push({ index: index + 1, name: form.templateName, creator: form.creator });
-      return acc;
-    }, {});
+    // 显示统计信息
+    Object.keys(userGroups).forEach(userName => {
+      console.log(`\n👤 ${userName}:`);
+      Object.keys(statusNames).forEach(status => {
+        if (userGroups[userName][status]) {
+          const count = userGroups[userName][status].length;
+          console.log(`   📋 ${statusNames[status]}: ${count} 个表单`);
+          userGroups[userName][status].forEach(form => {
+            console.log(`      ${form.index}. ${form.templateName} - ${form.inspector} (${form.businessName})`);
+          });
+        }
+      });
+    });
     
-    Object.keys(statusGroups).forEach(status => {
-      if (groupedForms[status]) {
-        console.log(`\n📋 ${statusGroups[status]} (${groupedForms[status].length} 个):`);
-        groupedForms[status].forEach(form => {
-          console.log(`   ${form.index}. ${form.name} - 创建者: ${form.creator}`);
-        });
-      }
+    // 总体统计
+    console.log('\n📈 总体统计:');
+    const statusCounts = {};
+    forms.forEach(form => {
+      statusCounts[form.status] = (statusCounts[form.status] || 0) + 1;
+    });
+    
+    Object.keys(statusNames).forEach(status => {
+      const count = statusCounts[status] || 0;
+      console.log(`   ${statusNames[status]}: ${count} 个表单`);
     });
     
     return forms;
@@ -396,6 +314,6 @@ if (require.main === module) {
 
 module.exports = { 
   initForms, 
-  forms,
+  generateForms,
   mockUsers
 };

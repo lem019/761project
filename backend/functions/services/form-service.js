@@ -77,7 +77,7 @@ async function getTemplateById(templateId) {
 }
 
 // 保存表单数据（创建或更新）
-async function saveForm(uid, formData) {
+async function saveForm(uid, formData, userInfo = {}) {
   const {
     id, // 如果有ID则是更新，没有则是创建
     type = "a",
@@ -97,6 +97,8 @@ async function saveForm(uid, formData) {
     inspectionData,
     status: status,
     creator: uid,
+    creatorName: userInfo.name || userInfo.email || 'Unknown User',
+    creatorEmail: userInfo.email || '',
     updatedAt: now
   };
 
@@ -338,6 +340,7 @@ async function getFormList(uid, role, options = {}) {
       return {
         id: d.id,
         ...data,
+        creatorName: data.creatorName || data.creatorEmail || 'Unknown User',
         createdAt: data.createdAt ? data.createdAt.toDate().toLocaleString() : '',
         submittedAt: data.submittedAt ? data.submittedAt.toDate().toLocaleString() : '',
         reviewedAt: data.reviewedAt ? data.reviewedAt.toDate().toLocaleString() : ''
@@ -374,6 +377,7 @@ async function getFormById(formId) {
     return {
       id: doc.id,
       ...data,
+      creatorName: data.creatorName || data.creatorEmail || 'Unknown User',
       createdAt: data.createdAt ? data.createdAt.toDate().toLocaleString() : '',
       submittedAt: data.submittedAt ? data.submittedAt.toDate().toLocaleString() : '',
       reviewedAt: data.reviewedAt ? data.reviewedAt.toDate().toLocaleString() : ''
