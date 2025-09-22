@@ -2,7 +2,9 @@
 import axios from "axios";
 import errorCode from "./errorCode";
 import { message as antdMessage, Modal } from "antd";
-import { removeStorage,getStorage } from "./helper";
+import { auth } from "@/firebase";
+import { signOut } from "firebase/auth";
+// 移除了自定义 JWT 相关的导入，现在使用 Firebase ID Token
 
 // Create instance and configure base URL
 const service = axios.create({
@@ -19,10 +21,10 @@ service.interceptors.request.use(
     // Standardize headers object
     config.headers = config.headers || {};
 
-    // Add Token
-    const token = getStorage("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // 使用 Firebase ID Token
+    const idToken = localStorage.getItem("idToken");
+    if (idToken) {
+      config.headers.Authorization = `Bearer ${idToken}`;
     }
 
     return config;
@@ -40,9 +42,18 @@ service.interceptors.response.use(
       Modal.error({
         title: "login expired",
         content: "login expired, please login again",
-        onOk: () => {
-          removeStorage("token");
-          window.location.href = "/login";
+        onOk: async () => {
+          // 清除本地存储
+          localStorage.removeItem("idToken");
+          // 使用Firebase登出以确保状态同步
+          try {
+            await signOut(auth);
+          } catch (error) {
+            console.error("登出失败:", error);
+          } finally {
+            // 无论登出是否成功都跳转到登录页
+            window.location.href = "/login";
+          }
         }
       });
       return Promise.reject(new Error("login expired, please login again"));
@@ -63,9 +74,18 @@ service.interceptors.response.use(
       Modal.error({
         title: "login expired",
         content: "login expired, please login again",
-        onOk: () => {
-          removeStorage("token");
-          window.location.href = "/login";
+        onOk: async () => {
+          // 清除本地存储
+          localStorage.removeItem("idToken");
+          // 使用Firebase登出以确保状态同步
+          try {
+            await signOut(auth);
+          } catch (error) {
+            console.error("登出失败:", error);
+          } finally {
+            // 无论登出是否成功都跳转到登录页
+            window.location.href = "/login";
+          }
         }
       });
       return Promise.reject(new Error("login expired, please login again"));

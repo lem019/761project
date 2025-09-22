@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // 用户上传的图片，需要认证
+    match /users/{userId}/images/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // 表单相关的图片，需要认证
+    match /forms/{formId}/images/{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // 公共资源（如头像、logo等）
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

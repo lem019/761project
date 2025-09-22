@@ -4,22 +4,28 @@ import logo from "@/assets/img/logo.png";
 import useUserStore from "@/domain/user/store/user.store";
 import styles from "./index.module.less";
 
-const userName = "Serati Ma"; // 假设用户名
 // tabs 由父组件传递
 
 const tabRoutes = ["/mobile/create", "/mobile/inprogress", "/mobile/approved"];
 
 const MobileHeader = ({ tabs}) => {
-  const { user } = useUserStore();
-  //const userName = user?.email;
+  const { user, logout } = useUserStore();
+  const userName = user?.email || user?.displayName || "User";
   const [showMenu, setShowMenu] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const activeTab = tabRoutes.findIndex(route => location.pathname.startsWith(route));
 
-  const handleLogout = () => {
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("登出失败:", error);
+      // 即使登出失败也跳转到登录页
+      navigate("/login");
+    }
   };
 
   return (

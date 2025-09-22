@@ -1,5 +1,5 @@
-import React from 'react';
-import { Layout, Typography, Card, Row, Col } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Typography, Card, Row, Col, Spin, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { 
   ToolOutlined, 
@@ -8,56 +8,77 @@ import {
   ArrowRightOutlined 
 } from '@ant-design/icons';
 import styles from './index.module.less';
+import { getFormTemplates } from '@/services/form-service';
+import useUserStore from '@/domain/user/store/user.store';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
+// 图标映射
+const iconMap = {
+  'ToolOutlined': <ToolOutlined />,
+  'SettingOutlined': <SettingOutlined />,
+  'SafetyOutlined': <SafetyOutlined />
+};
+
 const AdminCreate = () => {
   const navigate = useNavigate();
+  const { user } = useUserStore();
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const checkTypes = [
-    {
-      id: 'booth',
-      title: 'Booth Maintenance Service Check',
-      icon: <SettingOutlined />,
-      color: '#52c41a',
-      gradient: 'linear-gradient(135deg, #52c41a 0%, #73d13d 100%)'
-    },
-    {
-      id: 'pmr',
-      title: 'PMR Maintenance Service Check',
-      icon: <ToolOutlined />,
-      color: '#1890ff',
-      gradient: 'linear-gradient(135deg, #1890ff 0%, #40a9ff 100%)'
-    },
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      // 如果用户未登录，不执行API请求
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
-    {
-      id: 'dynapumps',
-      title: 'Dynapumps Booth Maintenance Service Check',
-      icon: <SafetyOutlined />,
-      color: '#722ed1',
-      gradient: 'linear-gradient(135deg, #722ed1 0%, #9254de 100%)'
-    }
-  ];
+      try {
+        setLoading(true);
+        const data = await getFormTemplates();
+        setTemplates(data);
+      } catch (error) {
+        message.error('获取模板列表失败');
+        console.error('获取模板列表失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleCardClick = (checkType) => {
-    // 跳转到 review-form 页面，并传递检查类型参数
-    navigate(`/pc/review-form?type=${checkType.id}`);
+    fetchTemplates();
+  }, [user]);
+
+  const handleCardClick = (template) => {
+    // 跳转到模板页面，传递模板ID
+    navigate(`/pc/template/${template.id}`);
   };
+
+  if (loading) {
+    return (
+      <Layout className={styles.createLayout}>
+        <Content className={styles.content}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+            <Spin size="large" />
+          </div>
+        </Content>
+      </Layout>
+    );
+  }
 
   return (
     <Layout className={styles.createLayout}>
       <Content className={styles.content}>
-
         <Row gutter={[24, 24]} className={styles.cardsContainer}>
-          {checkTypes.map((check) => (
-            <Col xs={24} sm={12} lg={8} key={check.id}>
+          {templates.map((template) => (
+            <Col xs={24} sm={12} lg={8} key={template.id}>
               <Card
                 className={styles.checkCard}
                 hoverable
-                onClick={() => handleCardClick(check)}
+                onClick={() => handleCardClick(template)}
                 style={{
-                  background: check.gradient,
+                  background: template.gradient,
                   border: 'none',
                   borderRadius: '16px',
                   overflow: 'hidden'
@@ -72,22 +93,23 @@ const AdminCreate = () => {
                         color: 'white'
                       }}
                     >
-                      {check.icon}
+                      {iconMap[template.icon]}
                     </div>
                   </div>
                   
                   <div className={styles.textContent}>
                     <Title level={4} className={styles.cardTitle}>
-                      {check.title}
+                      {template.name}
                     </Title>
+                    <Text className={styles.cardDescription} style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                      {template.description}
+                    </Text>
                   </div>
-
                 </div>
               </Card>
             </Col>
           ))}
         </Row>
-
       </Content>
     </Layout>
   );

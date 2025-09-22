@@ -1,0 +1,108 @@
+.container {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #333;
+}
+
+.successCard {
+  max-width: 500px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.subTitle {
+  text-align: left;
+  margin-top: 16px;
+}
+
+.formInfo {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #52c41a;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  min-width: 140px;
+  height: 44px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.tips {
+  margin-top: 24px;
+  text-align: left;
+  
+  .tipsList {
+    margin: 12px 0 0 0;
+    padding-left: 20px;
+    
+    li {
+      margin-bottom: 8px;
+      color: #666;
+      line-height: 1.5;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .actionButton {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .formInfo {
+    .infoItem {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+  }
+}

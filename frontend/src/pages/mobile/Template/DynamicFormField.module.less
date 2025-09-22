@@ -1,0 +1,102 @@
+.formItem {
+  margin-bottom: 24px;
+
+  .ant-form-item-label > label {
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+  }
+}
+
+.input {
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  height: 48px;
+  font-size: 16px;
+
+  &:focus {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  }
+
+  &::placeholder {
+    color: #bfbfbf;
+  }
+}
+
+.textArea {
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  font-size: 16px;
+  resize: vertical;
+
+  &:focus {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  }
+
+  &::placeholder {
+    color: #bfbfbf;
+  }
+}
+
+.datePicker {
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+  font-size: 16px;
+
+  .ant-picker-input {
+    height: 46px;
+  }
+
+  &:focus-within {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .input {
+    height: 44px;
+    font-size: 15px;
+  }
+
+  .textArea {
+    font-size: 15px;
+  }
+
+  .datePicker {
+    height: 44px;
+    font-size: 15px;
+
+    .ant-picker-input {
+      height: 42px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .formItem {
+    margin-bottom: 20px;
+  }
+
+  .input {
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .textArea {
+    font-size: 14px;
+  }
+
+  .datePicker {
+    height: 40px;
+    font-size: 14px;
+
+    .ant-picker-input {
+      height: 38px;
+    }
+  }
+}
