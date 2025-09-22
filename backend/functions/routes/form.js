@@ -20,6 +20,8 @@ router.use(authMiddleware);
  * 6. search form by text
  */
 
+// todo 不要在 controller 这里使用 code:200 404 500 这种，使用业务自定义 code 应该，这不是 http 状态嘛
+
 // 获取表单模板列表
 router.get("/templates", async (req, res) => {
   try {
@@ -113,12 +115,24 @@ router.get("/get/:id", async (req, res) => {
     const { id } = req.params;
     const form = await getFormById(id);
     if (!form) {
-      return res.status(404).json({ error: "not_found" });
+      return res.status(500).json({ 
+        code: 500,
+        message: 'Form not found',
+        data: null
+      });
     }
-    return res.json(form);
+    return res.json({
+      code: 200,
+      message: 'Success',
+      data: form
+    });
   } catch (e) {
     console.error('获取表单详情失败:', e);
-    return res.status(500).json({ error: e.message });
+    return res.status(500).json({ 
+      code: 500,
+      message: 'Internal Server Error',
+      error: e.message 
+    });
   }
 });
 

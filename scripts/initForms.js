@@ -55,10 +55,12 @@ const mockUsers = [
 ];
 
 // 初始化表单数据
+// template 需要对应 initTemplates.js 中的模板
 const forms = [
   {
     // PMR 维护服务检查表单 - 草稿状态
     type: 'pmr',
+    // template 需要对应 initTemplates.js 中的模板
     templateId: 'pmr',
     templateName: 'PMR Maintenance Service Check',
     metaData: {

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Form, Button, Card, Typography, message, Spin } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 import DynamicFormField from './DynamicFormField';
 import GuidanceContent from './GuidanceContent';
 import { saveFormData, submitForm } from '@/services/form-service';
@@ -33,8 +34,29 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
   // 初始化表单数据
   useEffect(() => {
     if (existingFormData) {
-      // 设置表单初始值
-      form.setFieldsValue(existingFormData);
+      // 设置表单初始值 - 使用metaData中的表单字段数据
+      const formValues = {
+        ...existingFormData.metaData,
+        inspectionItems: existingFormData.inspectionData
+      };
+
+      // 处理日期字段 - 将字符串转换为dayjs对象
+      if (formValues.date && typeof formValues.date === 'string') {
+        console.log('Original date string:', formValues.date);
+        // 尝试多种日期格式
+        let parsedDate = dayjs(formValues.date, 'DD/MM/YYYY');
+        if (!parsedDate.isValid()) {
+          parsedDate = dayjs(formValues.date, 'YYYY-MM-DD');
+        }
+        if (!parsedDate.isValid()) {
+          parsedDate = dayjs(formValues.date);
+        }
+        console.log('Parsed date:', parsedDate, 'isValid:', parsedDate.isValid());
+        formValues.date = parsedDate.isValid() ? parsedDate : null;
+      }
+
+      console.log('Setting form values:', formValues);
+      form.setFieldsValue(formValues);
     }
   }, [existingFormData, form]);
 
@@ -146,6 +168,7 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
       // Format date
       const formattedValues = {
         ...values,
+        id: currentFormId, // 添加当前表单ID
         date: values.date ? values.date.format('DD/MM/YYYY') : null,
         templateId: template.id,
         templateName: template.name
@@ -159,7 +182,7 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
       if (result.success) {
         // 显示成功消息
         message.success('表单提交成功！');
-        
+
         // 跳转到提交成功页面
         navigate(`/mobile/submit-success/${result.id}`, {
           state: {
