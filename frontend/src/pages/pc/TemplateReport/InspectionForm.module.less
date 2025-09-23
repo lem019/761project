@@ -154,6 +154,11 @@
   text-align: center;
   border-top: 1px solid #e8e8e8;
   background: #fafafa;
+  
+  /* 在PDF生成时隐藏下载按钮 */
+  @media print {
+    display: none !important;
+  }
 }
 
 .downloadBtn {
@@ -539,6 +544,26 @@
   .ant-form-item-extra,
   .downloadButtonSection {
     display: none !important;
+  }
+
+  // PDF优化：确保表格和表单在分页时的处理
+  .inspectionTable {
+    page-break-inside: avoid;
+  }
+
+  .inspectionRow {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  .formItem {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  // 确保表单标题在分页时保持连贯
+  .formTitle {
+    page-break-after: avoid;
   }
 
   // 确保输入框和文本区域的值在打印时可见

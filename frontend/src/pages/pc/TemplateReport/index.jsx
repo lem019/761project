@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { getFormData, getFormTemplateById } from '@/services/form-service';
 import InspectionForm from './InspectionForm';
 import styles from './index.module.less';
+import html2pdf from 'html2pdf.js';
 
 /**
  * Main Template Page Component
@@ -72,100 +73,122 @@ const TemplateReport = () => {
 
   const handleLoad = async () => {
     try {
-      message.loading('正在准备下载...', 1);
+      message.loading('正在生成PDF...', 2);
       
-      // 等待一小段时间确保页面完全渲染
+      // 等待页面完全渲染
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // 强制展开所有可能有滚动条的容器
-      const scrollableElements = document.querySelectorAll('[style*="overflow"], [style*="height"], [style*="max-height"]');
-      scrollableElements.forEach(element => {
-        element.style.overflow = 'visible';
-        element.style.height = 'auto';
-        element.style.maxHeight = 'none';
-        element.style.minHeight = 'auto';
+      // 获取要转换的元素
+      const element = document.querySelector(`.${styles.templateContainer}`);
+      if (!element) {
+        message.error('未找到要下载的内容');
+        return;
+      }
+
+      // 临时移除所有高度和滚动限制，确保显示完整内容
+      const originalStyles = new Map();
+      
+      // 保存并修改容器样式
+      const allElements = element.querySelectorAll('*');
+      allElements.forEach((el, index) => {
+        const computedStyle = window.getComputedStyle(el);
+        const originalStyle = {
+          height: el.style.height,
+          maxHeight: el.style.maxHeight,
+          minHeight: el.style.minHeight,
+          overflow: el.style.overflow,
+          overflowY: el.style.overflowY,
+        };
+        originalStyles.set(index, originalStyle);
+        
+        // 移除高度和滚动限制
+        if (computedStyle.overflow === 'hidden' || computedStyle.overflow === 'auto' || computedStyle.overflow === 'scroll') {
+          el.style.overflow = 'visible';
+        }
+        if (computedStyle.overflowY === 'hidden' || computedStyle.overflowY === 'auto' || computedStyle.overflowY === 'scroll') {
+          el.style.overflowY = 'visible';
+        }
+        if (computedStyle.height && computedStyle.height !== 'auto') {
+          el.style.height = 'auto';
+        }
+        if (computedStyle.maxHeight && computedStyle.maxHeight !== 'none') {
+          el.style.maxHeight = 'none';
+        }
       });
-      
-      // 特别处理 Ant Design 的容器
-      const antElements = document.querySelectorAll('.ant-card-body, .ant-form, .ant-table-container, .ant-table-content');
-      antElements.forEach(element => {
-        element.style.overflow = 'visible';
-        element.style.height = 'auto';
-        element.style.maxHeight = 'none';
-        element.style.minHeight = 'auto';
-      });
-      
-      // 准备打印样式 - 确保完整内容无滚动条
-      const printStyles = `
-        <style>
-          @media print {
-            * {
-              visibility: hidden;
-              overflow: visible !important;
-              height: auto !important;
-              max-height: none !important;
-            }
-            html, body {
-              margin: 0 !important;
-              padding: 0 !important;
-              height: auto !important;
-              overflow: visible !important;
-              background: white !important;
-            }
-            .${styles.templateContainer}, 
-            .${styles.templateContainer} * {
-              visibility: visible;
-              overflow: visible !important;
-              height: auto !important;
-              max-height: none !important;
-              min-height: auto !important;
-            }
-            .${styles.templateContainer} {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-              height: auto;
-              min-height: auto;
-              max-height: none;
-              overflow: visible;
-            }
-            .ant-card, .ant-card-body, .ant-form, .ant-table {
-              height: auto !important;
-              max-height: none !important;
-              overflow: visible !important;
-            }
-            @page {
-              margin: 0.5in;
-              size: A4;
-            }
-          }
-        </style>
-      `;
-      
-      // 添加打印样式到页面
-      const styleElement = document.createElement('style');
-      styleElement.innerHTML = printStyles;
-      document.head.appendChild(styleElement);
-      
-      // 触发打印对话框
-      window.print();
-      
-      // 清理样式和恢复原始状态
+
+      // 特别处理主容器
+      element.style.height = 'auto';
+      element.style.overflow = 'visible';
+      element.style.position = 'static';
+
+      // 生成文件名
+      const templateName = template?.name || 'Inspection';
+      const currentDate = new Date().toISOString().split('T')[0];
+      const formIdSuffix = id ? `_${id}` : '';
+      const filename = `${templateName}_${currentDate}${formIdSuffix}.pdf`;
+
+      // PDF生成选项
+      const options = {
+        margin: [15, 15, 15, 15], // 页边距 [top, left, bottom, right] mm
+        filename: filename,
+        image: { 
+          type: 'jpeg', 
+          quality: 0.95 
+        },
+        html2canvas: { 
+          scale: 2, // 提高清晰度
+          useCORS: true,
+          allowTaint: true,
+          letterRendering: true,
+          logging: false,
+          height: element.scrollHeight, // 使用完整高度
+          width: element.scrollWidth,   // 使用完整宽度
+          scrollX: 0,
+          scrollY: 0
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        },
+        pagebreak: { 
+          mode: ['avoid-all', 'css', 'legacy'],
+          before: '.page-break-before',
+          after: '.page-break-after'
+        }
+      };
+
+      // 生成PDF
+      await html2pdf()
+        .set(options)
+        .from(element)
+        .save();
+
+      // 恢复原始样式
       setTimeout(() => {
-        document.head.removeChild(styleElement);
+        allElements.forEach((el, index) => {
+          const originalStyle = originalStyles.get(index);
+          if (originalStyle) {
+            el.style.height = originalStyle.height;
+            el.style.maxHeight = originalStyle.maxHeight;
+            el.style.minHeight = originalStyle.minHeight;
+            el.style.overflow = originalStyle.overflow;
+            el.style.overflowY = originalStyle.overflowY;
+          }
+        });
         
-        // 恢复原始的样式（重新加载页面可能是最简单的方法，但会丢失用户数据）
-        // 这里我们只清理临时添加的样式，保持DOM状态
+        // 恢复主容器样式
+        element.style.height = '';
+        element.style.overflow = '';
+        element.style.position = '';
         
-        message.info('如需继续编辑表单，建议刷新页面恢复正常显示', 3);
+        message.success('PDF下载成功！');
       }, 1000);
       
-      message.success('下载准备完成！请在打印对话框中选择"保存为PDF"');
-      
     } catch (error) {
-      console.error('Download failed:', error);
-      message.error('下载失败，请重试');
+      console.error('PDF生成失败:', error);
+      message.error('PDF生成失败，请重试');
     }
   };
 
