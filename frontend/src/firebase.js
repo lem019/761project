@@ -1,8 +1,9 @@
 import { initializeApp } from "firebase/app";
+
 import { getAuth, GoogleAuthProvider, signInWithPopup, connectAuthEmulator } from "firebase/auth";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
-
+import { getStorage, connectStorageEmulator } from "firebase/storage";
 
 const app = initializeApp({
   apiKey: "AIzaSyDRARmNsfFszVO6zBKCJwVsG7U5BXuShQ0",
@@ -29,6 +30,14 @@ const functions = getFunctions(app);
 connectFunctionsEmulator(functions, "localhost", 5001);
 
 
+// Storage (for image/video uploads)
+const storage = getStorage(app);
+try {
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    connectStorageEmulator(storage, 'localhost', 9199);
+  }
+} catch (_) {}
+
 export const signInWithGoogle = () => signInWithPopup(auth, provider);
 
-export { auth, db, functions };
+export { auth, db, functions, storage };

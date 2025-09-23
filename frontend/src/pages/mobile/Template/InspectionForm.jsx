@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Card, Typography, message, Spin } from 'antd';
+import { Form, Button, Card, Typography, message, Spin, Checkbox  } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -8,6 +8,9 @@ import GuidanceContent from './GuidanceContent';
 import { saveFormData, submitForm } from '@/services/form-service';
 import styles from './InspectionForm.module.less';
 import { FORM_STATUS } from '@/constants/formStatus';
+
+
+import UploadMedia from '@/components/uploadMedia/index.jsx';
 
 const { Title } = Typography;
 
@@ -254,7 +257,8 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
           ))}
 
           {/* Inspection items - required */}
-          {template.inspectionItems && template.inspectionItems.length > 0 && (
+
+          {/* {template.inspectionItems && template.inspectionItems.length > 0 && (
             <Form.Item
               label="Inspection Items *"
               name="inspectionItems"
@@ -263,6 +267,11 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
               ]}
               className={styles.formItem}
             >
+              <div className={styles.inspectionItems}> */}
+
+          {template.inspectionItems && template.inspectionItems.length > 0 && (
+            <div className={styles.formItem}>
+              <div className={styles.sectionLabel}>Inspection Items *</div>
               <div className={styles.inspectionItems}>
                 {template.inspectionItems.map((item) => (
                   <div key={item.key} className={styles.inspectionItemWrapper}>
@@ -276,7 +285,7 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
                         className={styles.checkboxItem}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <input type="checkbox" className={styles.checkbox} disabled={readOnly}/>
+                        <Checkbox className={styles.checkbox} disabled={readOnly}/>
                       </Form.Item>
                       <div className={styles.itemContent}>
                         <span className={styles.itemText}>{item.name}</span>
@@ -284,15 +293,35 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
                       </div>
                     </div>
                     <div className={`${styles.guidanceWrapper} ${expandedItems[item.key] ? styles.expanded : styles.collapsed}`}>
+                      
                       <GuidanceContent
                         itemType={item.key}
                         guidanceContent={template.guidanceContent}
                       />
                     </div>
+                    {/* Attachment uploader for each inspection item */}
+                    <Form.Item
+                      label="Attachment"
+                      name={['inspectionItems', item.key, 'attachment']}
+                      valuePropName="value"
+                      className={styles.attachmentFormItem}
+                    >
+                      <UploadMedia
+                        
+
+                        accept="image/*,video/*"  // ✅ 图片 + 视频
+                        listType="picture"        // 走标准列表样式，支持缩略图
+                        maxSizeMB={10}            // ✅ 单个 ≤ 10MB
+                        maxCount={50}             // ✅ 多文件
+
+                        formId={currentFormId || 'temp'}
+                      />
+                    </Form.Item>
                   </div>
                 ))}
               </div>
-            </Form.Item>
+            
+            </div>
           )}
 
           {/* Save status and buttons */}
