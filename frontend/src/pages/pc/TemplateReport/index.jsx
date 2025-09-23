@@ -116,10 +116,25 @@ const TemplateReport = () => {
         }
       });
 
-      // 特别处理主容器
-      element.style.height = 'auto';
-      element.style.overflow = 'visible';
-      element.style.position = 'static';
+        // 特别处理主容器
+        element.style.height = 'auto';
+        element.style.overflow = 'visible';
+        element.style.position = 'static';
+        
+        // 修复标题字体重叠问题
+        const titleElement = element.querySelector('.formTitle, h1, h2, h3');
+        if (titleElement) {
+          titleElement.style.fontFamily = 'Arial, sans-serif';
+          titleElement.style.letterSpacing = '1px';
+          titleElement.style.wordSpacing = '2px';
+          titleElement.style.fontWeight = '600';
+          titleElement.style.textRendering = 'optimizeLegibility';
+          titleElement.style.webkitFontSmoothing = 'antialiased';
+          titleElement.style.whiteSpace = 'nowrap';
+          titleElement.style.overflow = 'visible';
+          titleElement.style.lineHeight = '1.2';
+          titleElement.style.textShadow = 'none';
+        }
 
       // 生成文件名
       const templateName = template?.name || 'Inspection';
@@ -144,7 +159,38 @@ const TemplateReport = () => {
           height: element.scrollHeight, // 使用完整高度
           width: element.scrollWidth,   // 使用完整宽度
           scrollX: 0,
-          scrollY: 0
+          scrollY: 0,
+          backgroundColor: '#ffffff',
+          foreignObjectRendering: false,
+          ignoreElements: function(element) {
+            return false;
+          },
+          onclone: function(clonedDoc) {
+            // 在克隆文档中进一步优化标题渲染
+            const clonedTitle = clonedDoc.querySelector('.formTitle, h1, h2, h3');
+            if (clonedTitle) {
+              clonedTitle.style.fontFamily = 'Arial, sans-serif';
+              clonedTitle.style.letterSpacing = '1.5px';
+              clonedTitle.style.wordSpacing = '2px';
+              clonedTitle.style.fontWeight = '600';
+              clonedTitle.style.textRendering = 'optimizeLegibility';
+              clonedTitle.style.webkitFontSmoothing = 'antialiased';
+              clonedTitle.style.whiteSpace = 'nowrap';
+              clonedTitle.style.lineHeight = '1.3';
+              clonedTitle.style.display = 'block';
+              clonedTitle.style.textShadow = 'none';
+              clonedTitle.style.fontSize = '24px';
+            }
+            
+            // 优化所有文本元素
+            const allTextElements = clonedDoc.querySelectorAll('*');
+            allTextElements.forEach(el => {
+              if (el.nodeType === Node.ELEMENT_NODE) {
+                el.style.textRendering = 'optimizeLegibility';
+                el.style.webkitFontSmoothing = 'antialiased';
+              }
+            });
+          }
         },
         jsPDF: { 
           unit: 'mm', 
@@ -182,6 +228,21 @@ const TemplateReport = () => {
         element.style.height = '';
         element.style.overflow = '';
         element.style.position = '';
+        
+        // 恢复标题样式
+        const titleElement = element.querySelector('.formTitle, h1, h2, h3');
+        if (titleElement) {
+          titleElement.style.fontFamily = '';
+          titleElement.style.letterSpacing = '';
+          titleElement.style.wordSpacing = '';
+          titleElement.style.fontWeight = '';
+          titleElement.style.textRendering = '';
+          titleElement.style.webkitFontSmoothing = '';
+          titleElement.style.whiteSpace = '';
+          titleElement.style.overflow = '';
+          titleElement.style.lineHeight = '';
+          titleElement.style.textShadow = '';
+        }
         
         message.success('PDF下载成功！');
       }, 1000);

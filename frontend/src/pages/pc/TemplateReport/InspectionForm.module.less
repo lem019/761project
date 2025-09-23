@@ -33,6 +33,9 @@
   margin-bottom: 32px !important;
   color: #333;
   font-weight: 600;
+  letter-spacing: 0.5px;
+  word-spacing: 1px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .templateDescription {
@@ -561,9 +564,21 @@
     page-break-after: auto;
   }
 
-  // 确保表单标题在分页时保持连贯
+  // 确保表单标题在分页时保持连贯并优化字体渲染
   .formTitle {
     page-break-after: avoid;
+    font-family: Arial, sans-serif !important;
+    letter-spacing: 1px !important;
+    word-spacing: 2px !important;
+    font-weight: 600 !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    font-kerning: auto !important;
+    text-shadow: none !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    line-height: 1.2 !important;
   }
 
   // 确保输入框和文本区域的值在打印时可见
