@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Spin, message } from 'antd';
+import { Card, Spin, message } from 'antd';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { DownloadOutlined } from '@ant-design/icons';
 import { getFormData, getFormTemplateById } from '@/services/form-service';
 import InspectionForm from './InspectionForm';
 import styles from './index.module.less';
@@ -18,12 +17,10 @@ const TemplateReport = () => {
   const [template, setTemplate] = useState(null);
   const [existingFormData, setExistingFormData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!templateId) {
-        setError('Template ID is required');
         setLoading(false);
         return;
       }
@@ -37,9 +34,6 @@ const TemplateReport = () => {
         
         if (templateResponse) {
           setTemplate(templateResponse);
-        } else {
-          setError(templateResponse?.message || 'Template not found');
-          return;
         }
 
         // 如果有id参数，获取现有的表单数据
@@ -55,7 +49,6 @@ const TemplateReport = () => {
         }
       } catch (err) {
         console.error('Failed to fetch template:', err);
-        setError('Failed to load template');
       } finally {
         setLoading(false);
       }
@@ -66,28 +59,11 @@ const TemplateReport = () => {
 
   if (loading) {
     return (
-      <div className={styles.container}>
+      <div className={styles.templateContainer}>
         <Card className={styles.formCard}>
           <div style={{ textAlign: 'center', padding: '50px' }}>
             <Spin size="large" />
             <div style={{ marginTop: '20px' }}>Loading template...</div>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.container}>
-        <Card className={styles.formCard}>
-          <div style={{ textAlign: 'center', padding: '10px' }}>
-            <div style={{ color: '#ff4d4f', fontSize: '16px', marginBottom: '20px' }}>
-              {error}
-            </div>
-            <Button type="primary" onClick={() => window.history.back()}>
-              Go Back
-            </Button>
           </div>
         </Card>
       </div>
@@ -144,9 +120,6 @@ const TemplateReport = () => {
               max-height: none !important;
               min-height: auto !important;
             }
-            .${styles.loadButtonContainer} {
-              display: none !important;
-            }
             .${styles.templateContainer} {
               position: absolute;
               left: 0;
@@ -198,18 +171,12 @@ const TemplateReport = () => {
 
   return (
     <div className={styles.templateContainer}>
-      <InspectionForm template={template} existingFormData={existingFormData} formId={id} />
-      <div className={styles.loadButtonContainer}>
-        <Button
-          type="primary"
-          size="large"
-          className={styles.loadBtn}
-          onClick={handleLoad}
-          icon={<DownloadOutlined />}
-        >
-          Download PDF
-        </Button>
-      </div>
+      <InspectionForm 
+        template={template} 
+        existingFormData={existingFormData} 
+        formId={id} 
+        onDownload={handleLoad}
+      />
     </div>
   );
 };

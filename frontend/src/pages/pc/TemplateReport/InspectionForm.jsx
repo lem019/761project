@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Form, Button, Card, Typography, message, Spin } from 'antd';
-import { SaveOutlined } from '@ant-design/icons';
+import { SaveOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import DynamicFormField from './DynamicFormField';
@@ -15,7 +15,7 @@ const { Title } = Typography;
  * Collects inspector info, inspection date, location details, etc.
  * Supports auto-save and editing existing forms
  */
-const InspectionForm = ({ template, existingFormData, formId }) => {
+const InspectionForm = ({ template, existingFormData, formId, onDownload }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState({});
@@ -47,7 +47,7 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
           parsedDate = dayjs(formValues.date);
         }
         console.log('Parsed date:', parsedDate, 'isValid:', parsedDate.isValid());
-        formValues.date = parsedDate.isValid() ? parsedDate : null;
+        formValues.date = parsedDate.isValid() ? parsedDate : formValues.date;
       }
 
       console.log('Setting form values:', formValues);
@@ -89,7 +89,7 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
           size="large"
         >
           {/* Render dynamic form fields */}
-          {template.formFields && template.formFields.map((field, index) => (
+          {template?.formFields?.map((field, index) => (
             <DynamicFormField
               key={field.name || index}
               field={field}
@@ -128,6 +128,20 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
           )}
           </Form.Item>
         </Form>
+        {/* 下载按钮 */}
+        {onDownload && (
+          <div className={styles.downloadButtonSection}>
+            <Button
+              type="primary"
+              size="large"
+              className={styles.downloadBtn}
+              onClick={onDownload}
+              icon={<DownloadOutlined />}
+            >
+              Download PDF
+            </Button>
+          </div>
+        )}
       </Card>
     </div>
   );
