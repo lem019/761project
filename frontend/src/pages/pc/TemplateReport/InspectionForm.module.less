@@ -488,18 +488,39 @@
     width: 100% !important;
     border-collapse: collapse !important;
     margin-top: 0px !important;
+    margin-bottom: 200px !important;
+    padding-bottom: 80px !important;
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
     overflow: visible !important;
-    page-break-inside: auto;
+    page-break-inside: auto !important;
+    page-break-before: avoid !important;
+    page-break-after: auto !important;
+    table-layout: auto !important;
+    
+    // 确保表格内所有元素都可见
+    * {
+      overflow: visible !important;
+      max-height: none !important;
+      height: auto !important;
+    }
   }
 
   .inspectionRow {
     display: table-row !important;
     border-bottom: 1px solid #000 !important;
-    page-break-inside: avoid;
-    page-break-after: auto;
+    height: auto !important;
+    min-height: 40px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
+    
+    &:last-child {
+      margin-bottom: 100px !important;
+      padding-bottom: 50px !important;
+    }
   }
 
   .inspectionLabel {
@@ -549,15 +570,7 @@
     display: none !important;
   }
 
-  // PDF优化：确保表格和表单在分页时的处理
-  .inspectionTable {
-    page-break-inside: avoid;
-  }
-
-  .inspectionRow {
-    page-break-inside: avoid;
-    page-break-after: auto;
-  }
+  // PDF优化：确保表格和表单在分页时的处理已在上面.inspectionTable和.inspectionRow中定义
 
   .formItem {
     page-break-inside: avoid;

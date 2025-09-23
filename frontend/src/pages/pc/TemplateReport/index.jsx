@@ -135,6 +135,48 @@ const TemplateReport = () => {
           titleElement.style.lineHeight = '1.2';
           titleElement.style.textShadow = 'none';
         }
+        
+        // 特别处理inspection items表格，确保完整显示
+        const inspectionTable = element.querySelector('.inspectionTable');
+        if (inspectionTable) {
+          inspectionTable.style.height = 'auto';
+          inspectionTable.style.maxHeight = 'none';
+          inspectionTable.style.overflow = 'visible';
+          inspectionTable.style.display = 'table';
+          inspectionTable.style.width = '100%';
+          inspectionTable.style.borderCollapse = 'collapse';
+          inspectionTable.style.pageBreakInside = 'auto';
+          inspectionTable.style.marginBottom = '100px'; // 大幅增加底部边距确保完整显示
+          inspectionTable.style.paddingBottom = '50px'; // 额外内边距
+        }
+        
+        // 处理所有表格行，确保它们都能显示
+        const inspectionRows = element.querySelectorAll('.inspectionRow');
+        inspectionRows.forEach((row, index) => {
+          row.style.height = 'auto';
+          row.style.maxHeight = 'none';
+          row.style.overflow = 'visible';
+          row.style.display = 'table-row';
+          row.style.pageBreakInside = 'avoid';
+          row.style.pageBreakAfter = 'auto';
+          row.style.border = '1px solid #000';
+          row.style.minHeight = '40px'; // 确保行有足够的最小高度
+        });
+        
+        // 特别处理最后一行，确保不被截断
+        if (inspectionRows.length > 0) {
+          const lastRow = inspectionRows[inspectionRows.length - 1];
+          lastRow.style.marginBottom = '50px';
+          lastRow.style.paddingBottom = '20px';
+        }
+        
+        // 确保表格内的所有内容都可见，包括视频按钮等
+        const allContentInTable = element.querySelectorAll('.inspectionTable *');
+        allContentInTable.forEach(el => {
+          el.style.overflow = 'visible';
+          el.style.maxHeight = 'none';
+          el.style.height = 'auto';
+        });
 
       // 生成文件名
       const templateName = template?.name || 'Inspection';
@@ -155,9 +197,9 @@ const TemplateReport = () => {
           useCORS: true,
           allowTaint: true,
           letterRendering: true,
-          logging: false,
-          height: element.scrollHeight, // 使用完整高度
-          width: element.scrollWidth,   // 使用完整宽度
+          logging: true, // 重新启用日志查看问题
+          height: element.scrollHeight + 300, // 大幅增加额外高度缓冲
+          width: element.scrollWidth + 100,    // 增加宽度缓冲
           scrollX: 0,
           scrollY: 0,
           backgroundColor: '#ffffff',
@@ -181,6 +223,53 @@ const TemplateReport = () => {
               clonedTitle.style.textShadow = 'none';
               clonedTitle.style.fontSize = '24px';
             }
+            
+            // 特别处理克隆文档中的inspection table
+            const clonedInspectionTable = clonedDoc.querySelector('.inspectionTable');
+            if (clonedInspectionTable) {
+              clonedInspectionTable.style.height = 'auto';
+              clonedInspectionTable.style.maxHeight = 'none';
+              clonedInspectionTable.style.overflow = 'visible';
+              clonedInspectionTable.style.display = 'table';
+              clonedInspectionTable.style.width = '100%';
+              clonedInspectionTable.style.borderCollapse = 'collapse';
+              clonedInspectionTable.style.pageBreakInside = 'auto';
+            }
+            
+            // 处理克隆文档中的所有表格行
+            const clonedInspectionRows = clonedDoc.querySelectorAll('.inspectionRow');
+            clonedInspectionRows.forEach((row, index) => {
+              row.style.height = 'auto';
+              row.style.maxHeight = 'none';
+              row.style.overflow = 'visible';
+              row.style.display = 'table-row';
+              row.style.pageBreakInside = 'avoid';
+              row.style.pageBreakAfter = 'auto';
+              row.style.border = '1px solid #000';
+              row.style.minHeight = '40px';
+            });
+            
+            // 特别处理克隆文档中的最后一行
+            if (clonedInspectionRows.length > 0) {
+              const clonedLastRow = clonedInspectionRows[clonedInspectionRows.length - 1];
+              clonedLastRow.style.marginBottom = '50px';
+              clonedLastRow.style.paddingBottom = '20px';
+            }
+            
+            // 确保克隆文档的表格有足够的底部空间
+            if (clonedInspectionTable) {
+              clonedInspectionTable.style.marginBottom = '200px';
+              clonedInspectionTable.style.paddingBottom = '80px';
+            }
+            
+            // 确保克隆文档中表格内的所有内容都可见
+            const allClonedContentInTable = clonedDoc.querySelectorAll('.inspectionTable *');
+            allClonedContentInTable.forEach(el => {
+              el.style.overflow = 'visible';
+              el.style.maxHeight = 'none';
+              el.style.height = 'auto';
+              el.style.display = el.style.display || 'block';
+            });
             
             // 优化所有文本元素
             const allTextElements = clonedDoc.querySelectorAll('*');
@@ -243,6 +332,43 @@ const TemplateReport = () => {
           titleElement.style.lineHeight = '';
           titleElement.style.textShadow = '';
         }
+        
+        // 恢复表格样式
+        const inspectionTable = element.querySelector('.inspectionTable');
+        if (inspectionTable) {
+          inspectionTable.style.height = '';
+          inspectionTable.style.maxHeight = '';
+          inspectionTable.style.overflow = '';
+          inspectionTable.style.display = '';
+          inspectionTable.style.width = '';
+          inspectionTable.style.borderCollapse = '';
+          inspectionTable.style.pageBreakInside = '';
+          inspectionTable.style.marginBottom = '';
+          inspectionTable.style.paddingBottom = '';
+        }
+        
+        // 恢复表格内所有元素的样式
+        const allContentInTable = element.querySelectorAll('.inspectionTable *');
+        allContentInTable.forEach(el => {
+          el.style.overflow = '';
+          el.style.maxHeight = '';
+          el.style.height = '';
+        });
+        
+        // 恢复表格行样式
+        const inspectionRows = element.querySelectorAll('.inspectionRow');
+        inspectionRows.forEach((row) => {
+          row.style.height = '';
+          row.style.maxHeight = '';
+          row.style.overflow = '';
+          row.style.display = '';
+          row.style.pageBreakInside = '';
+          row.style.pageBreakAfter = '';
+          row.style.border = '';
+          row.style.minHeight = '';
+          row.style.marginBottom = '';
+          row.style.paddingBottom = '';
+        });
         
         message.success('PDF下载成功！');
       }, 1000);
