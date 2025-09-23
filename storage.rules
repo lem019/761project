@@ -1,20 +1,53 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // 用户上传的图片，需要认证
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // 允许的文件：图片或视频；并兼容某些环境 contentType 为空的情况
+    function isImageOrVideo() {
+      return request.resource.contentType != null
+        && (request.resource.contentType.matches('image/.*')
+         || request.resource.contentType.matches('video/.*'));
+    }
+
+    // 基础校验：≤ 10MB 且为图片/视频。size 也可能为空，做保护。
+    function fileOk() {
+      return request.resource.size != null
+        && request.resource.size <= 10 * 1024 * 1024
+        && isImageOrVideo();
+    }
+
+    // —— 用户私有区：严格按 uid 隔离 ——
     match /users/{userId}/images/{allPaths=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if isOwner(userId) && fileOk();
+      allow read, delete:  if isOwner(userId);
     }
-    
-    // 表单相关的图片，需要认证
+
+    // —— 表单图片区：基础版（所有登录用户可读，任何登录用户可上传图片/视频≤10MB） ——
+    // 如需更细粒度，请用下面「进阶：联查 Firestore」替换本段
     match /forms/{formId}/images/{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow create, update: if isSignedIn() && fileOk();
+      allow read:  if isSignedIn();
+      allow delete: if isSignedIn();
     }
-    
-    // 公共资源（如头像、logo等）
+
+    // —— 临时上传区：带 uid 的路径强隔离（你项目里有 forms/temp/images/{uid}/... 的用法） ——
+    match /forms/temp/images/{uid}/{allPaths=**} {
+      allow create, update: if isOwner(uid) && fileOk();
+      allow read, delete:  if isOwner(uid);
+    }
+
+    // —— 公共资源：仅允许登录用户写；读开放 ——
     match /public/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isSignedIn() && fileOk();
     }
   }
 }

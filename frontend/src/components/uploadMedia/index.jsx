@@ -74,8 +74,13 @@ export default function UploadMedia({
 
       // 主文件上传：forms/<formId>/images/<fileName>
       const fileRef = ref(storage, `forms/${theFormId}/images/${safeName}`);
-      const task = uploadBytesResumable(fileRef, file);
-
+      
+      // 传入明确的 contentType，避免浏览器/环境不给 MIME 导致规则中 .matches() 报 null 错
+      const metadata = {
+        contentType: file.type || 'application/octet-stream',
+        cacheControl: 'public,max-age=3600'
+      };
+      const task = uploadBytesResumable(fileRef, file, metadata);
       task.on('state_changed', (snap) => {
         const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
         onProgress?.({ percent: pct });
