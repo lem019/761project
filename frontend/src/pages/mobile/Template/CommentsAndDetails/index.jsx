@@ -29,7 +29,7 @@ const CommentsAndDetails = ({ item }) => {
                 label={typeof dLabel === 'string' ? dLabel : undefined}
                 className={styles.formItem}
               >
-                <InputNumber style={{ width: '100%' }} />
+                <InputNumber min={1} max={10} defaultValue={1} style={{ width: '100%' }} />
               </Form.Item>
             );
           case 'input':
@@ -51,7 +51,7 @@ const CommentsAndDetails = ({ item }) => {
             }
             return (
               <Form.Item
-                key={idx}
+                key={detail.key}
                 name={namePath}
                 label={typeof dLabel === 'string' ? dLabel : undefined}
                 className={styles.formItem}
@@ -63,7 +63,7 @@ const CommentsAndDetails = ({ item }) => {
             if (Array.isArray(dLabel)) {
               return (
                 <Form.Item
-                  key={idx}
+                  key={detail.key}
                   name={namePath}
                   label={undefined}
                   className={styles.formItem}
@@ -75,7 +75,7 @@ const CommentsAndDetails = ({ item }) => {
             // dLabel 为字符串时，显示单个 Input 框
             return (
               <Form.Item
-                key={idx}
+                key={detail.key}
                 name={namePath}
                 label={typeof dLabel === 'string' ? dLabel : undefined}
                 className={styles.formItem}
@@ -86,7 +86,7 @@ const CommentsAndDetails = ({ item }) => {
           case 'checkbox':
             return (
               <Form.Item
-                key={idx}
+                key={detail.key}
                 name={namePath}
                 label={typeof dLabel === 'string' ? dLabel : undefined}
                 className={styles.formItem}
