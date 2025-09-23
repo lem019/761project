@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Spin, message } from 'antd';
+import { Card, Spin, message, Button } from 'antd';
+import { DownloadOutlined } from '@ant-design/icons';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { getFormData, getFormTemplateById } from '@/services/form-service';
 import InspectionForm from './InspectionForm';
@@ -385,8 +386,20 @@ const TemplateReport = () => {
         template={template} 
         existingFormData={existingFormData} 
         formId={id} 
-        onDownload={handleLoad}
       />
+      
+      {/* Download Button Section - Moved to index main page */}
+      <div className={styles.downloadButtonSection}>
+        <Button
+          type="primary"
+          size="large"
+          className={styles.downloadBtn}
+          onClick={handleLoad}
+          icon={<DownloadOutlined />}
+        >
+          Download PDF
+        </Button>
+      </div>
     </div>
   );
 };

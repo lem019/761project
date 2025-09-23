@@ -1,12 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Card, Typography, message, Spin } from 'antd';
-import { SaveOutlined, DownloadOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Form, Card, Typography, Spin } from 'antd'
 import dayjs from 'dayjs';
 import DynamicFormField from './DynamicFormField';
 import GuidanceContent from './GuidanceContent';
 import styles from './InspectionForm.module.less';
-import { FORM_STATUS } from '@/constants/formStatus';
 
 const { Title } = Typography;
 
@@ -15,16 +12,8 @@ const { Title } = Typography;
  * Collects inspector info, inspection date, location details, etc.
  * Supports auto-save and editing existing forms
  */
-const InspectionForm = ({ template, existingFormData, formId, onDownload }) => {
+const InspectionForm = ({ template, existingFormData, formId }) => {
   const [form] = Form.useForm();
-  const navigate = useNavigate();
-  const [expandedItems, setExpandedItems] = useState({});
-  const [currentFormId, setCurrentFormId] = useState(formId);
-
-  // 当formId prop变化时，更新本地状态
-  useEffect(() => {
-    setCurrentFormId(formId);
-  }, [formId]);
 
   // 初始化表单数据
   useEffect(() => {
@@ -128,20 +117,6 @@ const InspectionForm = ({ template, existingFormData, formId, onDownload }) => {
           )}
           </Form.Item>
         </Form>
-        {/* 下载按钮 */}
-        {onDownload && (
-          <div className={styles.downloadButtonSection}>
-            <Button
-              type="primary"
-              size="large"
-              className={styles.downloadBtn}
-              onClick={onDownload}
-              icon={<DownloadOutlined />}
-            >
-              Download PDF
-            </Button>
-          </div>
-        )}
       </Card>
     </div>
   );

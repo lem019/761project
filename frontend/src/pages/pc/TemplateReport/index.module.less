@@ -20,6 +20,48 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  padding-bottom: 80px; /* 为底部下载按钮留出空间 */
+  box-sizing: border-box;
+}
+
+// Download button styles for index page
+.downloadButtonSection {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 24px;
+  text-align: center;
+  background: #ffffff;
+  border-top: 1px solid #e8e8e8;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  
+  /* 在PDF生成时隐藏下载按钮 */
+  @media print {
+    display: none !important;
+  }
+}
+
+.downloadBtn {
+  min-width: 160px;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: #1890ff;
+  border: none;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #40a9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 
