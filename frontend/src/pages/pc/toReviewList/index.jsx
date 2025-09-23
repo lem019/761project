@@ -14,8 +14,8 @@ import {
   Spin,
   message
 } from 'antd';
-import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
-import { getFormList } from '@/services/form-service';
+import { SearchOutlined, ReloadOutlined, EyeOutlined } from '@ant-design/icons';
+import { getFormList, getFormTemplates } from '@/services/form-service';
 import styles from './index.module.less';
 
 const { Search } = Input;
@@ -31,8 +31,9 @@ const ToReviewList = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
+  const [formTemplates, setFormTemplates] = useState([]);
 
-  // 获取待审核表单列表数据
+  // Get pending review form list data
   const fetchToReviewList = async () => {
     try {
       setLoading(true);
@@ -40,7 +41,9 @@ const ToReviewList = () => {
         status: 'pending',
         page: currentPage,
         pageSize,
-        viewMode: 'reviewer'
+        viewMode: 'reviewer',
+        inspector: searchInspectors,
+        formName: searchFormName
       });
 
       if (response) {
@@ -48,35 +51,57 @@ const ToReviewList = () => {
         setFilteredData(items.map(item => ({
           id: item.id,
           formName: item.templateName || 'Unknown Form',
-          inspectors: item.creatorName || 'Unknown Inspector', // 这里需要从用户信息获取
+          inspectors: item.creatorName || 'Unknown Inspector', // Need to get from user info
           createTime: item.createdAt || '',
           submitTime: item.submittedAt || item.createdAt || ''
         })));
         setTotal(response.pagination?.total || 0);
       }
     } catch (error) {
-      console.error('获取待审核表单列表失败:', error);
-      message.error('获取待审核表单列表失败');
+      message.error('Failed to get pending review form list');
     } finally {
       setLoading(false);
     }
   };
 
-  // 初始加载和分页变化时重新获取数据
+  // Get form templates list
+  const fetchFormTemplates = async () => {
+    try {
+      const templates = await getFormTemplates();
+      setFormTemplates(templates || []);
+    } catch (error) {
+      message.error('Failed to get form templates list');
+    }
+  };
+
+  // Initial load and re-fetch data when pagination changes
   useEffect(() => {
     fetchToReviewList();
   }, [currentPage, pageSize]);
 
-  // 分页数据
+  // Get form templates when page loads
+  useEffect(() => {
+    fetchFormTemplates();
+  }, []);
+
+  // Pagination data
   const paginatedData = filteredData;
 
   const handleSearch = () => {
-    // 搜索逻辑已在 useEffect 中处理
+    // Reset to first page when searching
+    setCurrentPage(1);
+    // Trigger data fetch with current search parameters
+    fetchToReviewList();
   };
 
   const handleReset = () => {
     setSearchInspectors('');
-    setSearchFormName('');
+    setSearchFormName(undefined);
+    setCurrentPage(1);
+    // Trigger search after reset
+    setTimeout(() => {
+      fetchToReviewList();
+    }, 0);
   };
 
   const handlePageChange = (page, size) => {
@@ -86,8 +111,8 @@ const ToReviewList = () => {
 
   const handleReview = (record) => {
     console.log('Review record:', record);
-    // 跳转到审核页面，传递记录ID作为参数
-    navigate(`/pc/review-form?id=${record.id}&formName=${encodeURIComponent(record.formName)}`);
+    // Navigate to review page, pass record ID as parameter
+    navigate(`/pc/review-form?id=${record.id}`);
   };
 
   const columns = [
@@ -95,9 +120,8 @@ const ToReviewList = () => {
       title: 'Form Name',
       dataIndex: 'formName',
       key: 'formName',
-      sorter: (a, b) => a.formName.localeCompare(b.formName),
       render: (text) => (
-        <Text style={{ color: '#1890ff', cursor: 'pointer' }}>
+        <Text>
           {text}
         </Text>
       ),
@@ -106,7 +130,6 @@ const ToReviewList = () => {
       title: 'Inspectors',
       dataIndex: 'inspectors',
       key: 'inspectors',
-      sorter: (a, b) => a.inspectors.localeCompare(b.inspectors),
       render: (text, record) => (
         <Text
           style={{
@@ -137,9 +160,9 @@ const ToReviewList = () => {
       key: 'action',
       render: (_, record) => (
         <Button
-          type="link"
+          type="primary"
           onClick={() => handleReview(record)}
-          style={{ color: '#1890ff' }}
+          icon={<EyeOutlined />}
         >
           Review
         </Button>
@@ -150,14 +173,14 @@ const ToReviewList = () => {
   return (
     <div className={styles.container}>
       <Card className={styles.contentCard}>
-        {/* 搜索区域 */}
+        {/* Search area */}
         <div className={styles.searchSection}>
           <Row gutter={[16, 16]} align="middle">
             <Col xs={24} sm={12} md={8}>
               <div className={styles.searchItem}>
                 <Text className={styles.searchLabel}>Inspectors:</Text>
                 <Input
-                  placeholder="example"
+                  placeholder="please enter inspector name"
                   value={searchInspectors}
                   onChange={(e) => setSearchInspectors(e.target.value)}
                   className={styles.searchInput}
@@ -167,12 +190,19 @@ const ToReviewList = () => {
             <Col xs={24} sm={12} md={8}>
               <div className={styles.searchItem}>
                 <Text className={styles.searchLabel}>Form Name:</Text>
-                <Input
-                  placeholder="Please enter form name"
+                <Select
+                  placeholder="Please select form name"
                   value={searchFormName}
-                  onChange={(e) => setSearchFormName(e.target.value)}
+                  onChange={(value) => setSearchFormName(value)}
                   className={styles.searchInput}
-                />
+                  allowClear
+                >
+                  {formTemplates.map(template => (
+                    <Option key={template.id} value={template.name}>
+                      {template.name}
+                    </Option>
+                  ))}
+                </Select>
               </div>
             </Col>
             <Col xs={24} sm={24} md={8}>
@@ -192,7 +222,7 @@ const ToReviewList = () => {
           </Row>
         </div>
 
-        {/* 表格区域 */}
+        {/* Table area */}
         <div className={styles.tableSection}>
           <Table
             columns={columns}
@@ -205,7 +235,7 @@ const ToReviewList = () => {
           />
         </div>
 
-        {/* 分页区域 */}
+        {/* Pagination area */}
         <div className={styles.paginationSection}>
           <Pagination
             current={currentPage}

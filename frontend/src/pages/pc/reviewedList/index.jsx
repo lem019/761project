@@ -12,10 +12,11 @@ import {
   Row,
   Col,
   Spin,
-  message
+  message,
+  Flex
 } from 'antd';
-import { SearchOutlined, ReloadOutlined, DownloadOutlined } from '@ant-design/icons';
-import { getFormList } from '@/services/form-service';
+import { SearchOutlined, ReloadOutlined, DownloadOutlined, EyeOutlined } from '@ant-design/icons';
+import { getFormList, getFormTemplates } from '@/services/form-service';
 import styles from './index.module.less';
 
 const { Search } = Input;
@@ -31,6 +32,7 @@ const ReviewedList = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
+  const [formTemplates, setFormTemplates] = useState([]);
 
   // 获取已审核表单列表数据
   const fetchReviewedList = async () => {
@@ -40,7 +42,9 @@ const ReviewedList = () => {
         status: 'approved',
         page: currentPage,
         pageSize,
-        viewMode: 'reviewer'
+        viewMode: 'reviewer',
+        inspector: searchInspectors,
+        formName: searchFormName
       });
 
       if (response) {
@@ -62,21 +66,45 @@ const ReviewedList = () => {
     }
   };
 
+  // 获取表单模板列表
+  const fetchFormTemplates = async () => {
+    try {
+      const templates = await getFormTemplates();
+      setFormTemplates(templates || []);
+    } catch (error) {
+      console.error('获取表单模板列表失败:', error);
+      message.error('获取表单模板列表失败');
+    }
+  };
+
   // 初始加载和分页变化时重新获取数据
   useEffect(() => {
     fetchReviewedList();
   }, [currentPage, pageSize]);
 
+  // 页面加载时获取表单模板
+  useEffect(() => {
+    fetchFormTemplates();
+  }, []);
+
   // 分页数据
   const paginatedData = filteredData;
 
   const handleSearch = () => {
-    // 搜索逻辑已在 useEffect 中处理
+    // Reset to first page when searching
+    setCurrentPage(1);
+    // Trigger data fetch with current search parameters
+    fetchReviewedList();
   };
 
   const handleReset = () => {
     setSearchInspectors('');
-    setSearchFormName('');
+    setSearchFormName(undefined);
+    setCurrentPage(1);
+    // Trigger search after reset
+    setTimeout(() => {
+      fetchReviewedList();
+    }, 0);
   };
 
   const handlePageChange = (page, size) => {
@@ -95,9 +123,8 @@ const ReviewedList = () => {
       title: 'Form Name',
       dataIndex: 'formName',
       key: 'formName',
-      sorter: (a, b) => a.formName.localeCompare(b.formName),
       render: (text) => (
-        <Text style={{ color: '#1890ff', cursor: 'pointer' }}>
+        <Text>
           {text}
         </Text>
       ),
@@ -106,7 +133,6 @@ const ReviewedList = () => {
       title: 'Inspectors',
       dataIndex: 'inspectors',
       key: 'inspectors',
-      sorter: (a, b) => a.inspectors.localeCompare(b.inspectors),
       render: (text) => <Text>{text}</Text>,
     },
     {
@@ -127,22 +153,24 @@ const ReviewedList = () => {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
-        <div>
+        <Flex gap="middle">
           <Button
-            type="link"
+            type="primary"
             onClick={() => handleReviewAndDownload(record)}
             style={{ color: '#1890ff' }}
+            icon={<EyeOutlined />}
           >
             Review
           </Button>
           <Button
-            type="link"
+            type="default"
             onClick={() => handleReviewAndDownload(record)}
             style={{ color: '#1890ff' }}
+            icon={<DownloadOutlined />}
           >
             Download
           </Button>
-        </div>
+        </Flex>
       ),
     },
   ];
@@ -157,7 +185,7 @@ const ReviewedList = () => {
               <div className={styles.searchItem}>
                 <Text className={styles.searchLabel}>Inspectors:</Text>
                 <Input
-                  placeholder="example"
+                  placeholder="please enter inspector name"
                   value={searchInspectors}
                   onChange={(e) => setSearchInspectors(e.target.value)}
                   className={styles.searchInput}
@@ -167,12 +195,19 @@ const ReviewedList = () => {
             <Col xs={24} sm={12} md={8}>
               <div className={styles.searchItem}>
                 <Text className={styles.searchLabel}>Form Name:</Text>
-                <Input
-                  placeholder="Please enter form name"
+                <Select
+                  placeholder="Please select form name"
                   value={searchFormName}
-                  onChange={(e) => setSearchFormName(e.target.value)}
+                  onChange={(value) => setSearchFormName(value)}
                   className={styles.searchInput}
-                />
+                  allowClear
+                >
+                  {formTemplates.map(template => (
+                    <Option key={template.id} value={template.name}>
+                      {template.name}
+                    </Option>
+                  ))}
+                </Select>
               </div>
             </Col>
             <Col xs={24} sm={24} md={8}>
