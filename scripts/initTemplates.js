@@ -120,60 +120,46 @@ const templates = [
         }
       }
     ],
-    // 检查项的配置
-    inspectionItems: [
-      {
-        key: 'sprayBoothMake',
-        name: 'Spray Booth Make',
-        type: 'visual',
-        tag: 'visual',
-        required: true
-      },
-      {
-        key: 'purgeCycles',
-        name: 'Purge Cycles',
-        type: 'operation',
-        tag: 'Operation',
-        required: true
-      },
-      {
-        key: 'exhaustAirflow',
-        name: 'Exhaust Airflow Spraybooth Downdraught spray booth',
-        type: 'measurement',
-        tag: 'hot wire probe',
-        required: true
-      }
-    ],
-    // 指导内容的配置
-    guidanceContent: {
-      sprayBoothMake: {
-        checklist: [
-          "Check the overall structure of the spray booth for integrity, confirm all panels are securely connected",
-          "View inspection diagram",
-          "Verify the ventilation system is working properly, check fan operation sounds",
-          "Watch guidance video"
-        ],
-        image: "/api/placeholder/400/300"
-      },
-      purgeCycles: {
-        checklist: [
-          "Check purge cycle timing and frequency settings",
-          "View purge system diagram",
-          "Verify purge valve operation and pressure readings",
-          "Watch purge cycle demonstration video"
-        ],
-        image: "/api/placeholder/400/300"
-      },
-      exhaustAirflow: {
-        checklist: [
-          "Check exhaust fan operation and airflow direction",
-          "View airflow measurement diagram",
-          "Verify downdraught system functionality",
-          "Watch airflow testing video"
-        ],
-        image: "/api/placeholder/400/300"
-      }
+   // 检查项配置
+   inspectionItems: [
+    {
+      key:"worksite",
+      name: 'Worksite',
+      type: 'visual',
+      tag: 'visual',
+      commentsAndDetails:[
+        {key:"a1a1",type:"input",label:""},
+      ],
+      required: true
     },
+    {
+      key:"inletFan",
+      name:"Inlet Fan",
+      type:"visual",
+      commentsAndDetails:[
+        {key:"c1c1", type:"number",label:"Number of Fans"},
+        {key:"c1c2", type:"radio",label:["Direct Drive","Belt Drive","Axial Fan","Centrifugal"]},
+        {key:"c1c3", type:"checkbox",label:["Direct Drive","Belt Drive","Axial Fan","Centrifugal"]},
+        {key:"c1c4", type:"input",label:["Direct Drive","Belt Drive","Axial Fan","Centrifugal"]},
+      ],
+      required: true
+    },
+  ],
+  // 指导内容配置
+  guidanceContent: {
+    worksite:[
+      {key:"g1g1", type:"text",content:"Site sign-in. Clear access. Hazards identified. Personal protection. Isolation & tag out. Other O.H.S. issues."},
+      {key:"g1g2", type:"text",content:"Check before commencing service:"},
+    ],
+    inletFan:[
+      {key:"g2g1", type:"text",content:"Check for general condition & damage:"},
+      {key:"g2g2", type:"video", content: "spray-booth-inspection-video.mp4"},
+      {key:"g2g3", type:"text",content:"Please make sure the power isolator is switched off position"},
+      {key:"g2g4", type:"text",content:"Vane and impeller, free rotation with no obstacles, fan cabin fixed, seal up, electrical connection, etc."},
+      {key:"g2g5", type:"text",content:"Filters clean. Motors run. Belts intact."},
+      {key:"g2g6", type:"image",content:"https://images.unsplash.com/photo-1606231495909-73c86d43ed0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcHJheSUyMGJvb3RoJTIwaW5kdXN0cmlhbCUyMGVxdWlwbWVudHxlbnwxfHx8fDE3NTc5OTUyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"},
+    ],
+  },
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   },
@@ -413,56 +399,42 @@ const templates = [
     // 检查项配置
     inspectionItems: [
       {
-        key: 'pumpSystem',
-        name: 'Pump System Operation',
-        type: 'mechanical',
-        tag: 'mechanical',
+        key:"worksite",
+        name: 'Worksite',
+        type: 'visual',
+        tag: 'visual',
+        commentsAndDetails:[
+          {key:"a1a1",type:"input",label:""},
+        ],
         required: true
       },
       {
-        key: 'controlPanel',
-        name: 'Control Panel Check',
-        type: 'electrical',
-        tag: 'electrical',
+        key:"inletFan",
+        name:"Inlet Fan",
+        type:"visual",
+        commentsAndDetails:[
+          {key:"c1c1", type:"number",label:"Number of Fans"},
+          {key:"c1c2", type:"radio",label:["Direct Drive","Belt Drive","Axial Fan","Centrifugal"]},
+          {key:"c1c3", type:"checkbox",label:["Direct Drive","Belt Drive","Axial Fan","Centrifugal"]},
+          {key:"c1c4", type:"input",label:["Direct Drive","Belt Drive","Axial Fan","Centrifugal"]},
+        ],
         required: true
       },
-      {
-        key: 'safetyValves',
-        name: 'Safety Valves Inspection',
-        type: 'safety',
-        tag: 'safety',
-        required: true
-      }
     ],
     // 指导内容配置
     guidanceContent: {
-      pumpSystem: {
-        checklist: [
-          "Check pump operation and pressure readings",
-          "Inspect pump motor and drive system",
-          "Verify fluid levels and circulation",
-          "Test pump performance under load"
-        ],
-        image: "/api/placeholder/400/300"
-      },
-      controlPanel: {
-        checklist: [
-          "Test control panel functionality",
-          "Check alarm and indicator systems",
-          "Verify pressure and flow sensors",
-          "Test emergency stop systems"
-        ],
-        image: "/api/placeholder/400/300"
-      },
-      safetyValves: {
-        checklist: [
-          "Inspect pressure relief valves",
-          "Check valve operation and settings",
-          "Verify safety interlock systems",
-          "Test emergency shutdown procedures"
-        ],
-        image: "/api/placeholder/400/300"
-      }
+      worksite:[
+        {key:"g1g1", type:"text",content:"Site sign-in. Clear access. Hazards identified. Personal protection. Isolation & tag out. Other O.H.S. issues."},
+        {key:"g1g2", type:"text",content:"Check before commencing service:"},
+      ],
+      inletFan:[
+        {key:"g2g1", type:"text",content:"Check for general condition & damage:"},
+        {key:"g2g2", type:"video", content: "spray-booth-inspection-video.mp4"},
+        {key:"g2g3", type:"text",content:"Please make sure the power isolator is switched off position"},
+        {key:"g2g4", type:"text",content:"Vane and impeller, free rotation with no obstacles, fan cabin fixed, seal up, electrical connection, etc."},
+        {key:"g2g5", type:"text",content:"Filters clean. Motors run. Belts intact."},
+        {key:"g2g6", type:"image",content:"https://images.unsplash.com/photo-1606231495909-73c86d43ed0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcHJheSUyMGJvb3RoJTIwaW5kdXN0cmlhbCUyMGVxdWlwbWVudHxlbnwxfHx8fDE3NTc5OTUyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"},
+      ],
     },
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp()

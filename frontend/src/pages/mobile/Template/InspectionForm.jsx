@@ -79,8 +79,7 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
 
   // 自动保存功能 TODO: 把注释打开
   const autoSave = async (values) => {
-    return 
-    // if (saving) return; // 防止重复保存
+    if (saving) return; // 防止重复保存
 
     try {
       setSaving(true);
@@ -203,7 +202,7 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
         templateId: template.id,
         templateName: template.name
       };
-
+      console.log("formattedValues:",formattedValues)
       
 
       // 调用真实的API提交表单
