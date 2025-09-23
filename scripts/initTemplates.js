@@ -275,56 +275,42 @@ const templates = [
     // 检查项的配置
     inspectionItems: [
       {
-        key: 'boothStructure',
-        name: 'Booth Structure Inspection',
+        key:"worksite",
+        name: 'Worksite',
         type: 'visual',
         tag: 'visual',
+        commentsAndDetails:[
+          {key:"a1a1",type:"input",label:""},
+        ],
         required: true
       },
       {
-        key: 'electricalSystem',
-        name: 'Electrical System Check',
-        type: 'electrical',
-        tag: 'electrical',
+        key:"inletFan",
+        name:"Inlet Fan",
+        type:"visual",
+        commentsAndDetails:[
+          {key:"c1c1", type:"number",label:"Number of Fans"},
+          {key:"c1c2", type:"radio",label:["Direct Drive","Belt Drive","Axial Fan","Centrifugal"]},
+          {key:"c1c3", type:"checkbox",label:["Direct Drive","Belt Drive","Axial Fan","Centrifugal"]},
+          {key:"c1c4", type:"input",label:["Direct Drive","Belt Drive","Axial Fan","Centrifugal"]},
+        ],
         required: true
       },
-      {
-        key: 'safetyEquipment',
-        name: 'Safety Equipment Verification',
-        type: 'safety',
-        tag: 'safety',
-        required: true
-      }
     ],
     // 指导内容的配置
     guidanceContent: {
-      boothStructure: {
-        checklist: [
-          "Inspect booth frame for structural integrity",
-          "Check panel connections and fastenings",
-          "Verify door and window functionality",
-          "Examine weatherproofing seals"
-        ],
-        image: "/api/placeholder/400/300"
-      },
-      electricalSystem: {
-        checklist: [
-          "Test all electrical outlets and connections",
-          "Check lighting system functionality",
-          "Verify power distribution panel",
-          "Test emergency lighting systems"
-        ],
-        image: "/api/placeholder/400/300"
-      },
-      safetyEquipment: {
-        checklist: [
-          "Verify fire extinguisher placement and condition",
-          "Check emergency exit signage and lighting",
-          "Test smoke detection systems",
-          "Inspect first aid equipment"
-        ],
-        image: "/api/placeholder/400/300"
-      }
+      worksite:[
+        {key:"g1g1", type:"text",content:"Site sign-in. Clear access. Hazards identified. Personal protection. Isolation & tag out. Other O.H.S. issues."},
+        {key:"g1g2", type:"text",content:"Check before commencing service:"},
+      ],
+      inletFan:[
+        {key:"g2g1", type:"text",content:"Check for general condition & damage:"},
+        {key:"g2g2", type:"video", content: "spray-booth-inspection-video.mp4"},
+        {key:"g2g3", type:"text",content:"Please make sure the power isolator is switched off position"},
+        {key:"g2g4", type:"text",content:"Vane and impeller, free rotation with no obstacles, fan cabin fixed, seal up, electrical connection, etc."},
+        {key:"g2g5", type:"text",content:"Filters clean. Motors run. Belts intact."},
+        {key:"g2g6", type:"image",content:"https://images.unsplash.com/photo-1606231495909-73c86d43ed0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcHJheSUyMGJvb3RoJTIwaW5kdXN0cmlhbCUyMGVxdWlwbWVudHxlbnwxfHx8fDE3NTc5OTUyMjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"},
+      ],
     },
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp()

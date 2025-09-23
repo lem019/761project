@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Card, Typography, message, Spin, Checkbox  } from 'antd';
+import { Form, Button, Card, Typography, message, Spin, Checkbox } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import DynamicFormField from './DynamicFormField';
+import CommentsAndDetails from './CommentsAndDetails';
 import GuidanceContent from './GuidanceContent';
 import { saveFormData, submitForm } from '@/services/form-service';
 import styles from './InspectionForm.module.less';
@@ -43,9 +44,22 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
         inspectionItems: existingFormData.inspectionData
       };
 
+      // 兼容旧数据：旧版 inspectionData 为 { [key]: boolean }，转换为 { [key]: { checked: boolean } }
+      if (formValues.inspectionItems && typeof formValues.inspectionItems === 'object') {
+        const transformed = {};
+        Object.entries(formValues.inspectionItems).forEach(([k, v]) => {
+          if (typeof v === 'boolean') {
+            transformed[k] = { checked: v };
+          } else {
+            transformed[k] = v || {};
+          }
+        });
+        formValues.inspectionItems = transformed;
+      }
+
       // 处理日期字段 - 将字符串转换为dayjs对象
       if (formValues.date && typeof formValues.date === 'string') {
-        console.log('Original date string:', formValues.date);
+        
         // 尝试多种日期格式
         let parsedDate = dayjs(formValues.date, 'DD/MM/YYYY');
         if (!parsedDate.isValid()) {
@@ -54,18 +68,19 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
         if (!parsedDate.isValid()) {
           parsedDate = dayjs(formValues.date);
         }
-        console.log('Parsed date:', parsedDate, 'isValid:', parsedDate.isValid());
+        
         formValues.date = parsedDate.isValid() ? parsedDate : null;
       }
 
-      console.log('Setting form values:', formValues);
+      
       form.setFieldsValue(formValues);
     }
   }, [existingFormData, form]);
 
-  // 自动保存功能
+  // 自动保存功能 TODO: 把注释打开
   const autoSave = async (values) => {
-    if (saving) return; // 防止重复保存
+    return 
+    // if (saving) return; // 防止重复保存
 
     try {
       setSaving(true);
@@ -83,12 +98,12 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
         status: FORM_STATUS.DRAFT
       };
 
-      console.log('Saving form data:', formattedValues); // 添加调试日志
+      
 
       const response = await saveFormData(formattedValues);
       setLastSaved(new Date());
 
-      console.log('currentFormId:', currentFormId, response, !currentFormId && response?.id, response?.id);
+      
 
       // 如果这是新表单，更新URL中的id并保存formId供下次使用
       if (!currentFormId && response?.id) {
@@ -97,10 +112,10 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
         setCurrentFormId(newFormId);
         // 更新URL
         window.history.replaceState(null, '', `/mobile/template/${template.id}?id=${newFormId}`);
-        console.log('New form created with ID:', newFormId);
+        
       }
 
-      console.log('Auto-save successful:', response);
+      
     } catch (error) {
       console.error('Auto-save failed:', error);
       // 自动保存失败不显示错误提示，避免打扰用户
@@ -123,7 +138,7 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
 
   // 监听表单变化，实现自动保存
   const handleFormChange = (changedValues, allValues) => {
-    // console.log('Form changed:', changedValues, allValues); // 添加调试日志
+    
 
     // 清除之前的定时器
     if (autoSaveTimeoutRef.current) {
@@ -141,15 +156,6 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
     }, 2000);
   };
 
-  // 清理定时器
-  useEffect(() => {
-    return () => {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
-    };
-  }, []);
-
   /**
    * Toggle expand/collapse for an inspection item when clicked
    * @param {string} itemKey - Key of the inspection item
@@ -162,28 +168,43 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
   };
 
   /**
+   * 自定义校验：至少勾选一个检查项
+   * TODO: delete
+   */
+  const validateAtLeastOneInspectionItem = (_, value) => {
+    if (!value || typeof value !== 'object') {
+      return Promise.reject(new Error('Please select at least one inspection item'));
+    }
+    const anyChecked = Object.values(value).some(v => {
+      if (typeof v === 'boolean') return v;
+      if (v && typeof v === 'object') return !!v.checked;
+      return false;
+    });
+    return anyChecked ? Promise.resolve() : Promise.reject(new Error('Please select at least one inspection item'));
+  };
+
+ 
+
+  /**
    * Handle form submission
    * @param {Object} values - Form data
    */
   const handleSubmit = async (values) => {
-    setLoading(true);
+    // 使用表单当前的全部值，确保未变更项也被采集
+    const allValues = form.getFieldsValue(true);
+    console.log("allValues:",allValues);
+     setLoading(true);
     try {
-      await autoSave(values);
-      // 分离表单字段和检查项
-    const { inspectionItems, ...formFields } = values;
+      // Format date
+      const formattedValues = {
+        ...allValues,
+        id: currentFormId, // 添加当前表单ID
+        date: allValues.date ? allValues.date.format('DD/MM/YYYY') : null,
+        templateId: template.id,
+        templateName: template.name
+      };
 
-    // 组装和 autoSave 一样的结构
-    const formattedValues = {
-      id: currentFormId,
-      type: "a",
-      templateId: template.id,
-      templateName: template.name,
-      metaData: formFields, // input 字段
-      inspectionData: inspectionItems || {}, // checkbox
-      date: values.date ? values.date.format('DD/MM/YYYY') : null
-    };
-
-      console.log('Form submit data:', formattedValues);
+      
 
       // 调用真实的API提交表单
       const result = await submitForm(formattedValues);
@@ -260,11 +281,7 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
 
           {/* {template.inspectionItems && template.inspectionItems.length > 0 && (
             <Form.Item
-              label="Inspection Items *"
-              name="inspectionItems"
-              rules={[
-                { required: true, message: 'Please select at least one inspection item' }
-              ]}
+              label="Inspection Items"
               className={styles.formItem}
             >
               <div className={styles.inspectionItems}> */}
@@ -289,7 +306,7 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
                       </Form.Item>
                       <div className={styles.itemContent}>
                         <span className={styles.itemText}>{item.name}</span>
-                        <span className={styles.itemTag}>{item.tag}</span>
+                        {item.tag && <span className={styles.itemTag}>{item.tag}</span>}
                       </div>
                     </div>
                     <div className={`${styles.guidanceWrapper} ${expandedItems[item.key] ? styles.expanded : styles.collapsed}`}>
@@ -298,6 +315,11 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
                         itemType={item.key}
                         guidanceContent={template.guidanceContent}
                       />
+                      {Array.isArray(item.commentsAndDetails) && item.commentsAndDetails.length > 0 && (
+                        <div style={{ marginTop: 12, fontWeight: 600 }}>Comments & Details</div>
+                      )}
+                      
+                      <CommentsAndDetails item={item} />
                     </div>
                     {/* Attachment uploader for each inspection item */}
                     <Form.Item

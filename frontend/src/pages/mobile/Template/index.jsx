@@ -33,7 +33,6 @@ const TemplatePage = () => {
         
         // 获取模板数据
         const templateResponse = await getFormTemplateById(templateId);
-        console.log('Template response:', templateResponse);
         
         if (templateResponse) {
           setTemplate(templateResponse);
@@ -46,7 +45,6 @@ const TemplatePage = () => {
         if (id) {
           try {
             const formResponse = await getFormData(id);
-            console.log('Existing form data:', formResponse);
             setExistingFormData(formResponse);
           } catch (formErr) {
             console.error('Failed to fetch existing form data:', formErr);
