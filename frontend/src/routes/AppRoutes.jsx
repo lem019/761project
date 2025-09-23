@@ -8,6 +8,7 @@ import AdminInprogress from "@/pages/pc/adminInprogress";
 import AdminApproved from "@/pages/pc/adminApproved";
 import ToReviewList from "@/pages/pc/toReviewList";
 import ReviewedList from "@/pages/pc/reviewedList";
+import TemplateReport from "@/pages/pc/TemplateReport";
 import NotFound from "@/pages/404";
 import Unauthorized from "@/pages/Unauthorized";
 import Layout from "@/components/layout/index";
@@ -92,6 +93,11 @@ const AppRoutes = () => {
           <Route path="to-review" element={
             <ProtectedRoute requireAdmin={true}>
               <ToReviewList />
+            </ProtectedRoute>
+          } />
+          <Route path="download-form/:templateId" element={
+            <ProtectedRoute requireAdmin={true}>
+              <TemplateReport />
             </ProtectedRoute>
           } />
 

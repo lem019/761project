@@ -1,0 +1,526 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  background-color: #f5f5f5;
+  overflow: auto;
+  display: block;
+  box-sizing: border-box;
+}
+
+.formCard {
+  width: 100%;
+  height: 100vh;
+  max-width: none;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  margin: 0;
+  background: #ffffff;
+  box-sizing: border-box;
+
+  .ant-card-body {
+    padding: 0;
+    height: 100vh;
+    overflow: auto;
+    box-sizing: border-box;
+  }
+}
+
+.formTitle {
+  text-align: center;
+  margin-bottom: 32px !important;
+  color: #333;
+  font-weight: 600;
+}
+
+.templateDescription {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f6f8fa;
+  border-radius: 8px;
+  border-left: 4px solid #1890ff;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.form {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  
+  .ant-form-item {
+    display: table-row;
+    border: none;
+    margin-bottom: 0;
+  }
+  
+  .ant-form-item-label {
+    display: table-cell;
+    vertical-align: top;
+    width: 200px;
+    min-width: 200px;
+    padding: 16px 20px;
+    background: #f8f9fa;
+    border: 2px solid #000;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
+    white-space: nowrap;
+    
+    > label {
+      font-weight: 500;
+      color: #333;
+      font-size: 14px;
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+  
+  .ant-form-item-control {
+    display: table-cell;
+    vertical-align: top;
+    padding: 16px 20px;
+    background: #fff;
+    border: 2px solid #000;
+    border-bottom: 1px solid #000;
+    border-left: 1px solid #000;
+    position: relative;
+  }
+  
+  .ant-form-item:last-child {
+    .ant-form-item-label,
+    .ant-form-item-control {
+      border-bottom: 2px solid #000;
+    }
+  }
+  
+  .ant-input,
+  .ant-select-selector,
+  .ant-picker {
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    
+    &:hover {
+      border-color: #40a9ff;
+    }
+    
+    &:focus,
+    &.ant-picker-focused {
+      border-color: #1890ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+  }
+  
+  .ant-input {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .ant-select-selector {
+    padding: 4px 8px !important;
+    height: auto !important;
+    min-height: 32px;
+    
+    .ant-select-selection-search-input {
+      height: 24px !important;
+      font-size: 14px;
+    }
+  }
+  
+  .ant-picker {
+    padding: 8px 12px;
+    width: 100%;
+    font-size: 14px;
+  }
+}
+
+.formItem {
+  margin-bottom: 24px;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.inspectionItemsLabel {
+  margin-bottom: 0px;
+}
+
+
+.inspectionTable {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #000;
+  margin-top: 0px;
+  background: #ffffff;
+}
+
+.inspectionRow {
+  display: table-row;
+  
+  &:last-child {
+    .inspectionLabel,
+    .inspectionGuidance,
+    .inspectionMethod,
+    .inspectionFileAddress {
+      border-bottom: 2px solid #000;
+    }
+  }
+}
+
+.inspectionLabel {
+  display: table-cell;
+  vertical-align: top;
+  width: 200px;
+  min-width: 200px;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border: 2px solid #000;
+  border-bottom: 1px solid #000;
+  border-right: 1px solid #000;
+  white-space: nowrap;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.inspectionGuidance {
+  display: table-cell;
+  vertical-align: top;
+  padding: 16px 20px;
+  background: #fff;
+  border: 2px solid #000;
+  border-bottom: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+  color: #ff4d4f;
+  font-size: 14px;
+  text-align: center;
+}
+
+.inspectionMethod {
+  display: table-cell;
+  vertical-align: top;
+  padding: 16px 20px;
+  background: #fff;
+  border: 2px solid #000;
+  border-bottom: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+  color: #ff4d4f;
+  font-size: 14px;
+  text-align: center;
+}
+
+.inspectionFileAddress {
+  display: table-cell;
+  vertical-align: top;
+  padding: 16px 20px;
+  background: #fff;
+  border: 2px solid #000;
+  border-bottom: 1px solid #000;
+  border-left: 1px solid #000;
+  color: #ff4d4f;
+  font-size: 14px;
+  text-align: center;
+}
+
+
+/* 响应式设计 */
+/* 桌面端样式 */
+@media (min-width: 769px) {
+  .container {
+    padding: 3rem;
+    background-color: #f5f5f5;
+    height: 100vh;
+    box-sizing: border-box;
+  }
+  
+  .formCard {
+    height: 100%;
+    min-height: 100%;
+    
+    .ant-card-body {
+      height: 100%;
+      min-height: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .formCard {
+    height: 100vh;
+    box-sizing: border-box;
+    
+    .ant-card-body {
+      padding: 16px;
+      height: calc(100vh - 32px);
+      overflow: auto;
+      box-sizing: border-box;
+    }
+  }
+
+  .formTitle {
+    font-size: 20px;
+    margin-bottom: 24px !important;
+  }
+
+  .inspectionItemsLabel {
+    margin-bottom: 0px;
+  }
+
+
+  .inspectionTable {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .inspectionRow {
+    display: table-row;
+  }
+  
+  .inspectionLabel {
+    display: table-cell;
+    width: 120px;
+    min-width: 120px;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  
+  .inspectionGuidance,
+  .inspectionMethod,
+  .inspectionFileAddress {
+    display: table-cell;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .formCard {
+    height: 100vh;
+    box-sizing: border-box;
+    
+    .ant-card-body {
+      padding: 12px;
+      height: calc(100vh - 24px);
+      overflow: auto;
+      box-sizing: border-box;
+    }
+  }
+
+  .formTitle {
+    font-size: 18px;
+    margin-bottom: 20px !important;
+  }
+
+  .formItem {
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+  }
+
+  .inspectionItemsLabel {
+    margin-bottom: 0px;
+  }
+
+
+  .inspectionTable {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .inspectionRow {
+    display: table-row;
+  }
+  
+  .inspectionLabel {
+    display: table-cell;
+    width: 100px;
+    min-width: 100px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  
+  .inspectionGuidance,
+  .inspectionMethod,
+  .inspectionFileAddress {
+    display: table-cell;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
+// 打印样式 - 确保表单内容在打印时完整显示，无滚动条
+@media print {
+  .container {
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  .formCard {
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    page-break-inside: avoid;
+  }
+
+  .ant-card-body {
+    padding: 20px !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .form {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 20px !important;
+  }
+
+  .ant-form-item {
+    display: table-row !important;
+    border-bottom: 1px solid #000 !important;
+    page-break-inside: avoid;
+  }
+
+  .ant-form-item-label {
+    display: table-cell !important;
+    width: 30% !important;
+    padding: 8px 12px !important;
+    background-color: #f5f5f5 !important;
+    border-right: 1px solid #000 !important;
+    vertical-align: middle !important;
+    font-weight: bold !important;
+    text-align: left !important;
+  }
+
+  .ant-form-item-control {
+    display: table-cell !important;
+    width: 70% !important;
+    padding: 8px 12px !important;
+    background-color: white !important;
+    vertical-align: middle !important;
+  }
+
+  .inspectionItemsLabel {
+    margin-bottom: 0px !important;
+  }
+
+  .inspectionTable {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 0px !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-inside: auto;
+  }
+
+  .inspectionRow {
+    display: table-row !important;
+    border-bottom: 1px solid #000 !important;
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  .inspectionLabel {
+    display: table-cell !important;
+    width: 25% !important;
+    padding: 8px 12px !important;
+    background-color: #f0f8ff !important;
+    border-right: 1px solid #000 !important;
+    vertical-align: top !important;
+    font-weight: bold !important;
+    color: #000 !important;
+  }
+
+  .inspectionGuidance {
+    display: table-cell !important;
+    width: 35% !important;
+    padding: 8px 12px !important;
+    background-color: white !important;
+    border-right: 1px solid #000 !important;
+    vertical-align: top !important;
+    color: #000 !important;
+  }
+
+  .inspectionMethod {
+    display: table-cell !important;
+    width: 25% !important;
+    padding: 8px 12px !important;
+    background-color: #f9f9f9 !important;
+    border-right: 1px solid #000 !important;
+    vertical-align: top !important;
+    color: #000 !important;
+  }
+
+  .inspectionFileAddress {
+    display: table-cell !important;
+    width: 15% !important;
+    padding: 8px 12px !important;
+    background-color: white !important;
+    vertical-align: top !important;
+    color: #000 !important;
+  }
+
+  // 隐藏不需要打印的元素
+  .ant-form-item-explain,
+  .ant-form-item-extra {
+    display: none !important;
+  }
+
+  // 确保输入框和文本区域的值在打印时可见
+  .ant-input,
+  .ant-input-number,
+  .ant-select,
+  .ant-date-picker,
+  .ant-checkbox-wrapper {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #000 !important;
+  }
+
+}

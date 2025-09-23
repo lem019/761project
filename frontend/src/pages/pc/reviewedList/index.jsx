@@ -49,7 +49,14 @@ const ReviewedList = () => {
 
       if (response) {
         const items = response.items || [];
-        setFilteredData(items);
+        setFilteredData(items.map(item => ({
+          id: item.id,
+          formName: item.templateName || 'Unknown Form',
+          inspectors: item.creatorName || 'Unknown Inspector', // 这里需要从用户信息获取
+          createTime: item.createdAt || '',
+          approvedTime: item.reviewedAt || item.createdAt || '',
+          templateId: item.templateId || 'pmr' // 添加templateId，使用默认值
+        })));
         setTotal(response.pagination?.total || 0);
       }
     } catch (error) {
@@ -111,6 +118,13 @@ const ReviewedList = () => {
     navigate(`/pc/review-form?id=${record.id}&templateId=${record.templateId}`);
   };
 
+  const handleDownloadReport = (record) => {
+    console.log('Download report record:', record);
+    // 跳转到下载页面，使用templateId作为路径参数，id作为查询参数
+    const templateId = record.templateId || 'pmr';
+    navigate(`/pc/download-form/${templateId}?id=${record.id}&formName=${encodeURIComponent(record.formName)}`);
+  };
+
   const columns = [
     {
       title: 'Form Name',
@@ -158,8 +172,8 @@ const ReviewedList = () => {
             Review
           </Button>
           <Button
-            type="default"
-            onClick={() => handleReviewAndDownload(record)}
+            type="link"
+            onClick={() => handleDownloadReport(record)}
             style={{ color: '#1890ff' }}
             icon={<DownloadOutlined />}
           >
