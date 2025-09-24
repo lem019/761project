@@ -207,6 +207,8 @@ async function operateForm(formId, action, uid, role, comment = '') {
       newStatus = FORM_STATUS.PENDING;
       updateData.status = newStatus;
       updateData.submittedAt = FieldValue.serverTimestamp();
+      updateData.metaData = formData.metaData || {};
+      updateData.inspectionData = formData.inspectionData || {};
       break;
 
     case 'approve':

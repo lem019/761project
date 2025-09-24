@@ -165,14 +165,20 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
-      // Format date
-      const formattedValues = {
-        ...values,
-        id: currentFormId, // 添加当前表单ID
-        date: values.date ? values.date.format('DD/MM/YYYY') : null,
-        templateId: template.id,
-        templateName: template.name
-      };
+      await autoSave(values);
+      // 分离表单字段和检查项
+    const { inspectionItems, ...formFields } = values;
+
+    // 组装和 autoSave 一样的结构
+    const formattedValues = {
+      id: currentFormId,
+      type: "a",
+      templateId: template.id,
+      templateName: template.name,
+      metaData: formFields, // input 字段
+      inspectionData: inspectionItems || {}, // checkbox
+      date: values.date ? values.date.format('DD/MM/YYYY') : null
+    };
 
       console.log('Form submit data:', formattedValues);
 
@@ -270,7 +276,7 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
                         className={styles.checkboxItem}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <input type="checkbox" className={styles.checkbox} />
+                        <input type="checkbox" className={styles.checkbox} disabled={readOnly}/>
                       </Form.Item>
                       <div className={styles.itemContent}>
                         <span className={styles.itemText}>{item.name}</span>
