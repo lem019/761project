@@ -11,22 +11,21 @@ import {
   Typography,
   Row,
   Col,
-  Spin,
   message,
   Flex
 } from 'antd';
-import { SearchOutlined, ReloadOutlined, DownloadOutlined, EyeOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import { DownloadOutlined, EyeOutlined } from '@ant-design/icons';
 import { getFormList, getFormTemplates } from '@/services/form-service';
 import styles from './index.module.less';
 
-const { Search } = Input;
 const { Option } = Select;
 const { Text } = Typography;
 
 const ReviewedList = () => {
   const navigate = useNavigate();
   const [searchInspectors, setSearchInspectors] = useState('');
-  const [searchFormName, setSearchFormName] = useState('');
+  const [searchFormName, setSearchFormName] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [filteredData, setFilteredData] = useState([]);
@@ -34,10 +33,11 @@ const ReviewedList = () => {
   const [total, setTotal] = useState(0);
   const [formTemplates, setFormTemplates] = useState([]);
 
-  // 获取已审核表单列表数据
+  // Get reviewed form list data
   const fetchReviewedList = async () => {
     try {
       setLoading(true);
+      // TODO: need to include declined forms in the future 
       const response = await getFormList({
         status: 'approved',
         page: currentPage,
@@ -49,45 +49,39 @@ const ReviewedList = () => {
 
       if (response) {
         const items = response.items || [];
-        setFilteredData(items.map(item => ({
-          id: item.id,
-          formName: item.templateName || 'Unknown Form',
-          inspectors: item.creatorName || 'Unknown Inspector', // 这里需要从用户信息获取
-          createTime: item.createdAt || '',
-          approvedTime: item.reviewedAt || item.createdAt || ''
-        })));
+        setFilteredData(items);
         setTotal(response.pagination?.total || 0);
       }
     } catch (error) {
-      console.error('获取已审核表单列表失败:', error);
-      message.error('获取已审核表单列表失败');
+      console.error('Failed to get reviewed form list:', error);
+      message.error('Failed to get reviewed form list');
     } finally {
       setLoading(false);
     }
   };
 
-  // 获取表单模板列表
+  // Get form templates list
   const fetchFormTemplates = async () => {
     try {
       const templates = await getFormTemplates();
       setFormTemplates(templates || []);
     } catch (error) {
-      console.error('获取表单模板列表失败:', error);
-      message.error('获取表单模板列表失败');
+      console.error('Failed to get form templates list:', error);
+      message.error('Failed to get form templates list');
     }
   };
 
-  // 初始加载和分页变化时重新获取数据
+  // Re-fetch data on initial load and pagination changes
   useEffect(() => {
     fetchReviewedList();
   }, [currentPage, pageSize]);
 
-  // 页面加载时获取表单模板
+  // Get form templates on page load
   useEffect(() => {
     fetchFormTemplates();
   }, []);
 
-  // 分页数据
+  // Pagination data
   const paginatedData = filteredData;
 
   const handleSearch = () => {
@@ -113,16 +107,15 @@ const ReviewedList = () => {
   };
 
   const handleReviewAndDownload = (record) => {
-    console.log('Review and download record:', record);
-    // 跳转到审核页面，传递记录ID作为参数
-    navigate(`/pc/review-form?id=${record.id}&formName=${encodeURIComponent(record.formName)}&mode=view`);
+    // Navigate to review page, passing record ID as parameter
+    navigate(`/pc/review-form?id=${record.id}&templateId=${record.templateId}`);
   };
 
   const columns = [
     {
       title: 'Form Name',
-      dataIndex: 'formName',
-      key: 'formName',
+      dataIndex: 'templateName',
+      key: 'templateName',
       render: (text) => (
         <Text>
           {text}
@@ -131,23 +124,25 @@ const ReviewedList = () => {
     },
     {
       title: 'Inspectors',
-      dataIndex: 'inspectors',
+      dataIndex: ['metaData', 'inspector'],
       key: 'inspectors',
       render: (text) => <Text>{text}</Text>,
     },
     {
       title: 'Create Time',
-      dataIndex: 'createTime',
-      key: 'createTime',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       sorter: (a, b) => new Date(a.createTime) - new Date(b.createTime),
       render: (text) => <Text>{text}</Text>,
     },
     {
       title: 'Approved Time',
-      dataIndex: 'approvedTime',
-      key: 'approvedTime',
-      sorter: (a, b) => new Date(a.approvedTime) - new Date(b.approvedTime),
-      render: (text) => <Text>{text}</Text>,
+      dataIndex: ['updatedAt', '_seconds'],
+      key: 'updatedAt',
+      sorter: (a, b) => new Date(a.updatedAt._seconds) - new Date(b.updatedAt._seconds),
+      render: (text) => <Text>{
+        dayjs(text * 1000).format('DD/MM/YYYY HH:mm:ss A')
+      }</Text>,
     },
     {
       title: 'Action',
@@ -178,7 +173,7 @@ const ReviewedList = () => {
   return (
     <div className={styles.container}>
       <Card className={styles.contentCard}>
-        {/* 搜索区域 */}
+        {/* Search Section */}
         <div className={styles.searchSection}>
           <Row gutter={[16, 16]} align="middle">
             <Col xs={24} sm={12} md={8}>
@@ -227,7 +222,7 @@ const ReviewedList = () => {
           </Row>
         </div>
 
-        {/* 表格区域 */}
+        {/* Table Section */}
         <div className={styles.tableSection}>
           <Table
             columns={columns}
@@ -240,7 +235,7 @@ const ReviewedList = () => {
           />
         </div>
 
-        {/* 分页区域 */}
+        {/* Pagination Section */}
         <div className={styles.paginationSection}>
           <Pagination
             current={currentPage}

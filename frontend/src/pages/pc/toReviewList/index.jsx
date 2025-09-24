@@ -11,21 +11,19 @@ import {
   Typography,
   Row,
   Col,
-  Spin,
   message
 } from 'antd';
-import { SearchOutlined, ReloadOutlined, EyeOutlined } from '@ant-design/icons';
+import { EyeOutlined } from '@ant-design/icons';
 import { getFormList, getFormTemplates } from '@/services/form-service';
 import styles from './index.module.less';
-
-const { Search } = Input;
+import dayjs from 'dayjs';
 const { Option } = Select;
 const { Text } = Typography;
 
 const ToReviewList = () => {
   const navigate = useNavigate();
   const [searchInspectors, setSearchInspectors] = useState('');
-  const [searchFormName, setSearchFormName] = useState('');
+  const [searchFormName, setSearchFormName] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [filteredData, setFilteredData] = useState([]);
@@ -48,13 +46,7 @@ const ToReviewList = () => {
 
       if (response) {
         const items = response.items || [];
-        setFilteredData(items.map(item => ({
-          id: item.id,
-          formName: item.templateName || 'Unknown Form',
-          inspectors: item.creatorName || 'Unknown Inspector', // Need to get from user info
-          createTime: item.createdAt || '',
-          submitTime: item.submittedAt || item.createdAt || ''
-        })));
+        setFilteredData(items);
         setTotal(response.pagination?.total || 0);
       }
     } catch (error) {
@@ -110,16 +102,15 @@ const ToReviewList = () => {
   };
 
   const handleReview = (record) => {
-    console.log('Review record:', record);
     // Navigate to review page, pass record ID as parameter
-    navigate(`/pc/review-form?id=${record.id}`);
+    navigate(`/pc/review-form?id=${record.id}&templateId=${record.templateId}`);
   };
 
   const columns = [
     {
       title: 'Form Name',
-      dataIndex: 'formName',
-      key: 'formName',
+      dataIndex: 'templateName',
+      key: 'templateName',
       render: (text) => (
         <Text>
           {text}
@@ -128,7 +119,7 @@ const ToReviewList = () => {
     },
     {
       title: 'Inspectors',
-      dataIndex: 'inspectors',
+      dataIndex: ['metaData', 'inspector'],
       key: 'inspectors',
       render: (text, record) => (
         <Text
@@ -143,17 +134,19 @@ const ToReviewList = () => {
     },
     {
       title: 'Create Time',
-      dataIndex: 'createTime',
-      key: 'createTime',
-      sorter: (a, b) => new Date(a.createTime) - new Date(b.createTime),
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
       render: (text) => <Text>{text}</Text>,
     },
     {
-      title: 'Submit Time',
-      dataIndex: 'submitTime',
-      key: 'submitTime',
-      sorter: (a, b) => new Date(a.submitTime) - new Date(b.submitTime),
-      render: (text) => <Text>{text}</Text>,
+      title: 'Update Time',
+      dataIndex: ['updatedAt', '_seconds'],
+      key: 'updatedAt',
+      sorter: (a, b) => new Date(a.updatedAt._seconds) - new Date(b.updatedAt._seconds),
+      render: (text) => <Text>{
+        dayjs(text * 1000).format('DD/MM/YYYY HH:mm:ss A')
+      }</Text>,
     },
     {
       title: 'Action',

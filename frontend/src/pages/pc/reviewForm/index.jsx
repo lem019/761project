@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Layout,
   Typography,
@@ -18,169 +18,67 @@ import {
   Radio,
   Collapse,
   Image,
+  message,
 } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, SaveOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined, SaveOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { getFormData, saveFormData, operateForm, getFormTemplateById } from '@/services/form-service';
 import styles from './index.module.less';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
 const { TextArea } = Input;
 
-// Mock data
-const formMeta = {
-  submittedBy: {
-    name: "Nigel Blake",
-    mobile: "0408 742 659",
-  },
-  submittedAt: "2025-07-07",
-  location: {
-    contactPerson: "Andrew Buck",
-    businessName: "DYNAPUMPS",
-    address: "22 Homestead Drive",
-    suburb: "StaplYton QLD 4207",
-    phone: ["0459 578 705", "(07) 5546 7777"],
-    email: "Andrew.Buck@dynapumps.com",
-  }
-};
-
-const inspectionItems = [
-  {
-    id: 1,
-    name: "Worksite",
-    type: "Visual",
-    guidances: [
-      {
-        id: "g1",
-        text: "Site sign-in. Clear access. Hazards identified.",
-        checked: true,
-        media: [
-          { type: "img", url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop" },
-          { type: "img", url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop" },
-          { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" }
-        ]
-      },
-      {
-        id: "g2",
-        text: "Personal protection, Isolation & tag out.",
-        checked: true,
-        media: [
-          { type: "img", url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop" },
-          { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" }
-        ]
-      }
-    ],
-    commentsAndDetails: [
-      { id: "c1", type: "input", label: "Inspector Note", value: "" },
-    ],
-    comment: "",
-    action: null,
-  },
-  {
-    id: 2,
-    name: "Inlet Fan",
-    type: "Visual",
-    guidances: [
-      {
-        id: "g3",
-        text: "Check vane and impeller, ensure free rotation",
-        checked: true,
-        media: [
-          { type: "img", url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop" },
-          { type: "img", url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop" }
-        ]
-      },
-      {
-        id: "g4",
-        text: "Inspect fan cabin fixing, seal, electrical connection",
-        checked: true,
-        media: [
-          { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" }
-        ]
-      },
-      {
-        id: "g5",
-        text: "Check filters, motors run, belts intact",
-        checked: true,
-        media: [
-          { type: "img", url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop" },
-          { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" }
-        ]
-      },
-    ],
-    commentsAndDetails: [
-      { id: "c4", type: "labelInput", label: "Number of Fans", value: "1" },
-      { id: "c5", type: "labelInput", label: "Axial Fan", value: "✔" },
-      { id: "c6", type: "labelInput", label: "Centrifugal", value: "✔" },
-    ],
-    comment: "",
-    action: null,
-  },
-  {
-    id: 3,
-    name: "Purge Cycles",
-    type: "Operation",
-    guidances: [
-      {
-        id: "g6",
-        text: "Prior to spraying pre-purge",
-        checked: true,
-        media: []
-      },
-      {
-        id: "g7",
-        text: "Post-purge following spray cycle only",
-        checked: true,
-        media: [
-          { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4" }
-        ]
-      },
-      {
-        id: "g8",
-        text: "Pre-purge cycle for independent bake cycle",
-        checked: true,
-        media: [
-          { type: "img", url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop" },
-          { type: "img", url: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop" },
-          { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" }
-        ]
-      },
-    ],
-    commentsAndDetails: [
-      { id: "c7", type: "inlineInput", label: "Pre-purge (minutes)", value: "1.30" },
-      { id: "c8", type: "inlineInput", label: "Post-purge (minutes)", value: "1.30" },
-      { id: "c9", type: "inlineInput", label: "Bake cycle pre-purge (minutes)", value: "1.30" },
-    ],
-    comment: "",
-    action: null,
-  }
-];
 
 const ReviewFormPage = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [overallComment, setOverallComment] = useState('');
-  const [itemsData, setItemsData] = useState(inspectionItems);
+  const [formMeta, setFormMeta] = useState(null);
+  const [formId, setFormId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [templateData, setTemplateData] = useState(null);
 
-  // 处理 URL 参数
+  // Handle URL parameters and load form data
   useEffect(() => {
-    const id = searchParams.get('id');
-    const formName = searchParams.get('formName');
-    const mode = searchParams.get('mode');
+    const loadFormData = async () => {
+      const id = searchParams.get('id');
+      const templateId = searchParams.get('templateId');
+
+      if (id) {
+        setFormId(id);
+        setLoading(true);
+        try {
+          const templateData = await getFormTemplateById(templateId);
+          const formData = await getFormData(id);
+          
+          // Set template data
+          setTemplateData(templateData);
+          // Set form meta data
+          setFormMeta(formData);
+          
+          
+          // Set overall comment
+          setOverallComment(formData.overallComment || '');
+          
+        } catch (error) {
+          console.error('Failed to load form data:', error);
+          message.error('Failed to load form data');
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
     
-    if (id && formName) {
-      console.log('ReviewForm loaded with params:', { id, formName, mode });
-      // 这里可以根据 ID 加载对应的表单数据
-      // 如果是 view 模式，可以设置为只读模式
-    }
+    loadFormData();
   }, [searchParams]);
 
-  const handleRowDoubleClick = (record) => {
-    console.log('handleRowDoubleClick triggered', record);
-    console.log('Current modal state:', isModalVisible);
+  const handleOpenModal = (record) => {
     setSelectedItem(record);
     setIsModalVisible(true);
-    console.log('Modal should be visible now');
   };
 
   const handleModalClose = () => {
@@ -188,51 +86,24 @@ const ReviewFormPage = () => {
     setSelectedItem(null);
   };
 
-  const handleGuidanceChange = (itemId, guidanceId, checked) => {
-    setItemsData(prevData =>
-      prevData.map(item =>
-        item.id === itemId
-          ? {
-            ...item,
-            guidances: item.guidances.map(g =>
-              g.id === guidanceId ? { ...g, checked } : g
-            )
-          }
-          : item
-      )
-    );
-  };
-
-  const handleDetailChange = (itemId, detailId, value) => {
-    setItemsData(prevData =>
-      prevData.map(item =>
-        item.id === itemId
-          ? {
-            ...item,
-            commentsAndDetails: item.commentsAndDetails.map(d =>
-              d.id === detailId ? { ...d, value } : d
-            )
-          }
-          : item
-      )
-    );
-  };
-
-  const handleActionChange = (itemId, action) => {
-    setItemsData(prevData =>
-      prevData.map(item =>
-        item.id === itemId ? { ...item, action } : item
-      )
-    );
+  const handleActionChange = (record, action) => {
+    setFormMeta(prevFormMeta => {
+      const newFormMeta = { ...prevFormMeta };
+      if (!newFormMeta.inspectionData[record.key]) {
+        newFormMeta.inspectionData[record.key] = {};
+      }
+      newFormMeta.inspectionData[record.key].approved = action;
+      return newFormMeta;
+    });
   };
 
   const getTypeColor = (type) => {
     switch (type) {
-      case 'Visual':
+      case 'visual':
         return 'blue';
-      case 'Operation':
+      case 'operation':
         return 'green';
-      case 'Visual & Operation':
+      case 'visual & operation':
         return 'purple';
       default:
         return 'default';
@@ -246,7 +117,7 @@ const ReviewFormPage = () => {
       <div className={styles.mediaContainer}>
         {mediaArray.map((media, index) => (
           <div key={index} className={styles.mediaItem}>
-            {media.type === 'img' ? (
+            {media.type === 'image' ? (
               <Image
                 src={media.url}
                 alt={`Media ${index + 1}`}
@@ -271,8 +142,19 @@ const ReviewFormPage = () => {
     );
   };
 
-  const renderCommentsAndDetails = (details) => {
-    return details.map(detail => {
+  // TODO: need to adapt to the commentsAndDetails data format submitted by the employee
+  const renderCommentsAndDetails = (checkItemKey) => {
+    const commentsAndDetails = formMeta?.inspectionData?.[checkItemKey]?.commentsAndDetails || [];
+    
+    if (commentsAndDetails.length === 0) {
+      return (
+        <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+          <Text type="secondary">No comment</Text>
+        </div>
+      );
+    }
+    
+    return commentsAndDetails.map(detail => {
       switch (detail.type) {
         case 'input':
           return (
@@ -280,7 +162,6 @@ const ReviewFormPage = () => {
               key={detail.id}
               placeholder={detail.label}
               value={detail.value}
-              onChange={(e) => handleDetailChange(selectedItem.id, detail.id, e.target.value)}
               style={{ marginBottom: 8 }}
             />
           );
@@ -290,7 +171,6 @@ const ReviewFormPage = () => {
               <Text strong>{detail.label}:</Text>
               <Input
                 value={detail.value}
-                onChange={(e) => handleDetailChange(selectedItem.id, detail.id, e.target.value)}
                 style={{ marginLeft: 8, width: 200 }}
               />
             </div>
@@ -301,7 +181,6 @@ const ReviewFormPage = () => {
               <Text>{detail.label}: </Text>
               <Input
                 value={detail.value}
-                onChange={(e) => handleDetailChange(selectedItem.id, detail.id, e.target.value)}
                 style={{ width: 100, display: 'inline-block' }}
               />
             </div>
@@ -318,8 +197,8 @@ const ReviewFormPage = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => (
-        <Space direction="vertical" size={0}>
-          <Text strong>{text}</Text>
+        <Space onClick={() => handleOpenModal(record)} direction="vertical" size={0}>
+          <Text strong className={styles.inspectionItemText}>{text}</Text>
         </Space>
       ),
     },
@@ -330,14 +209,14 @@ const ReviewFormPage = () => {
       render: (action, record) => (
         <div onClick={(e) => e.stopPropagation()}>
           <Radio.Group
-            value={action}
-            onChange={(e) => handleActionChange(record.id, e.target.value)}
+            value={formMeta?.inspectionData[record.key]?.approved}
+            onChange={(e) => handleActionChange(record, e.target.value)}
             size="small"
           >
-            <Radio value="approve">
+            <Radio value={true}>
               Approve
             </Radio>
-            <Radio value="decline">
+            <Radio value={false}>
               Decline
             </Radio>
           </Radio.Group>
@@ -347,25 +226,123 @@ const ReviewFormPage = () => {
   ];
 
   const handleApprove = () => {
-    console.log('Approve clicked', { itemsData, overallComment });
-    // Handle approve logic here
+    Modal.confirm({
+      title: 'Confirm Approval',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Are you sure you want to approve this form? This action cannot be undone.',
+      okText: 'Yes, Approve',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await handleSave(false);
+          await operateForm(formId, 'approve', overallComment);
+          message.success({
+            content: 'Form approved successfully',
+            duration: 1,
+            onClose: () => {
+              navigate('/pc/to-review');
+            }
+          });
+        } catch (error) {
+          console.error('Failed to approve form:', error);
+          message.error('Failed to approve form');
+        }
+      },
+    });
   };
 
   const handleDecline = () => {
-    console.log('Decline clicked', { itemsData, overallComment });
-    // Handle decline logic here
+    Modal.confirm({
+      title: 'Confirm Decline',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Are you sure you want to decline this form? This action cannot be undone.',
+      okText: 'Yes, Decline',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await handleSave(false);
+          await operateForm(formId, 'decline', overallComment);
+          message.success({
+            content: 'Form declined successfully',
+            duration: 1,
+            onClose: () => {
+              navigate('/pc/to-review');
+            }
+          });
+        } catch (error) {
+          console.error('Failed to decline form:', error);
+          message.error('Failed to decline form');
+        }
+      },
+    });
   };
 
-  const handleSave = () => {
-    console.log('Save clicked', { itemsData, overallComment });
-    // Handle save logic here
+  const handleSave = async (alert = true) => {
+    try {
+      // Build save data
+      const saveData = {
+        id: formId,
+        inspectionData: formMeta,
+        overallComment: overallComment
+      };
+      
+      await saveFormData(saveData);
+      alert && message.success('Form saved successfully');
+    } catch (error) {
+      console.error('Failed to save form:', error);
+      message.error('Failed to save form');
+    }
   };
 
+  // Render dynamic form fields
+  const renderFormFields = () => {
+    if (!templateData?.formFields || !Array.isArray(templateData.formFields)) {
+      return null;
+    }
+
+    return templateData.formFields.map((field, index) => {
+      return (
+        <Col span={12} key={field.name}>
+          <div className={styles.infoGroup}>
+            <div className={styles.infoItem}>
+              <span className={styles.label}>{field.label}:</span>
+              <span className={styles.value}>{formMeta?.metaData[field.name]}</span>
+            </div>
+          </div>
+        </Col>
+      );
+    });
+  };
+
+
+  if (loading) {
+    return (
+      <Layout className={styles.reviewFormLayout}>
+        <Content className={styles.content}>
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            <Text>Loading form data...</Text>
+          </div>
+        </Content>
+      </Layout>
+    );
+  }
+
+  if (!formMeta) {
+    return (
+      <Layout className={styles.reviewFormLayout}>
+        <Content className={styles.content}>
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            <Text>No form data available</Text>
+          </div>
+        </Content>
+      </Layout>
+    );
+  }
 
   return (
     <Layout className={styles.reviewFormLayout}>
       <Content className={styles.content}>
-        <Title level={2} className={styles.pageTitle}>SPRAY BOOTH MAINTENANCE SERVICE REPORT</Title>
+        <Title level={2} className={styles.pageTitle}>{templateData?.name}</Title>
 
         {/* Basic Form Information */}
         <Card title="Basic Information" className={styles.infoCard}>
@@ -376,55 +353,24 @@ const ReviewFormPage = () => {
               <div className={styles.submitterRow}>
                 <div className={styles.submitterItem}>
                   <span className={styles.label}>Name:</span>
-                  <span className={styles.value}>{formMeta.submittedBy.name}</span>
+                  <span className={styles.value}>{formMeta?.creator}</span>
                 </div>
                 <div className={styles.submitterItem}>
-                  <span className={styles.label}>Mobile:</span>
-                  <span className={styles.value}>{formMeta.submittedBy.mobile}</span>
+                  <span className={styles.label}>Created At:</span>
+                  <span className={styles.value}>{formMeta?.createdAt}</span>
                 </div>
                 <div className={styles.submitterItem}>
-                  <span className={styles.label}>Submitted At:</span>
-                  <span className={styles.value}>{formMeta.submittedAt}</span>
+                  <span className={styles.label}>Status:</span>
+                  <span className={styles.value}>{formMeta?.status}</span>
                 </div>
               </div>
             </div>
 
-            {/* Location Information */}
+            {/* Form Information */}
             <div className={styles.locationSection}>
-              <div className={styles.sectionTitle}>Location Information</div>
+              <div className={styles.sectionTitle}>Form Information</div>
               <Row gutter={[24, 16]}>
-                <Col span={12}>
-                  <div className={styles.infoGroup}>
-                    <div className={styles.infoItem}>
-                      <span className={styles.label}>Contact Person:</span>
-                      <span className={styles.value}>{formMeta.location.contactPerson}</span>
-                    </div>
-                    <div className={styles.infoItem}>
-                      <span className={styles.label}>Business Name:</span>
-                      <span className={styles.value}>{formMeta.location.businessName}</span>
-                    </div>
-                    <div className={styles.infoItem}>
-                      <span className={styles.label}>Address:</span>
-                      <span className={styles.value}>{formMeta.location.address}</span>
-                    </div>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className={styles.infoGroup}>
-                    <div className={styles.infoItem}>
-                      <span className={styles.label}>Suburb:</span>
-                      <span className={styles.value}>{formMeta.location.suburb}</span>
-                    </div>
-                    <div className={styles.infoItem}>
-                      <span className={styles.label}>Phone:</span>
-                      <span className={styles.value}>{formMeta.location.phone.join(', ')}</span>
-                    </div>
-                    <div className={styles.infoItem}>
-                      <span className={styles.label}>Email:</span>
-                      <span className={styles.value}>{formMeta.location.email}</span>
-                    </div>
-                  </div>
-                </Col>
+                {renderFormFields()}
               </Row>
             </div>
           </div>
@@ -434,13 +380,10 @@ const ReviewFormPage = () => {
         <Card title="Inspection Items" className={styles.inspectionItemsCard}>
           <Table
             columns={columns}
-            dataSource={itemsData}
+            dataSource={templateData?.inspectionItems}
             pagination={false}
             bordered
-            rowKey="id"
-            onRow={(record) => ({
-              onClick: () => handleRowDoubleClick(record),
-            })}
+            rowKey="key"
             className={styles.inspectionTable}
           />
         </Card>
@@ -452,6 +395,8 @@ const ReviewFormPage = () => {
             value={overallComment}
             onChange={(e) => setOverallComment(e.target.value)}
             placeholder="Enter your overall comment here..."
+            disabled={formMeta?.status !== 'pending'}
+            readOnly={formMeta?.status !== 'pending'}
           />
         </Card>
 
@@ -466,6 +411,14 @@ const ReviewFormPage = () => {
             </Button>,
           ]}
           width={800}
+          style={{ top: 20 }}
+          styles={{
+            body: {
+              maxHeight: 'calc(100vh - 200px)', 
+              overflowY: 'auto',
+              padding: '16px'
+            }
+          }}
           className={styles.detailModal}
         >
           {selectedItem && (
@@ -478,93 +431,65 @@ const ReviewFormPage = () => {
 
               <Divider orientation="left">Guidances</Divider>
               <div className={styles.guidancesSection}>
-                {selectedItem.guidances.map((guidance) => {
-                  if (guidance.media.length <= 0) {
-                    return (
-                      <div key={guidance.id} className={styles.guidanceItem}>
-                        <Checkbox
-                          checked={guidance.checked}
-                          onChange={(e) => handleGuidanceChange(selectedItem.id, guidance.id, e.target.checked)}
-                        >
-                          {guidance.text}
-                        </Checkbox>
-                      </div>
-                    )
-                  } else {
-                    return (
-                      <Collapse
-                        // defaultActiveKey={guidance.id}
-                        ghost
-                        className={styles.guidanceCollapse}
+                {templateData?.guidanceContent[selectedItem.key]?.map((guidance) => {
+                  const hasMedia = guidance.type === 'image' || guidance.type === 'video';
+                  const isChecked = formMeta?.inspectionData?.[selectedItem.key]?.guidance?.[guidance.key]?.completed || false;
+                  
+                  return (
+                    <div key={guidance.key} style={{ display: hasMedia ? 'flex' : 'block' }} className={styles.guidanceItem}>
+                      <Checkbox
+                        checked={isChecked}
                       >
-                        <Collapse.Panel
-                          key={guidance.id}
-                          header={
-                            <div className={styles.guidanceHeader}>
-                              <Checkbox
-                                checked={guidance.checked}
-                                onChange={(e) => {
-                                  e.stopPropagation();
-                                  handleGuidanceChange(selectedItem.id, guidance.id, e.target.checked);
-                                }}
-                                className={styles.guidanceCheckbox}
-                              >
-                                {guidance.text}
-                              </Checkbox>
-                            </div>
-                          }
-                          className={styles.guidancePanel}
-                        >
-                          {guidance.media && guidance.media.length > 0 ? (
-                            renderMediaContent(guidance.media)
-                          ) : (
-                            <div className={styles.noMediaMessage}>
-                              <Text type="secondary">No media content available for this guidance.</Text>
-                            </div>
-                          )}
-                        </Collapse.Panel>
-                      </Collapse>
-                    )
-                  }
+                        {hasMedia? '' : guidance.content}
+                      </Checkbox>
+                      {hasMedia && (
+                        <div className={styles.mediaContainer}>
+                          {renderMediaContent([{ type: guidance.type, url: guidance.content }])}
+                        </div>
+                      )}
+                    </div>
+                  )
                 })}
               </div>
 
               <Divider orientation="left">Comments & Details</Divider>
               <div className={styles.commentsDetailsSection}>
-                {renderCommentsAndDetails(selectedItem.commentsAndDetails)}
+                {renderCommentsAndDetails(selectedItem.key)}
               </div>
             </div>
           )}
         </Modal>
       </Content>
       {/* Action Buttons */}
-      <div className={styles.actionArea}>
-        <Space size="large">
-          <Button
-            type="primary"
-            icon={<CheckCircleOutlined />}
-            onClick={handleApprove}
-            className={styles.approveButton}
-          >
-            Approve
-          </Button>
-          <Button
-            danger
-            icon={<CloseCircleOutlined />}
-            onClick={handleDecline}
-            className={styles.declineButton}
-          >
-            Decline
-          </Button>
-          <Button
-            icon={<SaveOutlined />}
-            onClick={handleSave}
-            className={styles.saveButton}
-          >
-            Save
-          </Button>
-        </Space>
-      </div>
+      {formMeta?.status === 'pending' && (
+        <div className={styles.actionArea}>
+          <Space size="large">
+            <Button
+              type="primary"
+              icon={<CheckCircleOutlined />}
+              onClick={handleApprove}
+              className={styles.approveButton}
+            >
+              Approve
+            </Button>
+            <Button
+              danger
+              icon={<CloseCircleOutlined />}
+              onClick={handleDecline}
+              className={styles.declineButton}
+            >
+              Decline
+            </Button>
+            <Button
+              icon={<SaveOutlined />}
+              onClick={handleSave}
+              className={styles.saveButton}
+            >
+              Save
+            </Button>
+          </Space>
+        </div>
+      )}
     </Layout>
   );
 };
