@@ -44,19 +44,6 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
         inspectionItems: existingFormData.inspectionData
       };
 
-      // 兼容旧数据：旧版 inspectionData 为 { [key]: boolean }，转换为 { [key]: { checked: boolean } }
-      if (formValues.inspectionItems && typeof formValues.inspectionItems === 'object') {
-        const transformed = {};
-        Object.entries(formValues.inspectionItems).forEach(([k, v]) => {
-          if (typeof v === 'boolean') {
-            transformed[k] = { checked: v };
-          } else {
-            transformed[k] = v || {};
-          }
-        });
-        formValues.inspectionItems = transformed;
-      }
-
       // 处理日期字段 - 将字符串转换为dayjs对象
       if (formValues.date && typeof formValues.date === 'string') {
         
@@ -71,13 +58,11 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
         
         formValues.date = parsedDate.isValid() ? parsedDate : null;
       }
-
-      
       form.setFieldsValue(formValues);
     }
   }, [existingFormData, form]);
 
-  // 自动保存功能 TODO: 把注释打开
+
   const autoSave = async (values) => {
     if (saving) return; // 防止重复保存
 
@@ -86,13 +71,13 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
 
       // 分离表单字段和检查数据
       const { inspectionItems, ...formFields } = values;
-
+      
       const formattedValues = {
         id: currentFormId, // 使用本地的formId状态
         type: template.type,
         templateId: template.id,
         templateName: template.name,
-        metaData: formFields, // 表单字段数据
+        metaData: {...formFields,date: formFields?.date ? dayjs(formFields?.date).format('DD/MM/YYYY') : null }, // 表单字段数据
         inspectionData: inspectionItems || {}, // 检查项数据
         status: FORM_STATUS.DRAFT
       };
@@ -191,19 +176,17 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
   const handleSubmit = async (values) => {
     // 使用表单当前的全部值，确保未变更项也被采集
     const allValues = form.getFieldsValue(true);
-    console.log("allValues:",allValues);
+    const {inspectionItems, ...formFields} = allValues;
      setLoading(true);
     try {
       // Format date
       const formattedValues = {
-        ...allValues,
         id: currentFormId, // 添加当前表单ID
-        date: allValues.date ? allValues.date.format('DD/MM/YYYY') : null,
         templateId: template.id,
-        templateName: template.name
+        templateName: template.name,
+        metaData: {...formFields,date: formFields?.date ? dayjs(formFields?.date).format('DD/MM/YYYY') : null }, // 表单字段数据
+        inspectionData: inspectionItems || {}, // 检查项数据
       };
-      console.log("formattedValues:",formattedValues)
-      
 
       // 调用真实的API提交表单
       const result = await submitForm(formattedValues);
