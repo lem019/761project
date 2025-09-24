@@ -122,7 +122,9 @@ const TemplateReport = () => {
         element.style.height = 'auto';
         element.style.overflow = 'visible';
         element.style.position = 'static';
-        
+        element.style.marginLeft = '60px'; // 增加左边距
+        element.style.paddingLeft = '40px'; // 额外的内边距
+
         // 修复标题字体重叠问题
         const titleElement = element.querySelector('.formTitle, h1, h2, h3');
         if (titleElement) {
