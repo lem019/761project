@@ -6,6 +6,7 @@ import { getFormData, getFormTemplateById } from '@/services/form-service';
 import InspectionForm from './InspectionForm';
 import styles from './index.module.less';
 import html2pdf from 'html2pdf.js';
+import inspectionStyles from './InspectionForm.module.less';
 
 /**
  * Main Template Page Component
@@ -80,7 +81,7 @@ const TemplateReport = () => {
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // 获取要转换的元素
-      const element = document.querySelector(`.${styles.templateContainer}`);
+      const element = document.querySelector(`.${inspectionStyles.container}`);
       if (!element) {
         message.error('未找到要下载的内容');
         return;
