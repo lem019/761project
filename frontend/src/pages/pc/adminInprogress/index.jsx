@@ -199,6 +199,10 @@ const AdminInprogress = () => {
                 const templateId = record.templateId || "pmr";
                 navigate(`/pc/template/${templateId}?id=${record.id}`);
               }
+              if (record.status === "pending") {
+                const templateId = record.templateId || "pmr";
+                navigate(`/pc/template/${templateId}?id=${record.id}&view=1`);
+              }
             },
             style: record.status === "draft" ? { cursor: "pointer" } : {},
           })}

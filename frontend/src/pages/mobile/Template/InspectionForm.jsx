@@ -16,7 +16,7 @@ const { Title } = Typography;
  * Collects inspector info, inspection date, location details, etc.
  * Supports auto-save and editing existing forms
  */
-const InspectionForm = ({ template, existingFormData, formId }) => {
+const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -236,6 +236,7 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
           onValuesChange={handleFormChange}
           className={styles.form}
           size="large"
+          disabled={readOnly} // limit entire form if readOnly is true
         >
           {/* Render dynamic form fields */}
           {template.formFields && template.formFields.map((field, index) => (
@@ -305,24 +306,28 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
           {/* Action buttons */}
           <Form.Item className={styles.submitButton}>
             <div className={styles.buttonGroup}>
-              <Button
-                icon={<SaveOutlined />}
-                onClick={handleManualSave}
-                loading={saving}
-                className={styles.saveBtn}
-                size="large"
-              >
-                Save for Later
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                className={styles.submitBtn}
-                size="large"
-              >
-                Submit Inspection
-              </Button>
+              {!readOnly && (
+                <>
+                <Button
+                  icon={<SaveOutlined />}
+                  onClick={handleManualSave}
+                  loading={saving}
+                  className={styles.saveBtn}
+                  size="large"
+                >
+                  Save for Later
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  className={styles.submitBtn}
+                  size="large"
+                >
+                  Submit Inspection
+                </Button>
+                </>
+              )}
             </div>
           </Form.Item>
         </Form>

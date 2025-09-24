@@ -18,6 +18,7 @@ const TemplatePage = () => {
   const [existingFormData, setExistingFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const isReadOnly = searchParams.get('view') === '1';//control if the form is in view-only mode
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,7 +94,7 @@ const TemplatePage = () => {
     );
   }
 
-  return <InspectionForm template={template} existingFormData={existingFormData} formId={id} />;
+  return <InspectionForm template={template} existingFormData={existingFormData} formId={id} readOnly={isReadOnly} />;
 };
 
 export default TemplatePage;

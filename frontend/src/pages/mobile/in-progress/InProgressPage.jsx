@@ -77,6 +77,12 @@ export default function InProgressPage() {
     nav(`/mobile/template/${templateId}?id=${item.id}`);
   };
 
+  const openView = (item) => {
+  const templateId = item.templateId || "pmr";
+  // view=1 作为只读标记，模板页可据此判断
+  nav(`/mobile/template/${templateId}?id=${item.id}&view=1`);
+};
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
@@ -119,7 +125,7 @@ export default function InProgressPage() {
             <Empty description="No records" />
           ) : (
             filtered.map((item) => (
-              <InProgressCard key={item.id} item={item} onEdit={() => openEdit(item)} />
+              <InProgressCard key={item.id} item={item} onEdit={() => openEdit(item)} onView={() => openView(item)} />
             ))
           )}
         </div>
