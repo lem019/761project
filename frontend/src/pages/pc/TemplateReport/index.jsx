@@ -124,6 +124,9 @@ const TemplateReport = () => {
         element.style.position = 'static';
         element.style.marginLeft = '60px'; // 增加左边距
         element.style.paddingLeft = '40px'; // 额外的内边距
+        element.style.paddingBottom = '150px'; // 极大幅增加底部内边距确保内容不被截断
+        element.style.marginBottom = '80px'; // 极大的底部边距
+        element.style.minHeight = '200vh'; // 确保容器有充足的高度
 
         // 修复标题字体重叠问题
         const titleElement = element.querySelector('.formTitle, h1, h2, h3');
@@ -150,8 +153,8 @@ const TemplateReport = () => {
           inspectionTable.style.width = '100%';
           inspectionTable.style.borderCollapse = 'collapse';
           inspectionTable.style.pageBreakInside = 'auto';
-          inspectionTable.style.marginBottom = '100px'; // 大幅增加底部边距确保完整显示
-          inspectionTable.style.paddingBottom = '50px'; // 额外内边距
+          inspectionTable.style.marginBottom = '800px'; // 极大幅增加底部边距确保完整显示
+          inspectionTable.style.paddingBottom = '400px'; // 大幅增加内边距
         }
         
         // 处理所有表格行，确保它们都能显示
@@ -170,9 +173,19 @@ const TemplateReport = () => {
         // 特别处理最后一行，确保不被截断
         if (inspectionRows.length > 0) {
           const lastRow = inspectionRows[inspectionRows.length - 1];
-          lastRow.style.marginBottom = '50px';
-          lastRow.style.paddingBottom = '20px';
+          lastRow.style.marginBottom = '300px'; // 大幅增加最后一行底部边距
+          lastRow.style.paddingBottom = '200px'; // 大幅增加最后一行内边距
+          lastRow.style.pageBreakInside = 'avoid'; // 避免最后一行被分页截断
         }
+        
+        // 特别处理最后一行中的所有内容，确保完整显示
+        const lastRowCells = element.querySelectorAll('.inspectionTable .inspectionRow:last-child *');
+        lastRowCells.forEach((cell) => {
+          cell.style.marginBottom = '100px';
+          cell.style.paddingBottom = '80px';
+          cell.style.overflow = 'visible';
+          cell.style.pageBreakInside = 'avoid';
+        });
         
         // 确保表格内的所有内容都可见，包括视频按钮等
         const allContentInTable = element.querySelectorAll('.inspectionTable *');
@@ -190,7 +203,7 @@ const TemplateReport = () => {
 
       // PDF生成选项
       const options = {
-        margin: [15, 15, 15, 15], // 页边距 [top, left, bottom, right] mm
+        margin: [15, 15, 15, 15], // 页边距 [top, left, bottom, right] mm - 大幅增加底部边距
         filename: filename,
         image: { 
           type: 'jpeg', 
@@ -202,8 +215,8 @@ const TemplateReport = () => {
           allowTaint: true,
           letterRendering: true,
           logging: true, // 重新启用日志查看问题
-          height: element.scrollHeight + 300, // 大幅增加额外高度缓冲
-          width: element.scrollWidth + 100,    // 增加宽度缓冲
+          height: element.scrollHeight + 2000, // 极大幅增加额外高度缓冲确保内容完整
+          width: element.scrollWidth + 200,    // 增加宽度缓冲
           scrollX: 0,
           scrollY: 0,
           backgroundColor: '#ffffff',
@@ -256,14 +269,39 @@ const TemplateReport = () => {
             // 特别处理克隆文档中的最后一行
             if (clonedInspectionRows.length > 0) {
               const clonedLastRow = clonedInspectionRows[clonedInspectionRows.length - 1];
-              clonedLastRow.style.marginBottom = '50px';
-              clonedLastRow.style.paddingBottom = '20px';
+              clonedLastRow.style.marginBottom = '300px'; // 大幅增加最后一行底部边距
+              clonedLastRow.style.paddingBottom = '200px'; // 大幅增加最后一行内边距
+              clonedLastRow.style.pageBreakInside = 'avoid'; // 避免最后一行被分页截断
             }
+            
+            // 特别处理克隆文档中最后一行的所有内容
+            const clonedLastRowCells = clonedDoc.querySelectorAll('.inspectionTable .inspectionRow:last-child *');
+            clonedLastRowCells.forEach((cell) => {
+              cell.style.marginBottom = '100px';
+              cell.style.paddingBottom = '80px';
+              cell.style.overflow = 'visible';
+              cell.style.pageBreakInside = 'avoid';
+            });
             
             // 确保克隆文档的表格有足够的底部空间
             if (clonedInspectionTable) {
-              clonedInspectionTable.style.marginBottom = '200px';
-              clonedInspectionTable.style.paddingBottom = '80px';
+              clonedInspectionTable.style.marginBottom = '800px'; // 极大幅增加底部边距
+              clonedInspectionTable.style.paddingBottom = '400px'; // 大幅增加内边距
+            }
+            
+            // 确保克隆文档的主容器有足够的底部空间
+            if (clonedDoc.body) {
+              clonedDoc.body.style.paddingBottom = '1000px';
+              clonedDoc.body.style.marginBottom = '500px';
+              clonedDoc.body.style.minHeight = '200vh';
+            }
+            
+            // 确保克隆文档中所有内容都有足够的空间
+            const clonedMainContainer = clonedDoc.querySelector('[class*="container"]');
+            if (clonedMainContainer) {
+              clonedMainContainer.style.paddingBottom = '1000px';
+              clonedMainContainer.style.marginBottom = '500px';
+              clonedMainContainer.style.minHeight = '200vh';
             }
             
             // 确保克隆文档中表格内的所有内容都可见
@@ -321,6 +359,11 @@ const TemplateReport = () => {
         element.style.height = '';
         element.style.overflow = '';
         element.style.position = '';
+        element.style.marginLeft = '';
+        element.style.paddingLeft = '';
+        element.style.paddingBottom = '';
+        element.style.marginBottom = '';
+        element.style.minHeight = '';
         
         // 恢复标题样式
         const titleElement = element.querySelector('.formTitle, h1, h2, h3');
@@ -351,6 +394,15 @@ const TemplateReport = () => {
           inspectionTable.style.paddingBottom = '';
         }
         
+        // 恢复最后一行及其内容的样式
+        const lastRowCells = element.querySelectorAll('.inspectionTable .inspectionRow:last-child *');
+        lastRowCells.forEach((cell) => {
+          cell.style.marginBottom = '';
+          cell.style.paddingBottom = '';
+          cell.style.overflow = '';
+          cell.style.pageBreakInside = '';
+        });
+        
         // 恢复表格内所有元素的样式
         const allContentInTable = element.querySelectorAll('.inspectionTable *');
         allContentInTable.forEach(el => {
@@ -372,6 +424,7 @@ const TemplateReport = () => {
           row.style.minHeight = '';
           row.style.marginBottom = '';
           row.style.paddingBottom = '';
+          row.style.pageBreakInside = '';
         });
         
         message.success('PDF下载成功！');
