@@ -17,6 +17,7 @@ import {
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import { getFormList } from '@/services/form-service';
 import styles from './index.module.less';
+import { useNavigate } from "react-router-dom";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -38,6 +39,7 @@ const AdminInprogress = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
+  const navigate = useNavigate();
 
   // 获取表单列表数据
   const fetchFormList = async () => {
@@ -191,6 +193,15 @@ const AdminInprogress = () => {
             className={styles.dataTable}
             size="middle"
             loading={loading}
+            onRow={(record) => ({
+            onClick: () => {
+              if (record.status === "draft") {
+                const templateId = record.templateId || "pmr";
+                navigate(`/pc/template/${templateId}?id=${record.id}`);
+              }
+            },
+            style: record.status === "draft" ? { cursor: "pointer" } : {},
+          })}
           />
         </div>
 
