@@ -114,12 +114,15 @@ async function saveForm(uid, formData, userInfo = {}) {
 
     // 检查权限：只有创建者可以更新草稿状态或者被拒绝状态的表单
     const existingData = doc.data();
-    if (existingData.creator !== uid) {
-      throw new Error('You don\'t have permission to update this form');
-    }
+    if (!(existingData.status === FORM_STATUS.PENDING && userInfo.role === 'admin')) {
+      if (existingData.creator !== uid) {
+        throw new Error('You don\'t have permission to update this form');
+      }
 
-    if (existingData.status !== FORM_STATUS.DRAFT && existingData.status !== FORM_STATUS.DECLINED) {
-      throw new Error('Only draft or declined forms can be updated');
+      if (existingData.status !== FORM_STATUS.DRAFT && existingData.status !== FORM_STATUS.DECLINED) {
+        // admin can update pending form to approved or declined
+        throw new Error('Only draft or declined forms can be updated');
+      }
     }
 
     await ref.update(dataToSave);

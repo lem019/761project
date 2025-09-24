@@ -23,6 +23,7 @@ import {
 import { CheckCircleOutlined, CloseCircleOutlined, SaveOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { getFormData, saveFormData, operateForm, getFormTemplateById } from '@/services/form-service';
 import styles from './index.module.less';
+import { FORM_STATUS } from '@/constants/formStatus';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -282,8 +283,13 @@ const ReviewFormPage = () => {
       // Build save data
       const saveData = {
         id: formId,
-        inspectionData: formMeta,
-        overallComment: overallComment
+        type: formMeta.type,
+        templateId: formMeta.templateId,
+        templateName: formMeta.templateName,
+        metaData: formMeta.metaData || {}, // 表单字段数据
+        inspectionData: formMeta.inspectionData || {}, // 检查项数据
+        overallComment: overallComment,
+        status: FORM_STATUS.PENDING,
       };
       
       await saveFormData(saveData);

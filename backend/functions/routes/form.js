@@ -142,7 +142,8 @@ router.post("/save", async (req, res) => {
     const uid = req.user.uid; // 从认证中间件获取真实用户ID
     const userInfo = {
       email: req.user.email,
-      name: req.user.name || req.user.email // 如果没有name，使用email作为name
+      name: req.user.name || req.user.email, // 如果没有name，使用email作为name
+      role: req.user.role || 'primary'
     };
     const result = await saveForm(uid, req.body, userInfo);
 

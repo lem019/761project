@@ -75,7 +75,7 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
 
       const formattedValues = {
         id: currentFormId, // 使用本地的formId状态
-        type: "a",
+        type: template.type,
         templateId: template.id,
         templateName: template.name,
         metaData: formFields, // 表单字段数据
