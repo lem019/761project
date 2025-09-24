@@ -61,9 +61,18 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
   return (
     <div className={styles.container}>
       <Card className={styles.formCard}>
-        <Title level={2} className={styles.formTitle}>
-          {template.name}
-        </Title>
+        <div className={styles.headerContainer}>
+          <Title level={2} className={styles.formTitle}>
+            {template.name}
+          </Title>
+        </div>
+        <div className={styles.logoContainer}>
+          <img 
+            src="/src/assets/img/logo.png" 
+            alt="ThermoFLO Logo"
+            className={styles.logo}
+          />
+        </div>
 
         {template.description && (
           <div className={styles.templateDescription}>
@@ -77,46 +86,69 @@ const InspectionForm = ({ template, existingFormData, formId }) => {
           className={styles.form}
           size="large"
         >
-          {/* Render dynamic form fields */}
-          {template?.formFields?.map((field, index) => (
-            <DynamicFormField
-              key={field.name || index}
-              field={field}
-              form={form}
-            />
-          ))}
-
-          {/* Inspection items */}
-          <Form.Item
-              label="Inspection Items"
-              name="inspectionItems"
-              className={`${styles.formItem} ${styles.inspectionItemsLabel}`}
-          >
-          {template.inspectionItems && template.inspectionItems.length > 0 && (
-            <div className={styles.inspectionTable}>
-              {template.inspectionItems.map((item) => (
-                <div key={item.key} className={styles.inspectionRow}>
-                  <div className={styles.inspectionLabel}>
-                    {item.name}
-                  </div>
-                  <div className={styles.inspectionGuidance}>
-                    <GuidanceContent
-                      itemType={item.key}
-                      guidanceContent={template.guidanceContent}
-                    />
-                  </div>
-                  <div className={styles.inspectionMethod}>
-                    method
-                  </div>
-                  <div className={styles.inspectionFileAddress}>
-                    file address
-                  </div>
-                </div>
+          
+          {/* Dynamic form fields table */}
+          <div className={styles.formTable}>
+            {template?.formFields?.map((field, index) => (
+              <DynamicFormField
+                key={field.name || index}
+                field={field}
+                form={form}
+              />
               ))}
+              
+              {/* Empty row */}
+              <div className={`${styles.tableRow} ${styles.emptyTableRow}`}></div>
             </div>
-          )}
-          </Form.Item>
         </Form>
+
+        {/* Inspection Items table */}
+        <div className={styles.inspectionTable}>
+          {/* Table header */}
+          <div className={styles.inspectionTableRow}>
+            <div className={styles.checklistItemCell}>
+              Checklist Item
+            </div>
+            <div className={styles.taskCell}>
+              Task to be completed  
+            </div>
+            <div className={styles.methodCell}>
+              Method
+            </div>
+            <div className={styles.checkboxCell}>
+              ☑️
+            </div>
+            <div className={styles.commentsCell}>
+              Comments & Details
+            </div>
+          </div>
+
+          {/* Inspection Items rows */}
+          {template.inspectionItems && template.inspectionItems.length > 0 && (
+            template.inspectionItems.map((item) => (
+              <div key={item.key} className={styles.inspectionTableRow}>
+                <div className={styles.checklistItemCell}>
+                  {item.name}
+                </div>
+                <div className={styles.taskCell}>
+                  <GuidanceContent
+                    itemType={item.key}
+                    guidanceContent={template.guidanceContent}
+                  />
+                </div>
+                <div className={styles.methodCell}>
+                  method
+                </div>
+                <div className={styles.checkboxCell}>
+                  ☑️
+                </div>
+                <div className={styles.commentsCell}>
+                  Comments & Details
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </Card>
     </div>
   );

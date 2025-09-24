@@ -7,64 +7,59 @@ const { TextArea } = Input;
 
 /**
  * Dynamic form field renderer
- * Renders form fields based on template configuration
+ * Renders form fields based on template configuration in table format
  */
 const DynamicFormField = ({ field, form }) => {
   const { name, label, type, required, placeholder, validation, format, rows } = field;
 
-  const commonProps = {
-    placeholder,
-    className: type === 'textarea' ? styles.textArea : styles.input
-  };
-
-  switch (type) {
-    case 'input':
-      return (
-        <Form.Item
-          label={`${label}${required ? ' *' : ''}`}
-          name={name}
-          rules={validation ? [validation] : []}
-          className={styles.formItem}
-        >
-          <Input {...commonProps} />
-        </Form.Item>
-      );
-
-    case 'textarea':
-      return (
-        <Form.Item
-          label={`${label}${required ? ' *' : ''}`}
-          name={name}
-          rules={validation ? [validation] : []}
-          className={styles.formItem}
-        >
-          <TextArea 
-            {...commonProps}
-            rows={rows || 3}
+  const renderInput = () => {
+    switch (type) {
+      case 'input':
+        return (
+          <Input 
+            placeholder={placeholder}
+            className={styles.tableInput}
           />
-        </Form.Item>
-      );
+        );
 
-    case 'datePicker':
-      return (
-        <Form.Item
-          label={`${label}${required ? ' *' : ''}`}
-          name={name}
-          rules={validation ? [validation] : []}
-          className={styles.formItem}
-        >
+      case 'textarea':
+        return (
+          <TextArea 
+            placeholder={placeholder}
+            rows={rows || 3}
+            className={styles.tableTextArea}
+          />
+        );
+
+      case 'datePicker':
+        return (
           <DatePicker
             placeholder={placeholder}
             format={format || 'DD/MM/YYYY'}
             suffixIcon={<CalendarOutlined />}
-            className={styles.datePicker}
+            className={styles.tableDatePicker}
           />
-        </Form.Item>
-      );
+        );
 
-    default:
-      return null;
-  }
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className={styles.tableRow}>
+      <div className={styles.tableLabel}>
+        {label}{required ? ' *' : ''}
+      </div>
+      <Form.Item
+          name={name}
+          rules={validation ? [validation] : []}
+          className={styles.tableFormItem}
+        >
+          {renderInput()}
+        </Form.Item>
+    </div>
+  );
 };
 
 export default DynamicFormField;
