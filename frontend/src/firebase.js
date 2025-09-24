@@ -21,15 +21,6 @@ connectAuthEmulator(auth, "http://localhost:9099"); // 让登录注册都走本�
 
 const provider = new GoogleAuthProvider();
 
-// Firestore local
-const db = getFirestore(app);
-connectFirestoreEmulator(db, "localhost", 8081);
-
-// Functions local
-const functions = getFunctions(app);
-connectFunctionsEmulator(functions, "localhost", 5001);
-
-
 // Storage (for image/video uploads)
 const storage = getStorage(app);
 try {
@@ -40,4 +31,4 @@ try {
 
 export const signInWithGoogle = () => signInWithPopup(auth, provider);
 
-export { auth, db, functions, storage };
+export { auth, storage };
