@@ -28,13 +28,13 @@ const templates = [
   {
     id: 'pmr',
     name: 'PMR Maintenance Service Check',
-    description: 'PMR维护服务检查表单',
+    description: '',//删去中文
     type: 'pmr',
     icon: 'ToolOutlined',
     color: '#1890ff',
     gradient: 'linear-gradient(135deg, #1890ff 0%, #40a9ff 100%)',
     isActive: true,
-    // 表单字段配置
+    // 表单字段的配置
     formFields: [
       {
         name: 'inspector',
@@ -120,7 +120,7 @@ const templates = [
         }
       }
     ],
-    // 检查项配置
+    // 检查项的配置
     inspectionItems: [
       {
         key: 'sprayBoothMake',
@@ -144,7 +144,7 @@ const templates = [
         required: true
       }
     ],
-    // 指导内容配置
+    // 指导内容的配置
     guidanceContent: {
       sprayBoothMake: {
         checklist: [
@@ -180,13 +180,13 @@ const templates = [
   {
     id: 'booth',
     name: 'Booth Maintenance Service Check',
-    description: '展位维护服务检查表单',
+    description: ' ',//删去中文
     type: 'booth',
     icon: 'SettingOutlined',
     color: '#52c41a',
     gradient: 'linear-gradient(135deg, #52c41a 0%, #73d13d 100%)',
     isActive: true,
-    // 表单字段配置
+    // 表单字段的配置
     formFields: [
       {
         name: 'inspector',
@@ -272,7 +272,7 @@ const templates = [
         }
       }
     ],
-    // 检查项配置
+    // 检查项的配置
     inspectionItems: [
       {
         key: 'boothStructure',
@@ -296,7 +296,7 @@ const templates = [
         required: true
       }
     ],
-    // 指导内容配置
+    // 指导内容的配置
     guidanceContent: {
       boothStructure: {
         checklist: [
@@ -332,13 +332,13 @@ const templates = [
   {
     id: 'dynapumps',
     name: 'Dynapumps Booth Maintenance Service Check',
-    description: 'Dynapumps展位维护服务检查表单',
+    description: ' ',//删去中文
     type: 'dynapumps',
     icon: 'SafetyOutlined',
     color: '#722ed1',
     gradient: 'linear-gradient(135deg, #722ed1 0%, #9254de 100%)',
     isActive: true,
-    // 表单字段配置
+    // 表单的字段配置
     formFields: [
       {
         name: 'inspector',
