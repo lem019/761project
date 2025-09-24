@@ -1,16 +1,15 @@
-// frontend/src/components/uploadMedia/index.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import { Upload, message } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { auth, storage } from '@/firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject, listAll } from 'firebase/storage';
 import getThumbnail from '@/utils/getThumbnail';
 
 /**
  * 可复用的上传组件（Firebase Storage）：
- * - 主文件路径：forms/<formId>/images/<fileName>
- * - 缩略图（视频）路径：forms/<formId>/images/thumbnails/<fileName>.jpg
- *   （与 storage.rules 中的 `match /forms/{formId}/images/{allPaths=**}` 兼容）
+ * - 主文件路径：forms/<formId>/images/<uid>/<fileName>
+ * - 缩略图（视频）路径：forms/<formId>/images/<uid>/thumbnails/<fileName>.jpg
+ *   （与 storage.rules: match /forms/{formId}/images/{uid}/{allPaths=**} 完全一致）
  */
 export default function UploadMedia({
   value = [],                 // 数组：多文件
@@ -50,7 +49,11 @@ export default function UploadMedia({
   };
 
   const beforeUpload = (file) => {
-    const okType = file.type?.startsWith('image/') || file.type?.startsWith('video/');
+    // 与 storage.rules 一致：MIME 或 扩展名兜底
+    const okType =
+      (file.type && (file.type.startsWith('image/') || file.type.startsWith('video/'))) ||
+      /\.(jpg|jpeg|png|gif|webp|mp4|mov|webm)$/i.test(file.name || '');
+ 
     if (!okType) {
       message.error('Only image or video files are allowed');
       return Upload.LIST_IGNORE;
@@ -69,16 +72,19 @@ export default function UploadMedia({
   const customRequest = async ({ file, onProgress, onError, onSuccess }) => {
     try {
       if (!auth.currentUser) throw new Error('not-signed-in');
+      const uid = auth.currentUser.uid;
       const safeName = String(file.name || 'file').replace(/[^\w.\-]+/g, '_');
       const theFormId = formId || 'temp';
 
-      // 主文件上传：forms/<formId>/images/<fileName>
-      const fileRef = ref(storage, `forms/${theFormId}/images/${safeName}`);
+      // 主文件上传：forms/<formId>/images/<uid>/<fileName>
+      const objectPath = `forms/${theFormId}/images/${uid}/${safeName}`;
+      const fileRef = ref(storage, objectPath);
       
       // 传入明确的 contentType，避免浏览器/环境不给 MIME 导致规则中 .matches() 报 null 错
       const metadata = {
         contentType: file.type || 'application/octet-stream',
-        cacheControl: 'public,max-age=3600'
+        cacheControl: 'public,max-age=3600',
+        customMetadata: { owner: uid },
       };
       const task = uploadBytesResumable(fileRef, file, metadata);
       task.on('state_changed', (snap) => {
@@ -90,11 +96,17 @@ export default function UploadMedia({
       const downloadURL = await getDownloadURL(fileRef);
 
       let thumbUrl;
+      let thumbPath;
       if (file.type?.startsWith('video/')) {
         // 生成视频缩略图
         const thumbBlob = await getThumbnail(file, { frameTime: 0.2 });
-        const thumbRef = ref(storage, `forms/${theFormId}/images/thumbnails/${safeName}.jpg`);
-        const thumbTask = uploadBytesResumable(thumbRef, thumbBlob, { contentType: 'image/jpeg' });
+        // 缩略图也放在同一 uid 目录下，继承相同的访问控制
+        thumbPath = `forms/${theFormId}/images/${uid}/thumbnails/${safeName}.jpg`;
+        const thumbRef = ref(storage, thumbPath);
+        const thumbTask = uploadBytesResumable(thumbRef, thumbBlob, {
+          contentType: 'image/jpeg',
+          customMetadata: { owner: uid },
+        });
         await thumbTask;
         thumbUrl = await getDownloadURL(thumbRef);
       }
@@ -105,6 +117,9 @@ export default function UploadMedia({
         type: file.type,
         downloadURL,
         thumbnailURL: thumbUrl,
+        // 记录存储路径，删除时才知道删哪一个
+        path: objectPath,
+        thumbnailPath: thumbPath,
       };
 
       
@@ -130,11 +145,20 @@ export default function UploadMedia({
       beforeUpload={beforeUpload}
       customRequest={customRequest}
       onRemove={(file) => {
+        // 真正删除云端对象（主文件 & 缩略图），规则会校验 owner
         const base = Array.isArray(valueRef.current) ? valueRef.current : [];
-        const next = base.filter(
-          (it) => it.name !== file.name || (it.downloadURL || it.url) !== (file.url || file.response?.downloadURL)
+        const target = base.find(
+          (it) => it.name === file.name && (it.downloadURL || it.url) === (file.url || file.response?.downloadURL)
         );
-        trigger(next);
+        const tasks = [];
+        if (target?.path) tasks.push(deleteObject(ref(storage, target.path)));
+        if (target?.thumbnailPath) tasks.push(deleteObject(ref(storage, target.thumbnailPath)));
+        return Promise.all(tasks)
+          .catch(() => void 0)
+          .finally(() => {
+            const next = base.filter((it) => it !== target);
+            trigger(next);
+          });
       }}
       onChange={({ fileList: fl }) => setFileList(fl)} // 仅控制展示
       showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}

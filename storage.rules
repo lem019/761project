@@ -2,52 +2,45 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    function isSignedIn() {
-      return request.auth != null;
-    }
+    function isSignedIn() { return request.auth != null; }
 
-    function isOwner(uid) {
-      return isSignedIn() && request.auth.uid == uid;
+    
+    function isImageOrVideoMime() {
+      return request.resource.contentType != null &&
+        (request.resource.contentType.matches('image/.*') ||
+         request.resource.contentType.matches('video/.*'));
     }
-
-    // 允许的文件：图片或视频；并兼容某些环境 contentType 为空的情况
-    function isImageOrVideo() {
-      return request.resource.contentType != null
-        && (request.resource.contentType.matches('image/.*')
-         || request.resource.contentType.matches('video/.*'));
+    function hasSafeExt() {
+      return request.resource.name.matches('.*\\.(?i)(jpg|jpeg|png|gif|webp|mp4|mov|webm)$');
     }
-
-    // 基础校验：≤ 10MB 且为图片/视频。size 也可能为空，做保护。
     function fileOk() {
-      return request.resource.size != null
-        && request.resource.size <= 10 * 1024 * 1024
-        && isImageOrVideo();
+      return request.resource.size != null &&
+             request.resource.size <= 10 * 1024 * 1024 &&
+             (isImageOrVideoMime() || hasSafeExt());
     }
 
-    // —— 用户私有区：严格按 uid 隔离 ——
-    match /users/{userId}/images/{allPaths=**} {
-      allow create, update: if isOwner(userId) && fileOk();
-      allow read, delete:  if isOwner(userId);
-    }
+    // 在路径上引入 {uid}，便于在 list 阶段按路径就拦截
+    match /forms/{formId}/images/{uid}/{allPaths=**} {
+      // 列表（list）：只能列出自己的目录
+      allow list: if isSignedIn() && request.auth.uid == uid;
 
-    // —— 表单图片区：基础版（所有登录用户可读，任何登录用户可上传图片/视频≤10MB） ——
-    // 如需更细粒度，请用下面「进阶：联查 Firestore」替换本段
-    match /forms/{formId}/images/{allPaths=**} {
-      allow create, update: if isSignedIn() && fileOk();
-      allow read:  if isSignedIn();
-      allow delete: if isSignedIn();
-    }
+      // 读取单个对象（get）：只能读取自己拥有（owner）的文件
+      allow get: if isSignedIn() && resource.metadata.owner == request.auth.uid;
 
-    // —— 临时上传区：带 uid 的路径强隔离（你项目里有 forms/temp/images/{uid}/... 的用法） ——
-    match /forms/temp/images/{uid}/{allPaths=**} {
-      allow create, update: if isOwner(uid) && fileOk();
-      allow read, delete:  if isOwner(uid);
-    }
+      // 新建：大小/类型校验 + 必须写入 owner 且与当前登录者一致
+      allow create: if isSignedIn()
+                    && fileOk()
+                    && request.resource.metadata.owner == request.auth.uid;
 
-    // —— 公共资源：仅允许登录用户写；读开放 ——
-    match /public/{allPaths=**} {
-      allow read: if true;
-      allow write: if isSignedIn() && fileOk();
+      // 更新：只有 owner 可更新 + 仍需大小/类型校验 + 禁止篡改 owner
+      allow update: if isSignedIn()
+                    && resource.metadata.owner == request.auth.uid
+                    && fileOk()
+                    && request.resource.metadata.owner == resource.metadata.owner;
+
+      // 删除：只有 owner 可删
+      allow delete: if isSignedIn()
+                    && resource.metadata.owner == request.auth.uid;
     }
   }
 }
