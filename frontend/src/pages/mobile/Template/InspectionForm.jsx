@@ -332,12 +332,12 @@ const InspectionForm = ({ template, existingFormData, formId, readOnly }) => {
           <div className={styles.saveStatus}>
             {saving && (
               <div className={styles.savingIndicator}>
-                <Spin size="small" /> 正在保存...
+                <Spin size="small" /> Saving...
               </div>
             )}
             {lastSaved && !saving && (
               <div className={styles.lastSaved}>
-                最后保存: {lastSaved.toLocaleTimeString()}
+                Last Saved: {lastSaved.toLocaleTimeString()}
               </div>
             )}
           </div>

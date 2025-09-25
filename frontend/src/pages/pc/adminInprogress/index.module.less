@@ -1,129 +1,255 @@
 .container {
-  display: flex;
-  flex: 1;
-  background-color: #f0f2f5;
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
 
-  .contentCard {
-    flex: 1;
-    display: flex;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: none;
-
-    :global(.ant-card-body) {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+  .header {
+    margin-bottom: 32px;
+    
+    .title {
+      margin: 0 0 8px 0 !important;
+      color: #1f2937;
+      font-weight: 700;
+      font-size: 32px;
+    }
+    
+    .subtitle {
+      color: #6b7280;
+      font-size: 16px;
+      margin: 0;
     }
   }
 
   .searchSection {
-    margin-bottom: 24px;
-    padding: 20px;
-    background: #fafafa;
-    border-radius: 8px;
-    border: 1px solid #f0f0f0;
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 
-    .searchItem {
+    .searchBar {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-
-      .searchLabel {
-        font-weight: 500;
-        color: #374151;
-        font-size: 14px;
-      }
+      justify-content: flex-end;
 
       .searchInput {
-        border-radius: 6px;
+        width: 300px;
+        border-radius: 8px;
         border: 1px solid #d1d5db;
         transition: all 0.3s ease;
 
-        &:focus,
-        &:hover {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-        }
-      }
+        :global(.ant-input) {
+          border: none;
+          box-shadow: none;
+          padding: 12px 16px;
+          font-size: 14px;
 
-      .statusSelect {
-        width: 100%;
-        border-radius: 6px;
-
-        .ant-select-selector {
-          border-radius: 6px;
-          border: 1px solid #d1d5db;
-          transition: all 0.3s ease;
-
-          &:hover,
           &:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+            box-shadow: none;
           }
+        }
+
+        :global(.ant-input-search-button) {
+          border: none;
+          background: transparent;
+          color: #6b7280;
+        }
+
+        &:hover,
+        &:focus-within {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
       }
     }
 
-    .actionButtons {
+    .statusFilters {
       display: flex;
-      gap: 12px;
-      justify-content: flex-end;
+      width: 100%;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 4px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
-      .resetButton {
-        border: 1px solid #d1d5db;
-        color: #374151;
-        background: #ffffff;
-        border-radius: 6px;
-        font-weight: 500;
-        transition: all 0.3s ease;
+      .statusButton {
+        flex: 1;
+        border-radius: 8px;
+        padding: 12px 16px;
+        height: auto;
+        font-weight: 600;
+        font-size: 14px;
+        border: none !important;
+        background: transparent;
+        color: #64748b;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 1;
+        margin: 0 !important;
 
-        &:hover {
-          border-color: #9ca3af;
-          color: #1f2937;
+        &:hover:not(.active) {
+          color: #1890ff;
+          background: rgba(24, 144, 255, 0.08);
+          transform: translateY(-1px);
         }
-      }
 
-      .queryButton {
-        background: #3b82f6;
-        border-color: #3b82f6;
-        border-radius: 6px;
-        font-weight: 500;
-        transition: all 0.3s ease;
+        // 激活状态样式
+        &.active {
+          background-color: #1890ff !important;
+          background: #1890ff !important;
+          color: #ffffff !important;
+          box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3) !important;
+          border: 1px solid #1890ff !important;
+          transform: translateY(-1px);
+          z-index: 2;
 
-        &:hover {
-          background: #2563eb;
-          border-color: #2563eb;
+          &:hover {
+            background-color: #1890ff !important;
+            background: #1890ff !important;
+            color: #ffffff !important;
+            border-color: #1890ff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4) !important;
+          }
+
+          &:focus {
+            background-color: #1890ff !important;
+            background: #1890ff !important;
+            color: #ffffff !important;
+            border-color: #1890ff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3) !important;
+          }
+
+          &:active {
+            background-color: #1890ff !important;
+            background: #1890ff !important;
+            color: #ffffff !important;
+            border-color: #1890ff !important;
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3) !important;
+          }
         }
       }
     }
   }
 
-  .tableSection {
-    flex: 1;
-    overflow: auto;
-    margin-bottom: 24px;
+  .inspectionsSection {
+    margin-bottom: 32px;
 
-    .dataTable {
-      .ant-table-thead > tr > th {
-        background: #f8fafc;
-        border-bottom: 2px solid #e5e7eb;
+    .sectionHeader {
+      margin-bottom: 24px;
+
+      .sectionTitle {
+        margin: 0 0 8px 0 !important;
+        color: #1f2937;
         font-weight: 600;
-        color: #374151;
-        padding: 16px 12px;
+        font-size: 20px;
       }
 
-      .ant-table-tbody > tr {
+      .sectionSubtitle {
+        color: #6b7280;
+        font-size: 14px;
+        margin: 0;
+      }
+    }
+
+    .loadingContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 0;
+    }
+
+    .inspectionsList {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .inspectionCard {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
+        cursor: pointer;
 
         &:hover {
-          background: #f8fafc;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          border-color: #3b82f6;
         }
 
-        > td {
-          padding: 12px;
-          border-bottom: 1px solid #f3f4f6;
+        :global(.ant-card-body) {
+          padding: 20px;
+        }
+
+        .cardContent {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 16px;
+
+          .cardLeft {
+            flex: 1;
+            min-width: 0;
+
+            .inspectionTitle {
+              margin: 0 0 12px 0 !important;
+              color: #1f2937;
+              font-weight: 600;
+              font-size: 16px;
+              line-height: 1.4;
+            }
+
+            .cardMeta {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              flex-wrap: wrap;
+
+              .statusTag {
+                border-radius: 12px;
+                font-weight: 500;
+                font-size: 12px;
+                padding: 4px 12px;
+                margin: 0;
+              }
+
+              .createTime {
+                color: #6b7280;
+                font-size: 14px;
+              }
+            }
+          }
+
+          .cardActions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+
+            .actionButton {
+              border: none;
+              background: transparent;
+              color: #6b7280;
+              font-weight: 500;
+              padding: 8px 12px;
+              border-radius: 6px;
+              transition: all 0.3s ease;
+
+              &:hover {
+                background: #f3f4f6;
+                color: #374151;
+              }
+
+              &.ant-btn-dangerous {
+                &:hover {
+                  background: #fef2f2;
+                  color: #dc2626;
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -132,16 +258,18 @@
   .paginationSection {
     display: flex;
     justify-content: center;
-    padding-top: 16px;
-    border-top: 1px solid #f3f4f6;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
 
     .pagination {
       .ant-pagination-item {
-        border-radius: 6px;
+        border-radius: 8px;
         border: 1px solid #d1d5db;
+        font-weight: 500;
 
         &:hover {
           border-color: #3b82f6;
+          color: #3b82f6;
         }
 
         &.ant-pagination-item-active {
@@ -156,8 +284,9 @@
 
       .ant-pagination-prev,
       .ant-pagination-next {
-        border-radius: 6px;
+        border-radius: 8px;
         border: 1px solid #d1d5db;
+        font-weight: 500;
 
         &:hover {
           border-color: #3b82f6;
@@ -167,7 +296,7 @@
 
       .ant-pagination-options {
         .ant-select-selector {
-          border-radius: 6px;
+          border-radius: 8px;
           border: 1px solid #d1d5db;
         }
       }
@@ -176,50 +305,68 @@
 }
 
 // 响应式设计
+@media (max-width: 1200px) {
+  .container {
+    max-width: 100%;
+    padding: 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 16px;
+    max-width: 100%;
 
     .header {
-      margin-bottom: 16px;
+      margin-bottom: 24px;
 
       .title {
-        font-size: 20px;
+        font-size: 24px;
       }
-    }
 
-    .contentCard {
-      .ant-card-body {
-        padding: 16px;
+      .subtitle {
+        font-size: 14px;
       }
     }
 
     .searchSection {
-      margin-bottom: 16px;
-      padding: 16px;
+      .searchBar {
+        justify-content: center;
 
-      .searchItem {
-        margin-bottom: 16px;
-
-        &:last-child {
-          margin-bottom: 0;
+        .searchInput {
+          width: 100%;
+          max-width: 400px;
         }
       }
 
-      .actionButtons {
-        justify-content: center;
-        margin-top: 16px;
+      .statusFilters {
+        .statusButton {
+          font-size: 12px;
+          padding: 10px 12px;
+        }
       }
     }
 
-    .tableSection {
-      margin-bottom: 16px;
+    .inspectionsSection {
+      .inspectionsList {
+        .inspectionCard {
+          .cardContent {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
 
-      .dataTable {
-        .ant-table-thead > tr > th,
-        .ant-table-tbody > tr > td {
-          padding: 8px 6px;
-          font-size: 12px;
+            .cardLeft {
+              .cardMeta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+              }
+            }
+
+            .cardActions {
+              justify-content: center;
+            }
+          }
         }
       }
     }
@@ -238,26 +385,54 @@
   .container {
     padding: 12px;
 
+    .header {
+      .title {
+        font-size: 20px;
+      }
+    }
+
     .searchSection {
-      padding: 12px;
-
-      .actionButtons {
-        flex-direction: column;
-        width: 100%;
-
-        .resetButton,
-        .queryButton {
+      .searchBar {
+        .searchInput {
           width: 100%;
+        }
+      }
+
+      .statusFilters {
+        .statusButton {
+          font-size: 11px;
+          padding: 8px 6px;
         }
       }
     }
 
-    .tableSection {
-      .dataTable {
-        .ant-table-thead > tr > th,
-        .ant-table-tbody > tr > td {
-          padding: 6px 4px;
-          font-size: 11px;
+    .inspectionsSection {
+      .inspectionsList {
+        .inspectionCard {
+          :global(.ant-card-body) {
+            padding: 16px;
+          }
+
+          .cardContent {
+            .cardLeft {
+              .inspectionTitle {
+                font-size: 14px;
+              }
+
+              .cardMeta {
+                .createTime {
+                  font-size: 12px;
+                }
+              }
+            }
+
+            .cardActions {
+              .actionButton {
+                font-size: 12px;
+                padding: 6px 8px;
+              }
+            }
+          }
         }
       }
     }

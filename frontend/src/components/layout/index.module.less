@@ -180,9 +180,15 @@
   flex: 1;
   display: flex;
   overflow-y: auto;
-  padding-right: 8px;
+  padding: 0 24px;
   width: 100%;
-  justify-content: center; /* 让子页面水平居中 */
+  justify-content: center; /* 让子页面居中 */
+}
+
+@media (max-width: 1200px) {
+  .outlet-container {
+    padding: 0 16px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -191,11 +197,11 @@
   }
   
   .content-area {
-    padding: 16px;
+    padding: 0;
   }
   
   .outlet-container {
-    padding-right: 0;
+    padding: 0 12px;
   }
   
   .left-section {

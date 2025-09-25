@@ -2,26 +2,21 @@ import React, { useState, useEffect } from 'react';
 import {
   Button,
   Input,
-  Table,
-  Space,
   Card,
   Pagination,
-  Select,
   Tag,
   Typography,
-  Row,
-  Col,
   Spin,
-  message
+  message,
+  Empty
 } from 'antd';
-import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
+import { SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getFormList } from '@/services/form-service';
 import styles from './index.module.less';
 import { useNavigate } from "react-router-dom";
 
 const { Search } = Input;
-const { Option } = Select;
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 // 状态映射
 const statusMap = {
@@ -58,7 +53,8 @@ const AdminInprogress = () => {
           id: item.id,
           formName: item.templateName || 'Unknown Form',
           status: item.status,
-          createTime: item.createdAt || ''
+          createTime: item.createdAt || '',
+          templateId: item.templateId || 'pmr'
         })));
         setTotal(response.pagination?.total || 0);
       }
@@ -78,138 +74,162 @@ const AdminInprogress = () => {
   // 分页数据
   const paginatedData = filteredData;
 
-  const handleReset = () => {
-    setSearchFormName('');
-    setStatusFilter('All');
-  };
-
   const handlePageChange = (page, size) => {
     setCurrentPage(page);
     setPageSize(size);
   };
 
-  const columns = [
-    {
-      title: 'Form Name',
-      dataIndex: 'formName',
-      key: 'formName',
-      render: (text) => (
-        <Text style={{ color: '#1890ff', cursor: 'pointer' }}>
-          {text}
-        </Text>
-      ),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => {
-        const statusInfo = statusMap[status] || { color: '#999', text: status };
-        return (
-          <Tag color={statusInfo.color}>
-            {statusInfo.text}
-          </Tag>
-        );
-      },
-      filters: [
-        { text: 'All', value: 'All' },
-        { text: 'Pending', value: 'Pending' },
-        { text: 'Draft', value: 'Draft' },
-        { text: 'Declined', value: 'Declined' },
-        { text: 'Approved', value: 'Approved' },
-      ],
-      onFilter: (value, record) => {
-        if (value === 'All') return true;
-        return record.status === value;
-      },
-    },
-    {
-      title: 'Create Time',
-      dataIndex: 'createTime',
-      key: 'createTime',
-      sorter: (a, b) => new Date(a.createTime) - new Date(b.createTime),
-      render: (text) => <Text>{text}</Text>,
-    },
-  ];
+  const handleStatusFilter = (status) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+  };
+
+  const handleFormClick = (record) => {
+    if (record.status === "draft" || record.status === "declined") {
+      navigate(`/pc/template/${record.templateId}?id=${record.id}`);
+    } else if (record.status === "pending") {
+      navigate(`/pc/template/${record.templateId}?id=${record.id}&view=1`);
+    }
+  };
+
+  const handleEdit = (record, e) => {
+    e.stopPropagation();
+    handleFormClick(record);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
     <div className={styles.container}>
-      <Card className={styles.contentCard}>
-        {/* 搜索区域 */}
-        {/* <div className={styles.searchSection}>
-          <Row gutter={[16, 16]} align="middle">
-            <Col xs={24} sm={12} md={8}>
-              <div className={styles.searchItem}>
-                <Text className={styles.searchLabel}>Form Name:</Text>
-                <Input
-                  placeholder="Please enter form name"
-                  value={searchFormName}
-                  onChange={(e) => setSearchFormName(e.target.value)}
-                  className={styles.searchInput}
-                />
-              </div>
-            </Col>
-            <Col xs={24} sm={12} md={8}>
-              <div className={styles.searchItem}>
-                <Text className={styles.searchLabel}>Status:</Text>
-                <Select
-                  value={statusFilter}
-                  onChange={setStatusFilter}
-                  className={styles.statusSelect}
-                  placeholder="All"
-                >
-                  <Option value="All">All</Option>
-                  <Option value="Pending">Pending</Option>
-                  <Option value="Draft">Draft</Option>
-                  <Option value="Declined">Declined</Option>
-                  <Option value="Approved">Approved</Option>
-                </Select>
-              </div>
-            </Col>
-            <Col xs={24} sm={24} md={8}>
-              <Space className={styles.actionButtons}>
-                <Button onClick={handleReset} className={styles.resetButton}>
-                  Reset
-                </Button>
-                <Button 
-                  type="primary" 
-                  onClick={handleSearch}
-                  className={styles.queryButton}
-                >
-                  Query
-                </Button>
-              </Space>
-            </Col>
-          </Row>
-        </div> */}
+      {/* 页面标题区域 */}
+      <div className={styles.header}>
+        <Title level={2} className={styles.title}>Inspections in Progress</Title>
+        <Text className={styles.subtitle}>Manage your draft, pending, and declined inspections</Text>
+      </div>
 
-        {/* 表格区域 */}
-        <div className={styles.tableSection}>
-          <Table
-            columns={columns}
-            dataSource={paginatedData}
-            rowKey="id"
-            pagination={false}
-            className={styles.dataTable}
-            size="middle"
-            loading={loading}
-            onRow={(record) => ({
-            onClick: () => {
-              if (record.status === "draft") {
-                const templateId = record.templateId || "pmr";
-                navigate(`/pc/template/${templateId}?id=${record.id}`);
-              }
-              if (record.status === "pending") {
-                const templateId = record.templateId || "pmr";
-                navigate(`/pc/template/${templateId}?id=${record.id}&view=1`);
-              }
-            },
-            style: record.status === "draft" ? { cursor: "pointer" } : {},
-          })}
+      {/* 搜索和筛选区域 */}
+      <div className={styles.searchSection}>
+        <div className={styles.searchBar}>
+          <Search
+            placeholder="Search inspections..."
+            value={searchFormName}
+            onChange={(e) => setSearchFormName(e.target.value)}
+            onSearch={() => fetchFormList()}
+            className={styles.searchInput}
+            prefix={<SearchOutlined />}
           />
         </div>
+        
+        {/* 状态筛选标签 */}
+        <div className={styles.statusFilters}>
+          <Button
+            type={statusFilter === 'All' ? 'primary' : 'default'}
+            onClick={() => handleStatusFilter('All')}
+            className={`${styles.statusButton} ${statusFilter === 'All' ? styles.active : ''}`}
+          >
+            All
+          </Button>
+          <Button
+            type={statusFilter === 'Draft' ? 'primary' : 'default'}
+            onClick={() => handleStatusFilter('Draft')}
+            className={`${styles.statusButton} ${statusFilter === 'Draft' ? styles.active : ''}`}
+          >
+            Draft
+          </Button>
+          <Button
+            type={statusFilter === 'Pending' ? 'primary' : 'default'}
+            onClick={() => handleStatusFilter('Pending')}
+            className={`${styles.statusButton} ${statusFilter === 'Pending' ? styles.active : ''}`}
+          >
+            Pending
+          </Button>
+          <Button
+            type={statusFilter === 'Declined' ? 'primary' : 'default'}
+            onClick={() => handleStatusFilter('Declined')}
+            className={`${styles.statusButton} ${statusFilter === 'Declined' ? styles.active : ''}`}
+          >
+            Declined
+          </Button>
+        </div>
+      </div>
 
-        {/* 分页区域 */}
+      {/* 检查项列表区域 */}
+      <div className={styles.inspectionsSection}>
+        <div className={styles.sectionHeader}>
+          <Title level={4} className={styles.sectionTitle}>Your Inspections</Title>
+          <Text className={styles.sectionSubtitle}>All your inspections across different stages</Text>
+        </div>
+
+        {loading ? (
+          <div className={styles.loadingContainer}>
+            <Spin size="large" />
+          </div>
+        ) : paginatedData.length === 0 ? (
+          <Empty description="No inspections found" />
+        ) : (
+          <div className={styles.inspectionsList}>
+            {paginatedData.map((item) => {
+              const statusInfo = statusMap[item.status] || { color: '#999', text: item.status };
+              return (
+                <Card
+                  key={item.id}
+                  className={styles.inspectionCard}
+                  hoverable={item.status === 'draft'}
+                  onClick={() => handleFormClick(item)}
+                >
+                  <div className={styles.cardContent}>
+                    <div className={styles.cardLeft}>
+                      <Title level={5} className={styles.inspectionTitle}>
+                        {item.formName}
+                      </Title>
+                      <div className={styles.cardMeta}>
+                        <Tag color={statusInfo.color} className={styles.statusTag}>
+                          {statusInfo.text}
+                        </Tag>
+                        <Text className={styles.createTime}>
+                          Created: {formatDate(item.createTime)}
+                        </Text>
+                      </div>
+                    </div>
+                    <div className={styles.cardActions}>
+                      <Button
+                        type="text"
+                        icon={<EditOutlined />}
+                        onClick={(e) => handleEdit(item, e)}
+                        className={styles.actionButton}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={(e) => handleDelete(item, e)}
+                        className={styles.actionButton}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* 分页区域 */}
+      {total > 0 && (
         <div className={styles.paginationSection}>
           <Pagination
             current={currentPage}
@@ -226,7 +246,7 @@ const AdminInprogress = () => {
             className={styles.pagination}
           />
         </div>
-      </Card>
+      )}
     </div>
   );
 };
