@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-
 import { useState, useEffect } from "react";
 import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
+import HomePage from "@/pages/HomePage";
 import ReviewForm from "@/pages/pc/reviewForm";
 import AdminCreate from "@/pages/pc/adminCreate";
 import AdminInprogress from "@/pages/pc/adminInprogress";
@@ -56,7 +57,11 @@ const AppRoutes = () => {
   return (
     <AuthLoader>
       <Routes>
-        <Route path="/" element={<Navigate to="/pc/create" replace />} />
+        <Route path="/" element={
+          <ProtectedRoute>
+            {isMobile ? <MobileMainPage > <HomePage /> </MobileMainPage> : <Layout > <HomePage /> </Layout>}
+          </ProtectedRoute>
+        } />
         
         {/* 公开路由 - 不需要登录 */}
         <Route path="/login" element={<LoginPage />} />

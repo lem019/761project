@@ -7,8 +7,10 @@ const tabs = ["Create", "In Progress", "Approved"];
 const MobileMainPage = ({ children }) => (
   <>
     <MobileHeader tabs={tabs} />
-    <div style={{ padding: "16px 0", position: "relative" }}>
-      {children || <Outlet />}  {/* 支持 children 或 Outlet */}
+    <div style={{ padding: "16px 0", position: "relative", display: 'flex', justifyContent: 'center' }}>
+      <div style={{ width: '100%' }}>
+        {children || <Outlet />}  {/* 支持 children 或 Outlet */}
+      </div>
     </div>
   </>
 );

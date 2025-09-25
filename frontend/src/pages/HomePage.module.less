@@ -1,0 +1,537 @@
+.homePage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  width: 100%;
+}
+
+/* 导航栏样式 */
+.header {
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoIcon {
+  width: 32px;
+  height: 32px;
+  background: #1890ff;
+  color: white;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.logoText {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  text-transform: lowercase;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  padding: 12px 16px;
+  color: #333;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  &:hover {
+    color: #1890ff;
+    background-color: rgba(24, 144, 255, 0.1);
+  }
+}
+
+.activeNav {
+  background: #1890ff !important;
+  color: white !important;
+  
+  &:hover {
+    background: #40a9ff !important;
+    color: white !important;
+  }
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.userName {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.userEmail {
+  color: #666;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 主要内容区域 */
+.mainContent {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* 欢迎区域 */
+.welcomeSection {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.welcomeContent {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.mainTitle {
+  color: #1a365d;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  color: #4a5568;
+  font-size: 1.125rem;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.guideCard {
+  background: linear-gradient(90deg, #3A73CF 0%, #4299e1 50%, #e53e3e 100%);
+  border: none;
+  border-radius: 12px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 32px rgba(58, 115, 207, 0.35);
+  color: #fff;
+  position: relative;
+}
+
+
+.guideContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  min-height: 80px;
+}
+
+.guideText {
+  flex: 1;
+  text-align: left;
+  
+  /* 强制覆盖 antd Typography 的默认文字颜色 */
+  :global(.ant-typography) {
+    color: #fff;
+  }
+}
+
+.guideTitle {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.guideDescription {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+.guideButtons {
+  position: absolute;
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.guideButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 6px;
+  backdrop-filter: blur(6px) saturate(180%);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.20);
+  }
+
+  :global(.anticon) {
+    font-size: 16px;
+    margin-right: 4px;
+  }
+}
+
+.startButton {
+  background: #1890ff;
+  border: none;
+  border-radius: 8px;
+  height: 48px;
+  padding: 0 32px;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  margin-bottom: 32px;
+  
+  &:hover {
+    background: #40a9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(24, 144, 255, 0.4);
+  }
+}
+
+/* 功能卡片区域 */
+.featuresSection {
+  margin-bottom: 60px;
+}
+
+.featureCards {
+  margin: 0 -12px;
+}
+
+.featureCard {
+  height: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+  text-align: center;
+  padding: 32px 24px;
+  position: relative;
+  overflow: hidden;
+  
+  /* 左侧渐变高亮条 */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(24,144,255,0.7), rgba(24,144,255,0.05));
+  }
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.featureIcon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 26px;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0) 45%),
+              linear-gradient(135deg, #69b1ff 0%, #1677ff 100%);
+  box-shadow: inset 0 2px 6px rgba(255,255,255,0.35), 0 10px 20px rgba(22,119,255,0.15);
+}
+
+.featureTitle {
+  margin-bottom: 16px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #1d4ed8, #ef4444, #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.featureDescription {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* 不同主题色：蓝/红/橙 */
+.featureBlue::before { background: linear-gradient(180deg, rgba(24,144,255,0.8), rgba(24,144,255,0.05)); }
+.featureRed::before { background: linear-gradient(180deg, rgba(245,34,45,0.8), rgba(245,34,45,0.05)); }
+.featureOrange::before { background: linear-gradient(180deg, rgba(250,140,22,0.8), rgba(250,140,22,0.05)); }
+
+.featureRed .featureIcon {
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0) 45%),
+              linear-gradient(135deg, #ffa39e 0%, #ff4d4f 100%);
+  box-shadow: inset 0 2px 6px rgba(255,255,255,0.35), 0 10px 20px rgba(255,77,79,0.18);
+}
+
+.featureOrange .featureIcon {
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0) 45%),
+              linear-gradient(135deg, #ffd591 0%, #fa8c16 100%);
+  box-shadow: inset 0 2px 6px rgba(255,255,255,0.35), 0 10px 20px rgba(250,140,22,0.18);
+}
+
+/* 关于我们和服务区域 */
+.aboutSection {
+  margin-bottom: 40px;
+}
+
+.combinedCard {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+  padding: 40px;
+}
+
+.aboutContent,
+.servicesContent {
+  height: 100%;
+}
+
+.aboutCard,
+.servicesCard {
+  height: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+  padding: 32px;
+}
+
+.sectionTitle {
+  color: #1a365d;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.aboutText {
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.aboutList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  
+  li {
+    color: #4a5568;
+    padding: 8px 0;
+    position: relative;
+    padding-left: 20px;
+    
+    &::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #1890ff;
+      font-weight: bold;
+    }
+  }
+}
+
+.serviceItem {
+  margin-bottom: 24px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.serviceTitle {
+  margin-bottom: 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.serviceDescription {
+  color: #666;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .headerContent {
+    padding: 0 16px;
+    height: 56px;
+  }
+  
+  .logoIcon {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+  
+  .logoText {
+    font-size: 16px;
+  }
+  
+  .navigation {
+    gap: 4px;
+  }
+  
+  .navButton {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .userInfo {
+    display: none;
+  }
+  
+  .userAvatar {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  
+  .mainContent {
+    padding: 24px 16px;
+  }
+  
+  .mainTitle {
+    font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .guideContent {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .guideText {
+    text-align: center;
+  }
+  
+  .guideButtons {
+    position: static;
+    width: 100%;
+    margin-top: 12px;
+    justify-content: center;
+  }
+  
+  .guideButton {
+    flex: 1;
+    max-width: 140px;
+  }
+  
+  .featureCard {
+    padding: 24px 16px;
+  }
+  
+  .aboutCard,
+  .servicesCard {
+    padding: 24px 16px;
+  }
+  
+  .sectionTitle {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainTitle {
+    font-size: 1.75rem;
+  }
+  
+  .guideTitle {
+    font-size: 1.25rem;
+  }
+  
+  .guideDescription {
+    font-size: 0.9rem;
+  }
+  
+  .guideButtons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .guideButton {
+    max-width: 100%;
+  }
+  
+  .featureIcon {
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+  }
+  
+  .featureTitle {
+    font-size: 1.125rem;
+  }
+}

@@ -75,8 +75,8 @@
 }
 
 .content-area {
-  padding: 24px;
-  background: #f5f5f5;
+  // padding: 24px;
+  background: transparent; /* 让子页面背景（如首页渐变）充满两侧 */
   min-height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
@@ -87,6 +87,8 @@
   display: flex;
   overflow-y: auto;
   padding-right: 8px;
+  width: 100%;
+  justify-content: center; /* 让子页面水平居中 */
 }
 
 @media (max-width: 768px) {
