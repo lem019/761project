@@ -1,6 +1,6 @@
 .createLayout {
   height: 100%;
-  background: linear-gradient(135deg, #f0f2f5 0%, #e6f7ff 100%);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
 
   .content {
@@ -19,95 +19,133 @@
         color: #1f2937;
         font-weight: 700;
         margin-bottom: 16px;
-        font-size: 32px;
+        font-size: 36px;
+        line-height: 1.2;
       }
 
       .subtitle {
         color: #6b7280;
-        font-size: 16px;
+        font-size: 18px;
         max-width: 600px;
         margin: 0 auto;
         line-height: 1.6;
+        font-weight: 400;
       }
     }
 
     .cardsContainer {
       margin-bottom: 48px;
 
-      .checkCard {
-        height: 200px;
+      .templateCard {
+        display: flex;
+        flex-direction: column;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(to bottom right, #ffffff, #f8fafc);
+        transition: all 0.3s ease;
+        height: 400px;
 
         &:hover {
+          border-color: #3A73CF;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
           transform: translateY(-8px);
-          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .ant-card-body {
-          height: 100%;
-          padding: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .cardContent {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          height: 100%;
-          position: relative;
+        .cardTopSection {
+          background: linear-gradient(to bottom right, #3A73CF, #2d3748);
+          padding: 24px;
           color: white;
+          position: relative;
+          flex: 1;
+
+          .decorativeCircle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 96px;
+            height: 96px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(48px, -48px);
+          }
 
           .iconContainer {
-            margin-bottom: 24px;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 10;
 
             .iconWrapper {
-              width: 80px;
-              height: 80px;
-              border-radius: 50%;
-              display: flex;
+              background: rgba(255, 255, 255, 0.2);
+              padding: 20px;
+              border-radius: 16px;
+              display: inline-flex;
               align-items: center;
               justify-content: center;
-              font-size: 32px;
-              backdrop-filter: blur(10px);
-              border: 2px solid rgba(255, 255, 255, 0.3);
-              transition: all 0.3s ease;
+              width: 80px;
+              height: 80px;
 
-              &:hover {
-                transform: scale(1.1);
-                border-color: rgba(255, 255, 255, 0.5);
+              .anticon {
+                font-size: 40px;
+                color: white;
               }
             }
           }
 
-          .textContent {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-
-            .cardTitle {
-              color: white !important;
-              font-weight: 600;
-              margin-bottom: 12px;
-              font-size: 18px;
-              line-height: 1.4;
-            }
-
+          .cardTitle {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 10;
+            color: white;
           }
 
-          &:hover {
-            .arrowContainer {
-              opacity: 1;
-              transform: translateX(4px);
+          .cardDescription {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+            position: relative;
+            z-index: 10;
+          }
+        }
+
+        .cardBottomSection {
+          padding: 16px 24px;
+          background: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 80px;
+
+          .startButton {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: var(--hover-bg) !important;
+              transform: scale(1.05);
             }
 
-            .iconWrapper {
-              transform: scale(1.1);
+            .plusIcon {
+              font-size: 18px;
+              font-weight: bold;
+            }
+
+            .arrowIcon {
+              font-size: 18px;
             }
           }
         }
@@ -117,10 +155,32 @@
     .footer {
       text-align: center;
 
-      .footerText {
-        color: #9ca3af;
-        font-size: 14px;
-        font-style: italic;
+      .comingSoonCard {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        background: #f9fafb;
+        box-shadow: none;
+
+        .ant-card-body {
+          padding: 32px;
+        }
+
+        .comingSoonContent {
+          .comingSoonTitle {
+            color: #374151 !important;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 20px;
+          }
+
+          .comingSoonText {
+            color: #6b7280 !important;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 500px;
+            margin: 0 auto;
+          }
+        }
       }
     }
   }
@@ -136,42 +196,77 @@
         margin-bottom: 32px;
 
         .pageTitle {
-          font-size: 24px;
+          font-size: 28px;
         }
 
         .subtitle {
-          font-size: 14px;
+          font-size: 16px;
         }
       }
 
       .cardsContainer {
         margin-bottom: 32px;
 
-        .checkCard {
-          height: 240px;
+        .templateCard {
+          height: 350px;
 
-          .cardContent {
-            padding: 24px 16px;
+          .cardTopSection {
+            padding: 20px;
 
             .iconContainer {
-              margin-bottom: 16px;
-
               .iconWrapper {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
+                width: 70px;
+                height: 70px;
+                padding: 16px;
+
+                .anticon {
+                  font-size: 36px;
+                }
               }
             }
 
-            .textContent {
-              .cardTitle {
+            .cardTitle {
+              font-size: 16px;
+            }
+
+            .cardDescription {
+              font-size: 13px;
+            }
+          }
+
+          .cardBottomSection {
+            padding: 12px 20px;
+            min-height: 70px;
+
+            .startButton {
+              height: 36px;
+              font-size: 14px;
+
+              .plusIcon {
                 font-size: 16px;
-                margin-bottom: 8px;
               }
 
-              .cardDescription {
-                font-size: 13px;
+              .arrowIcon {
+                font-size: 16px;
               }
+            }
+          }
+        }
+      }
+
+      .footer {
+        .comingSoonCard {
+          .ant-card-body {
+            padding: 24px;
+          }
+
+          .comingSoonContent {
+            .comingSoonTitle {
+              font-size: 18px;
+            }
+
+            .comingSoonText {
+              font-size: 13px;
             }
           }
         }
@@ -185,29 +280,77 @@
     .content {
       padding: 16px 12px;
 
-      .cardsContainer {
-        .checkCard {
-          height: 200px;
+      .header {
+        .pageTitle {
+          font-size: 24px;
+        }
 
-          .cardContent {
-            padding: 20px 12px;
+        .subtitle {
+          font-size: 14px;
+        }
+      }
+
+      .cardsContainer {
+        .templateCard {
+          height: 300px;
+
+          .cardTopSection {
+            padding: 16px;
 
             .iconContainer {
               .iconWrapper {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
+                width: 60px;
+                height: 60px;
+                padding: 14px;
+
+                .anticon {
+                  font-size: 32px;
+                }
               }
             }
 
-            .textContent {
-              .cardTitle {
+            .cardTitle {
+              font-size: 14px;
+            }
+
+            .cardDescription {
+              font-size: 12px;
+            }
+          }
+
+          .cardBottomSection {
+            padding: 10px 16px;
+            min-height: 60px;
+
+            .startButton {
+              height: 32px;
+              font-size: 13px;
+
+              .plusIcon {
                 font-size: 14px;
               }
 
-              .cardDescription {
-                font-size: 12px;
+              .arrowIcon {
+                font-size: 14px;
               }
+            }
+          }
+        }
+      }
+
+      .footer {
+        .comingSoonCard {
+          .ant-card-body {
+            padding: 20px;
+          }
+
+          .comingSoonContent {
+            .comingSoonTitle {
+              font-size: 16px;
+            }
+
+            .comingSoonText {
+              font-size: 12px;
             }
           }
         }
