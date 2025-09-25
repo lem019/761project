@@ -157,7 +157,7 @@ const AdminCreate = () => {
                     style={{ background: theme.gradient }}
                   >
                     <div className={styles.decorativeCircle}></div>
-                    <div className={styles.iconContainer}>
+                    <div className={styles.iconContainer} style={{fontSize: '35px'}}>
                       <div className={styles.iconWrapper}>
                         {iconMap[template.icon] || <ToolOutlined />}
                       </div>
