@@ -284,6 +284,12 @@ async function operateForm(formId, action, uid, role, comment = '') {
 async function getFormList(uid, role, options = {}) {
   try {
     const { status, page = 1, pageSize = 10, viewMode } = options;
+    // 统一为数组或特殊标识 'all'
+    const statusList = Array.isArray(status)
+      ? status
+      : (typeof status === 'string' && status.includes(',')
+        ? status.split(',').map(s => s.trim()).filter(Boolean)
+        : status);
 
     // 转换分页参数为数字
     const pageNum = parseInt(page, 10);
@@ -300,25 +306,53 @@ async function getFormList(uid, role, options = {}) {
       // reviewer 模式：按照注释中的逻辑
       if (role === 'admin') {
         // 管理员在 reviewer 模式下
-        if (status === 'pending') {
+        if (statusList === 'all') {
+          // 不限定状态
+          // no-op
+        } else if (Array.isArray(statusList)) {
+          // Firestore 不支持 in 同时 orderBy 不同字段，这里仅在 reviewer 特殊分支中按需组合
+          const wantsApproved = statusList.includes('approved');
+          const wantsPending = statusList.includes('pending');
+
+          // reviewer 场景允许的状态主要是 pending 和 approved 且基本不会同时请求
+          // if (wantsApproved && wantsPending) {
+          //   // 需要同时获取两类，简化实现：取 pending 列表；前端如需并集应使用两次请求或后续支持 union
+          //   q = q.where("status", "==", "pending");
+          // } else 
+
+          if (wantsPending) {
+            q = q.where("status", "==", "pending");
+          } else if (wantsApproved) {
+            q = q.where("status", "==", "approved").where("reviewedBy", "==", uid);
+          }
+        } else if (statusList === 'pending') {
           // to review: creator 是所有人，状态是 pending
           q = q.where("status", "==", "pending");
-        } else if (status === 'approved') {
+        } else if (statusList === 'approved') {
           // reviewed: reviewer 是自己，状态是 approved
           q = q.where("status", "==", "approved").where("reviewedBy", "==", uid);
         }
       } else {
-        // 检查员在 reviewer 模式下：只能看到自己创建的表单
+        // 检查员在 inspector 模式下：只能看到自己创建的表单
         q = q.where("creator", "==", uid);
-        if (status && status !== 'all') {
-          q = q.where("status", "==", String(status));
+        if (statusList && statusList !== 'all') {
+          if (Array.isArray(statusList)) {
+            q = q.where("status", "in", statusList.slice(0, 10));
+          } else {
+            q = q.where("status", "==", String(statusList));
+          }
         }
       }
     } else {
       // 检查员只能看到自己创建的表单
       q = q.where("creator", "==", uid);
-      if (status && status !== 'all') {
-        q = q.where("status", "==", String(status));
+      console.log("statusList", statusList);
+      if (statusList && statusList !== 'all') {
+        if (Array.isArray(statusList)) {
+          q = q.where("status", "in", statusList.slice(0, 10));
+        } else {
+          q = q.where("status", "==", String(statusList));
+        }
       }
     }
 

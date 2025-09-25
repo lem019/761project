@@ -45,7 +45,7 @@ const AdminInprogress = () => {
   const fetchFormList = async () => {
     try {
       setLoading(true);
-      const status = statusFilter === 'All' ? 'all' : statusFilter.toLowerCase();
+      const status = statusFilter === 'All' ? "draft,pending,declined" : statusFilter.toLowerCase();
       const response = await getFormList({
         status,
         page: currentPage,

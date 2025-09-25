@@ -91,14 +91,14 @@ export const submitForm = async (formData) => {
 export const getFormList = async (params = {}) => {
   try {
     const { status = 'all', page = 1, pageSize = 20, viewMode = 'inspector' } = params;
-    // console.log("form list query ft", params);
-    // console.log("form list query ft request", status, page, pageSize, viewMode);
-    const response = await http.get('/form/form-list', {
-      status,
+    // 兼容数组与字符串：后端按逗号分隔解析，避免 axios 默认的 status[] 语法
+    const queryParams = {
+      status: Array.isArray(status) ? status.join(',') : status,
       page,
       pageSize,
       viewMode
-    });
+    };
+    const response = await http.get('/form/form-list', queryParams);
     return response.data;
   } catch (error) {
     console.error('获取表单列表失败:', error);

@@ -86,9 +86,13 @@ router.get("/form-list", async (req, res) => {
     const role = req.user.role; // 从认证中间件获取用户角色
     console.log("form list query", req.query, uid, role);
     const { status, page = 1, pageSize = 10, viewMode } = req.query;
+    // 支持 status 为逗号分隔的列表，例如 "draft,pending"
+    const normalizedStatus = typeof status === 'string'
+      ? status.split(',').map(s => s.trim()).filter(Boolean)
+      : 'all';
     
     const result = await getFormList(uid, role, {
-      status: status || 'all',
+      status: normalizedStatus || 'all',
       page: page || 1,
       pageSize: pageSize || 20,
       viewMode: viewMode || 'inspector'

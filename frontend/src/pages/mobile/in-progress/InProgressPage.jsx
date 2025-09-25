@@ -26,7 +26,7 @@ export default function InProgressPage() {
   const fetchFormList = async () => {
     try {
       setLoading(true);
-      const status = filter === "ALL" ? "all" : filter.toLowerCase();
+      const status = filter === "ALL" ? "draft,pending,declined" : filter.toLowerCase();
       const response = await getFormList({
         status,
         page: 1,
