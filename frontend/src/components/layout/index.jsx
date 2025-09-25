@@ -87,18 +87,21 @@ const Layout = ({ children }) => {
             type="text" 
             icon={<HomeOutlined />} 
             onClick={() => navigate('/')}
-            className={styles['nav-button']}
+            className={`${styles['nav-button']} ${location.pathname === '/' ? styles['activeNav'] : ''}`}
           >
             Home
           </Button>
           
           <Dropdown
-            menu={{ items: getInspectorMenuItems() }}
+            menu={{ 
+              items: getInspectorMenuItems(),
+              className: styles['dropdown-menu']
+            }}
             placement="bottom"
             arrow
             trigger={['hover', 'click']}
           >
-            <Button className={styles['nav-button']}>
+            <Button className={`${styles['nav-button']} ${location.pathname.startsWith('/pc/') && (location.pathname.includes('create') || location.pathname.includes('inprogress') || location.pathname.includes('approved')) ? styles['activeNav'] : ''}`}>
               <FileTextOutlined />
               Inspector
               <DownOutlined style={{ fontSize: '10px', marginLeft: '4px' }} />
@@ -106,12 +109,15 @@ const Layout = ({ children }) => {
           </Dropdown>
           
           <Dropdown
-            menu={{ items: getReviewMenuItems() }}
+            menu={{ 
+              items: getReviewMenuItems(),
+              className: styles['dropdown-menu']
+            }}
             placement="bottom"
             arrow
             trigger={['hover', 'click']}
           >
-            <Button className={styles['nav-button']}>
+            <Button className={`${styles['nav-button']} ${location.pathname.startsWith('/pc/') && (location.pathname.includes('to-review') || location.pathname.includes('reviewed') || location.pathname.includes('review-form')) ? styles['activeNav'] : ''}`}>
               <EyeOutlined />
               Review
               <DownOutlined style={{ fontSize: '10px', marginLeft: '4px' }} />
