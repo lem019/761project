@@ -37,8 +37,8 @@ export default function InProgressPage() {
         setFormList(response.items || []);
       }
     } catch (error) {
-      console.error('获取表单列表失败:', error);
-      message.error('获取表单列表失败');
+      console.error('Failed to fetch form list:', error);
+      message.error('Failed to fetch form list');
     } finally {
       setLoading(false);
     }

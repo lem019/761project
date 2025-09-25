@@ -27,7 +27,7 @@ const AuthLoader = ({ children }) => {
         gap: '16px'
       }}>
         <Spin size="large" />
-        <div>正在验证身份...</div>
+        <div>Authenticating...</div>
       </div>
     );
   }

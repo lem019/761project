@@ -11,88 +11,111 @@ const GuidanceContent = ({ itemType, guidanceContent }) => {
   const [checkedItems, setCheckedItems] = useState({});
 
   /**
-   * Handle checklist selection for a guidance item
-   * @param {string} item - Checklist item text
-   * @param {boolean} checked - Whether the item is selected
+   * 处理勾选项（本组件内本地状态，不依赖外部 Form 上下文）
    */
   const handleCheckboxChange = (item, checked) => {
-    setCheckedItems(prev => ({
-      ...prev,
-      [item]: checked
-    }));
+    setCheckedItems((prev) => ({ ...prev, [item]: checked }));
   };
 
   /**
-   * Get guidance content for different inspection items
-   * @param {string} type - Inspection item type
-   * @returns {Object} Guidance content configuration
+   * 统一获取并标准化指导内容：
+   * - 若为数组结构：直接返回数组
+   * - 若为对象结构：从 checklist/image/video 组装为数组
+   * - 否则返回空数组
    */
-  const getGuidanceContent = (type) => {
-    if (guidanceContent && guidanceContent[type]) {
-      return guidanceContent[type];
+  const getNormalizedContent = (type) => {
+    const raw = guidanceContent && guidanceContent[type];
+    if (!raw) return [];
+
+    if (Array.isArray(raw)) {
+      return raw;
     }
-    
-    // Fallback content if no guidance content is provided
-    // todo 是否需要这个
-    return {
-      checklist: [
-        "Check item functionality",
-        "View inspection diagram",
-        "Verify system operation",
-        "Watch guidance video"
-      ],
-      image: "/api/placeholder/400/300"
-    };
+
+    if (typeof raw === 'object') {
+      const list = [];
+      if (Array.isArray(raw.checklist)) {
+        raw.checklist.forEach((text, index) => {
+          list.push({ type: 'text', content: text, key: `text-${index}` });
+        });
+      }
+      if (raw.image) {
+        list.push({ type: 'image', content: raw.image, key: 'image' });
+      }
+      if (raw.video) {
+        list.push({ type: 'video', content: raw.video, key: 'video' });
+      }
+      return list;
+    }
+
+    return [];
   };
 
-  const content = getGuidanceContent(itemType);
+  const content = getNormalizedContent(itemType);
+
+  // 文本类选项用于复选框
+  const textOptions = content
+    .filter((entry) => entry && entry.type === 'text' && typeof entry.content === 'string')
+    .map((entry, idx) => ({ label: entry.content, key: entry.key || `text-${idx}` }));
 
   return (
     <div className={styles.guidanceContent}>
       {/* <div className={styles.guidanceTitle}>Guidance</div> */}
-      
-      <div className={styles.checklist}>
-        {content.checklist.map((item, index) => (
-          <div key={index} className={styles.checklistItem}>
-            <Checkbox
-              checked={checkedItems[item] || false}
-              onChange={(e) => handleCheckboxChange(item, e.target.checked)}
-              className={styles.guidanceCheckbox}
-            />
-            <span className={styles.checklistText}>{item}</span>
-          </div>
-        ))}
-      </div>
 
-      {/* Inspection diagram */}
+      {/* 文本 checklist */}
+      {textOptions.length > 0 && (
+        <div className={styles.checklist}>
+          {textOptions.map((opt) => (
+            <div key={opt.key} className={styles.checklistItem}>
+              <Checkbox
+                checked={!!checkedItems[opt.label]}
+                onChange={(e) => handleCheckboxChange(opt.label, e.target.checked)}
+                className={styles.guidanceCheckbox}
+              />
+              <span className={styles.checklistText}>{opt.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 媒体内容（图片 / 视频）*/}
       <div className={styles.guidanceMedia}>
-        <div className={styles.inspectionDiagram}>
-          <div className={styles.diagramImage}>
-            <img 
-              src={content.image} 
-              alt="Inspection Diagram"
-              className={styles.diagramImg}
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'flex';
-              }}
-            />
-            <div className={styles.imagePlaceholder}>
-              <EyeOutlined className={styles.placeholderIcon} />
-              <span>Inspection Diagram</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Guidance video */}
-        <div className={styles.guidanceVideo}>
-          <div className={styles.videoPlayer}>
-            <div className={styles.videoPlaceholder}>
-              <PlayCircleOutlined className={styles.playIcon} />
-              <span>Click to play video</span>
-            </div>
-          </div>
-        </div>
+        {content.map((entry, index) => {
+          if (!entry || !entry.type) return null;
+          if (entry.type === 'image' && entry.content) {
+            return (
+              <div key={`img-${index}`} className={styles.inspectionDiagram}>
+                <div className={styles.diagramImage}>
+                  <img
+                    src={entry.content}
+                    alt="Inspection Diagram"
+                    className={styles.diagramImg}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div className={styles.imagePlaceholder}>
+                    <EyeOutlined className={styles.placeholderIcon} />
+                    <span>Inspection Diagram</span>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          if (entry.type === 'video' && entry.content) {
+            return (
+              <div key={`vid-${index}`} className={styles.guidanceVideo}>
+                <div className={styles.videoPlayer}>
+                  <video controls style={{ width: '100%' }}>
+                    <source src={entry.content} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })}
       </div>
     </div>
   );

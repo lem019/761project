@@ -75,7 +75,7 @@ const TemplateReport = () => {
 
   const handleLoad = async () => {
     try {
-      message.loading('正在生成PDF...', 2);
+      message.loading('Generating PDF...', 2);
       
       // 等待页面完全渲染
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -83,7 +83,7 @@ const TemplateReport = () => {
       // 获取要转换的元素
       const element = document.querySelector(`.${inspectionStyles.container}`);
       if (!element) {
-        message.error('未找到要下载的内容');
+        message.error('Content to download not found');
         return;
       }
 
@@ -427,12 +427,12 @@ const TemplateReport = () => {
           row.style.pageBreakInside = '';
         });
         
-        message.success('PDF下载成功！');
+        message.success('PDF downloaded successfully!');
       }, 1000);
       
     } catch (error) {
-      console.error('PDF生成失败:', error);
-      message.error('PDF生成失败，请重试');
+      console.error('PDF generation failed:', error);
+      message.error('PDF generation failed, please try again');
     }
   };
 

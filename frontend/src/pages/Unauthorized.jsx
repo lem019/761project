@@ -9,10 +9,10 @@ const Unauthorized = () => {
     <Result
       status="403"
       title="403"
-      subTitle="抱歉，您没有权限访问此页面。"
+      subTitle="Sorry, you are not authorized to access this page."
       extra={
         <Button type="primary" onClick={() => navigate('/pc/create')}>
-          返回首页
+          Back to Home
         </Button>
       }
     />
