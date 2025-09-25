@@ -35,10 +35,12 @@
 }
 
 .center-section {
+  position: absolute; /* 让中间绝对居中，不受左右宽度影响 */
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex: 1;
   gap: 8px;
   
   .nav-button {
@@ -79,19 +81,55 @@
   
   .user-dropdown {
     cursor: pointer;
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 2px solid transparent;
     display: flex;
     align-items: center;
-    gap: 12px;
-    
+    gap: 10px;
+
     &:hover {
       background: linear-gradient(135deg, rgba(24, 144, 255, 0.08), rgba(24, 144, 255, 0.12));
       border-color: rgba(24, 144, 255, 0.2);
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 280px; /* 固定最大宽度 */
+    }
+
+    .user-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end; /* 靠头像一侧对齐 */
+      flex: 1; /* 文本占据剩余空间以便省略号生效 */
+      text-align: right;
+      min-width: 0; /* 允许子元素计算溢出 */
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: #1f2937;
+      line-height: 18px;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .user-email {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 16px;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 }
@@ -167,11 +205,10 @@
   }
   
   .center-section {
-    gap: 16px;
-    
+    gap: 12px;
     .nav-button {
       font-size: 12px;
-      padding: 8px 0;
+      padding: 8px 10px;
       gap: 4px;
     }
   }
@@ -180,6 +217,7 @@
     .user-dropdown {
       padding: 6px 12px;
       font-size: 12px;
+      .user-info { max-width: 200px; }
     }
   }
 }

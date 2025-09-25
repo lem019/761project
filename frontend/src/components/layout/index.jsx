@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout as AntLayout, Menu, Avatar, Dropdown, Space, theme, Button } from 'antd';
+import { Layout as AntLayout, Menu, Avatar, Dropdown, Space, theme, Button, Typography } from 'antd';
 import { HomeOutlined, UserOutlined, DownOutlined, PlusOutlined, ClockCircleOutlined, CheckSquareOutlined, FileTextOutlined, EyeOutlined, FileDoneOutlined, MenuOutlined } from '@ant-design/icons';
 import useUserStore from '@/domain/user/store/user.store';
 import logo from '@/assets/thermoFLO_Final_colour.png';
@@ -13,7 +13,25 @@ const Layout = ({ children }) => {
   const location = useLocation();
   const user = useUserStore((state) => state.user);
   const userRole = user?.role || user?.userRole;
-  const userName = user?.email;
+
+  const getDisplayNameFromEmail = (email) => {
+    if (!email) return 'User';
+    const local = email.split('@')[0];
+    return local
+      .split(/[._\-]+/)
+      .filter(Boolean)
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(' ');
+  };
+
+  const displayName = user?.displayName || getDisplayNameFromEmail(user?.email);
+  const userEmail = user?.email || '';
+  const userInitials = (displayName || 'U')
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   const {
     token: { colorBgContainer },
@@ -81,7 +99,7 @@ const Layout = ({ children }) => {
           <img src={logo} alt="ThermoFLO Logo" className={styles['logo-img']} />
         </div>
 
-        {/* 中间：导航菜单 */}
+        {/* 中间：导航菜单（绝对居中） */}
         <div className={styles['center-section']}>
           <Button 
             type="text" 
@@ -125,7 +143,7 @@ const Layout = ({ children }) => {
           </Dropdown>
         </div>
 
-        {/* 右侧：用户信息 */}
+        {/* 右侧：用户信息（固定最大宽度，右向左扩展） */}
         <div className={styles['right-section']}>
           <Dropdown
             menu={{ items: userMenuItems }}
@@ -133,12 +151,19 @@ const Layout = ({ children }) => {
             arrow
           >
             <Space className={styles['user-dropdown']}>
-              <Avatar
-                size="small"
-                icon={<UserOutlined />}
-                style={{ backgroundColor: '#1890ff' }}
-              />
-              <span style={{ color: '#333' }}>{userName}</span>
+              <div className={styles['user-info']}>
+                <div className={styles['user-text']}>
+                  <div className={styles['user-name']}>{displayName}</div>
+                  <div className={styles['user-email']}>{userEmail}</div>
+                </div>
+                <Avatar
+                  size={36}
+                  src={user?.photoURL || undefined}
+                  style={{ backgroundColor: '#e6f4ff', color: '#1677ff', flex: '0 0 auto', fontWeight: 600, fontSize: 14 }}
+                >
+                  {userInitials}
+                </Avatar>
+              </div>
               <DownOutlined style={{ fontSize: '12px', color: '#666' }} />
             </Space>
           </Dropdown>
