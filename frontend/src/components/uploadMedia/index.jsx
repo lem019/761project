@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Upload, message } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { auth, storage } from '@/firebase';
@@ -24,10 +24,32 @@ export default function UploadMedia({
   // 始终拿到「最新」的 value，避免闭包里读到旧值导致覆盖
   const valueRef = useRef(value);
   useEffect(() => { valueRef.current = value || []; }, [value]);
+  
   // 受控：外部 value -> antd fileList
+  // 使用浅比较来避免频繁的序列化，只在数组长度或内容真正变化时更新
+  const prevValueRef = useRef();
+  
   useEffect(() => {
+    console.log("value:",value)
+    const normalizedValue = Array.isArray(value) ? value : [];
+    const prevValue = prevValueRef.current;
+    
+    // 浅比较：检查数组长度和基本属性是否相同
+    if (prevValue && 
+        Array.isArray(prevValue) && 
+        prevValue.length === normalizedValue.length &&
+        prevValue.every((item, index) => {
+          const current = normalizedValue[index];
+          return item && current && 
+                 item.name === current.name && 
+                 item.downloadURL === current.downloadURL &&
+                 item.thumbnailURL === current.thumbnailURL;
+        })) {
+      return; // 没有实际变化，跳过更新
+    }
+    
     setFileList(
-      (value || []).map((it, idx) => ({
+      normalizedValue.map((it, idx) => ({
         uid: it.uid || String(idx),
         name: it.name,
         status: 'done',
@@ -35,6 +57,8 @@ export default function UploadMedia({
         thumbUrl: it.thumbnailURL || it.thumbUrl,
       }))
     );
+    
+    prevValueRef.current = normalizedValue;
   }, [value]);
 
   const trigger = (next) => {
