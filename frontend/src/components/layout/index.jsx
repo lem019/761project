@@ -14,11 +14,16 @@ const Layout = ({ children }) => {
   const user = useUserStore((state) => state.user);
   const userRole = user?.role || user?.userRole;
 
+  // 判断当前角色是不是employee/inspector
+  const roleStr = (userRole || '').toString().toLowerCase();
+  const isInspector = roleStr === 'primary';
+
+
   const getDisplayNameFromEmail = (email) => {
     if (!email) return 'User';
     const local = email.split('@')[0];
     return local
-      .split(/[._\-]+/)
+      .split(/[._-]+/)
       .filter(Boolean)
       .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
       .join(' ');
@@ -126,21 +131,24 @@ const Layout = ({ children }) => {
             </Button>
           </Dropdown>
           
-          <Dropdown
-            menu={{ 
-              items: getReviewMenuItems(),
-              className: styles['dropdown-menu']
-            }}
-            placement="bottom"
-            arrow
-            trigger={['hover', 'click']}
-          >
-            <Button className={`${styles['nav-button']} ${location.pathname.startsWith('/pc/') && (location.pathname.includes('to-review') || location.pathname.includes('reviewed') || location.pathname.includes('review-form')) ? styles['activeNav'] : ''}`}>
-              <EyeOutlined />
-              Review
-              <DownOutlined style={{ fontSize: '10px', marginLeft: '4px' }} />
-            </Button>
-          </Dropdown>
+          {/* 当登录的角色是inspector，不显示review那一栏 */}
+          {!isInspector && (
+            <Dropdown
+              menu={{ 
+                items: getReviewMenuItems(),
+                className: styles['dropdown-menu']
+              }}
+              placement="bottom"
+              arrow
+              trigger={['hover', 'click']}
+            >
+              <Button className={`${styles['nav-button']} ${location.pathname.startsWith('/pc/') && (location.pathname.includes('to-review') || location.pathname.includes('reviewed') || location.pathname.includes('review-form')) ? styles['activeNav'] : ''}`}>
+                <EyeOutlined />
+                Review
+                <DownOutlined style={{ fontSize: '10px', marginLeft: '4px' }} />
+              </Button>
+            </Dropdown>
+          )}
         </div>
 
         {/* 右侧：用户信息（固定最大宽度，右向左扩展） */}
