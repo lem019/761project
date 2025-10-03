@@ -355,21 +355,29 @@ async function getFormList(uid, role, options = {}) {
         }
 
         // 模糊（前缀）搜索：对 lower 字段做 startAt / endAt
+        const searchOrder = [];
         if (inspectorQ) {
-          // 需要 orderBy 与 startAt/endAt 在同一字段
-          q = q.orderBy("creatorNameLower")
-              .startAt(inspectorQ)
-              .endAt(inspectorQ + "\uf8ff");
+          searchOrder.push({ field: "creatorNameLower", start: inspectorQ, end: inspectorQ + "\uf8ff" });
         }
         if (formNameQ) {
-          // 如果前面已经 orderBy 了别的字段，这里追加一个 where 无法前缀匹配
-          // 因此前缀匹配与排序字段保持一致；
-          // 若两者都传了，优先以 formName 做排序，再在内存里二次过滤（见下）
-          if (!inspectorQ) {
-            q = q.orderBy("templateNameLower")
-                .startAt(formNameQ)
-                .endAt(formNameQ + "\uf8ff");
+          searchOrder.push({ field: "templateNameLower", start: formNameQ, end: formNameQ + "\uf8ff" });
+        }
+
+        if (searchOrder.length) {
+          searchOrder.forEach(({ field }) => {
+            q = q.orderBy(field);
+          });
+
+          if (searchOrder.length === 1) {
+            const [{ start, end }] = searchOrder;
+            q = q.startAt(start).endAt(end);
+          } else {
+            const startValues = searchOrder.map(({ start }) => start);
+            const endValues = searchOrder.map(({ end }) => end);
+            q = q.startAt(startValues).endAt(endValues);
           }
+        } else {
+          q = q.orderBy("createdAt", "desc");
         }
 
 
@@ -383,11 +391,13 @@ async function getFormList(uid, role, options = {}) {
             q = q.where("status", "==", String(statusList));
           }
         }
-        // 本人列表的前缀搜索
         if (formNameQ) {
-          q = q.orderBy("templateNameLower")
-              .startAt(formNameQ)
-              .endAt(formNameQ + "\uf8ff");
+          q = q
+            .orderBy("templateNameLower")
+            .startAt(formNameQ)
+            .endAt(formNameQ + "\uf8ff");
+        } else {
+          q = q.orderBy("createdAt", "desc");
         }
       }
     } else {
@@ -401,11 +411,13 @@ async function getFormList(uid, role, options = {}) {
           q = q.where("status", "==", String(statusList));
         }
       }
-      // 移动端 in-progress：按模板名做前缀搜索（小写字段）
       if (formNameQ) {
-        q = q.orderBy("templateNameLower")
-            .startAt(formNameQ)
-            .endAt(formNameQ + "\uf8ff");
+        q = q
+          .orderBy("templateNameLower")
+          .startAt(formNameQ)
+          .endAt(formNameQ + "\uf8ff");
+      } else {
+        q = q.orderBy("createdAt", "desc");
       }
     }
 
@@ -439,20 +451,10 @@ async function getFormList(uid, role, options = {}) {
         reviewedAt: data.reviewedAt ? data.reviewedAt.toDate().toLocaleString() : ''
       };
     });
-
-    // 若 admin 同时传了 inspector + formName，两者都要命中时，这里做一次窄化（集合已经很小）
-    const filtered = items.filter(it => {
-      const okInspector = inspectorQ ? (it.creatorNameLower || "").startsWith(inspectorQ) : true;
-      const okFormName  = formNameQ  ? (it.templateNameLower || "").startsWith(formNameQ)  : true;
-      return okInspector && okFormName;
-    });   
-
-
     return {
       success: true,
       data: {
-        // items,
-        items: filtered,
+        items,
         pagination: {
           current: pageNum,
           pageSize: pageSizeNum,

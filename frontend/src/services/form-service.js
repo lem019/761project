@@ -99,8 +99,15 @@ export const getFormList = async (params = {}) => {
       viewMode
     };
     // 统一改为后端识别的字段；同时兼容调用方传入的新旧字段名
-    if (qInspector ?? inspector) queryParams.qInspector = (qInspector ?? inspector);
-    if (qFormName  ?? formName)  queryParams.qFormName  = (qFormName  ?? formName);
+    const inspectorFilter = qInspector ?? inspector;
+    const formNameFilter = qFormName ?? formName;
+
+    if (typeof inspectorFilter === 'string' && inspectorFilter.trim()) {
+      queryParams.qInspector = inspectorFilter.trim();
+    }
+    if (typeof formNameFilter === 'string' && formNameFilter.trim()) {
+      queryParams.qFormName = formNameFilter.trim();
+    }
 
     const response = await http.get('/form/form-list', queryParams);
     return response.data;

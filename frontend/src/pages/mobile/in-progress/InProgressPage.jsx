@@ -23,16 +23,21 @@ export default function InProgressPage() {
   const [formList, setFormList] = useState([]);
 
   // 获取表单列表数据
-  const fetchFormList = async () => {
+  const fetchFormList = async (override = {}) => {
     try {
       setLoading(true);
 
       const status = filter === "ALL" ? "draft,pending,declined" : filter.toLowerCase();
+      const pageParam = override.page ?? 1;
+      const queryValue = override.qFormName ?? q;
 
-      const params = { status, page: 1, pageSize: 20, viewMode: 'inspector' };
-      if (q && q.trim()) params.qFormName = q.trim();
+      const params = { status, page: pageParam, pageSize: 20, viewMode: 'inspector' };
+      if (typeof queryValue === 'string' && queryValue.trim()) {
+        params.qFormName = queryValue.trim();
+      }
+
       const response = await getFormList(params);
-      
+
       if (response) {
         setFormList(response.items || []);
       }
@@ -46,29 +51,21 @@ export default function InProgressPage() {
 
   // 初始加载和筛选条件变化时重新获取数据
   useEffect(() => {
-    fetchFormList();
-  }, [filter]);
+    const timer = setTimeout(() => {
+      fetchFormList({ page: 1 });
+    }, 300);
 
-  const filtered = useMemo(() => {
-    let rows = formList.map(item => ({
-      id: item.id,
-      title: item.templateName || 'Unknown Form',
-      date: item.createdAt || '',
-      status: statusMap[item.status] || item.status,
-      templateId: item.templateId || 'pmr',
-      formData: item
-    }));
+    return () => clearTimeout(timer);
+  }, [filter, q]);
 
-    // 客户端搜索过滤 todo 后续更改成服务端
-    if (q.trim()) {
-      const searchTerm = q.toLowerCase();
-      rows = rows.filter(item =>
-        [item.id, item.title].join(" ").toLowerCase().includes(searchTerm)
-      );
-    }
-
-    return rows;
-  }, [formList, q]);
+  const displayList = useMemo(() => formList.map(item => ({
+    id: item.id,
+    title: item.templateName || 'Unknown Form',
+    date: item.createdAt || '',
+    status: statusMap[item.status] || item.status,
+    templateId: item.templateId || 'pmr',
+    formData: item
+  })), [formList]);
 
   const openEdit = (item) => {
     // 跳转到编辑页面，使用查询参数传递id
@@ -78,10 +75,10 @@ export default function InProgressPage() {
   };
 
   const openView = (item) => {
-  const templateId = item.templateId || "pmr";
-  // view=1 作为只读标记，模板页可据此判断
-  nav(`/mobile/template/${templateId}?id=${item.id}&view=1`);
-};
+    const templateId = item.templateId || "pmr";
+    // view=1 作为只读标记，模板页可据此判断
+    nav(`/mobile/template/${templateId}?id=${item.id}&view=1`);
+  };
 
   return (
     <div className={styles.page}>
@@ -94,6 +91,10 @@ export default function InProgressPage() {
           placeholder="Search by ID, booth or location"
           value={q}
           onChange={(e) => setQ(e.target.value)}
+          onSearch={(value) => {
+            setQ(value);
+            fetchFormList({ page: 1, qFormName: value });
+          }}
           loading={loading}
         />
 
@@ -121,10 +122,10 @@ export default function InProgressPage() {
             <div style={{ textAlign: 'center', padding: '50px' }}>
               <Spin size="large" />
             </div>
-          ) : filtered.length === 0 ? (
+          ) : displayList.length === 0 ? (
             <Empty description="No records" />
           ) : (
-            filtered.map((item) => (
+            displayList.map((item) => (
               <InProgressCard key={item.id} item={item} onEdit={() => openEdit(item)} onView={() => openView(item)} />
             ))
           )}

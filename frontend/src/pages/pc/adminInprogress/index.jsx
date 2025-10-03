@@ -37,17 +37,23 @@ const AdminInprogress = () => {
   const navigate = useNavigate();
 
   // 获取表单列表数据
-  const fetchFormList = async () => {
+  const fetchFormList = async (override = {}) => {
     try {
       setLoading(true);
       const status = statusFilter === 'All' ? "draft,pending,declined" : statusFilter.toLowerCase();
-      const response = await getFormList({
+      const pageParam = override.page ?? currentPage;
+      const sizeParam = override.pageSize ?? pageSize;
+      const formNameFilter = override.qFormName ?? searchFormName;
+
+      const params = {
         status,
-        page: currentPage,
-        pageSize,
+        page: pageParam,
+        pageSize: sizeParam,
         // 将搜索词（表单名）传给后端做前缀匹配
-        qFormName: (searchFormName || '').trim()
-      });
+        qFormName: formNameFilter
+      };
+
+      const response = await getFormList(params);
 
       if (response) {
         const items = response.items || [];
@@ -126,7 +132,10 @@ const AdminInprogress = () => {
             placeholder="Search inspections..."
             value={searchFormName}
             onChange={(e) => setSearchFormName(e.target.value)}
-            onSearch={() => fetchFormList()}
+            onSearch={() => {
+              setCurrentPage(1);
+              fetchFormList({ page: 1, qFormName: searchFormName });
+            }}
             className={styles.searchInput}
             prefix={<SearchOutlined />}
           />
