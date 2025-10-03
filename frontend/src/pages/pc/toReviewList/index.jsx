@@ -32,17 +32,29 @@ const ToReviewList = () => {
   const [formTemplates, setFormTemplates] = useState([]);
 
   // Get pending review form list data
-  const fetchToReviewList = async () => {
+  const fetchToReviewList = async (override = {}) => {
     try {
       setLoading(true);
-      const response = await getFormList({
+      const pageParam = override.page ?? currentPage;
+      const sizeParam = override.pageSize ?? pageSize;
+      const inspectorFilter = override.qInspector ?? searchInspectors;
+      const formNameFilter = override.qFormName ?? searchFormName;
+
+      const params = {
         status: 'pending',
-        page: currentPage,
-        pageSize,
-        viewMode: 'reviewer',
-        qInspector: searchInspectors,
-        qFormName:  searchFormName        
-      });
+        page: pageParam,
+        pageSize: sizeParam,
+        viewMode: 'reviewer'
+      };
+
+      if (typeof inspectorFilter === 'string' && inspectorFilter.trim()) {
+        params.qInspector = inspectorFilter.trim();
+      }
+      if (typeof formNameFilter === 'string' && formNameFilter.trim()) {
+        params.qFormName = formNameFilter.trim();
+      }
+
+      const response = await getFormList(params);
 
       if (response) {
         const items = response.items || [];
@@ -81,10 +93,8 @@ const ToReviewList = () => {
   const paginatedData = filteredData;
 
   const handleSearch = () => {
-    // Reset to first page when searching
     setCurrentPage(1);
-    // Trigger data fetch with current search parameters
-    fetchToReviewList();
+    fetchToReviewList({ page: 1 });
   };
 
   const handleReset = () => {
@@ -92,9 +102,7 @@ const ToReviewList = () => {
     setSearchFormName(undefined);
     setCurrentPage(1);
     // Trigger search after reset
-    setTimeout(() => {
-      fetchToReviewList();
-    }, 0);
+    fetchToReviewList({ page: 1, qInspector: '', qFormName: '' });
   };
 
   const handlePageChange = (page, size) => {

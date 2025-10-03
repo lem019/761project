@@ -34,18 +34,30 @@ const ReviewedList = () => {
   const [formTemplates, setFormTemplates] = useState([]);
 
   // Get reviewed form list data
-  const fetchReviewedList = async () => {
+  const fetchReviewedList = async (override = {}) => {
     try {
       setLoading(true);
-      // TODO: need to include declined forms in the future 
-      const response = await getFormList({
+      // TODO: need to include declined forms in the future
+      const pageParam = override.page ?? currentPage;
+      const sizeParam = override.pageSize ?? pageSize;
+      const inspectorFilter = override.qInspector ?? searchInspectors;
+      const formNameFilter = override.qFormName ?? searchFormName;
+
+      const params = {
         status: 'approved',
-        page: currentPage,
-        pageSize,
-        viewMode: 'reviewer',
-        qQnspector: searchInspectors,
-        qFormName: searchFormName
-      });
+        page: pageParam,
+        pageSize: sizeParam,
+        viewMode: 'reviewer'
+      };
+
+      if (typeof inspectorFilter === 'string' && inspectorFilter.trim()) {
+        params.qInspector = inspectorFilter.trim();
+      }
+      if (typeof formNameFilter === 'string' && formNameFilter.trim()) {
+        params.qFormName = formNameFilter.trim();
+      }
+
+      const response = await getFormList(params);
 
       if (response) {
         const items = response.items || [];
@@ -92,10 +104,8 @@ const ReviewedList = () => {
   const paginatedData = filteredData;
 
   const handleSearch = () => {
-    // Reset to first page when searching
     setCurrentPage(1);
-    // Trigger data fetch with current search parameters
-    fetchReviewedList();
+    fetchReviewedList({ page: 1 });
   };
 
   const handleReset = () => {
@@ -103,9 +113,7 @@ const ReviewedList = () => {
     setSearchFormName(undefined);
     setCurrentPage(1);
     // Trigger search after reset
-    setTimeout(() => {
-      fetchReviewedList();
-    }, 0);
+    fetchReviewedList({ page: 1, qInspector: '', qFormName: '' });
   };
 
   const handlePageChange = (page, size) => {
