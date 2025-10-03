@@ -85,7 +85,18 @@ router.get("/form-list", async (req, res) => {
     const uid = req.user.uid; // 从认证中间件获取真实用户ID
     const role = req.user.role; // 从认证中间件获取用户角色
     console.log("form list query", req.query, uid, role);
-    const { status, page = 1, pageSize = 10, viewMode } = req.query;
+    
+    const {
+      status,
+      page = 1,
+      pageSize = 10,
+      viewMode,
+    } = req.query; 
+    
+    // 统一新老参数名（兼容 formName/inspector）
+    const qFormName = (req.query.qFormName ?? req.query.formName ?? '').toString();
+    const qInspector = (req.query.qInspector ?? req.query.inspector ?? '').toString();
+
     // 支持 status 为逗号分隔的列表，例如 "draft,pending"
     const normalizedStatus = typeof status === 'string'
       ? status.split(',').map(s => s.trim()).filter(Boolean)
@@ -95,8 +106,10 @@ router.get("/form-list", async (req, res) => {
       status: normalizedStatus || 'all',
       page: page || 1,
       pageSize: pageSize || 20,
-      viewMode: viewMode || 'inspector'
+      viewMode: viewMode || 'inspector',
+      qFormName, qInspector
     });
+
     
     return res.json({
       code: 200,

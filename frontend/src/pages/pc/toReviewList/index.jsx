@@ -40,8 +40,8 @@ const ToReviewList = () => {
         page: currentPage,
         pageSize,
         viewMode: 'reviewer',
-        inspector: searchInspectors,
-        formName: searchFormName
+        qInspector: searchInspectors,
+        qFormName:  searchFormName        
       });
 
       if (response) {

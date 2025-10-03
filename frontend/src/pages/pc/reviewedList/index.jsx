@@ -43,8 +43,8 @@ const ReviewedList = () => {
         page: currentPage,
         pageSize,
         viewMode: 'reviewer',
-        inspector: searchInspectors,
-        formName: searchFormName
+        qQnspector: searchInspectors,
+        qFormName: searchFormName
       });
 
       if (response) {

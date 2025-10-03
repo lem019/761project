@@ -44,7 +44,9 @@ const AdminInprogress = () => {
       const response = await getFormList({
         status,
         page: currentPage,
-        pageSize
+        pageSize,
+        // 将搜索词（表单名）传给后端做前缀匹配
+        qFormName: (searchFormName || '').trim()
       });
 
       if (response) {

@@ -26,12 +26,12 @@ export default function InProgressPage() {
   const fetchFormList = async () => {
     try {
       setLoading(true);
+
       const status = filter === "ALL" ? "draft,pending,declined" : filter.toLowerCase();
-      const response = await getFormList({
-        status,
-        page: 1,
-        pageSize: 20
-      });
+
+      const params = { status, page: 1, pageSize: 20, viewMode: 'inspector' };
+      if (q && q.trim()) params.qFormName = q.trim();
+      const response = await getFormList(params);
       
       if (response) {
         setFormList(response.items || []);

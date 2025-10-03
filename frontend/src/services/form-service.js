@@ -90,7 +90,7 @@ export const submitForm = async (formData) => {
 // 获取表单列表
 export const getFormList = async (params = {}) => {
   try {
-    const { status = 'all', page = 1, pageSize = 20, viewMode = 'inspector' } = params;
+    const { status = 'all', page = 1, pageSize = 20, viewMode = 'inspector', inspector, formName, qInspector, qFormName } = params;
     // 兼容数组与字符串：后端按逗号分隔解析，避免 axios 默认的 status[] 语法
     const queryParams = {
       status: Array.isArray(status) ? status.join(',') : status,
@@ -98,6 +98,10 @@ export const getFormList = async (params = {}) => {
       pageSize,
       viewMode
     };
+    // 统一改为后端识别的字段；同时兼容调用方传入的新旧字段名
+    if (qInspector ?? inspector) queryParams.qInspector = (qInspector ?? inspector);
+    if (qFormName  ?? formName)  queryParams.qFormName  = (qFormName  ?? formName);
+
     const response = await http.get('/form/form-list', queryParams);
     return response.data;
   } catch (error) {

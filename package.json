@@ -23,17 +23,17 @@
     "deploy": "npm run clean_build && firebase deploy"
   },
   "devDependencies": {
+    "eslint": "^9.36.0",
     "firebase-admin": "^13.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5"
   },
   "lint-staged": {
     "frontend/**/*.{js,jsx}": [
-      "cd frontend && eslint --fix",
-      "cd frontend && prettier --write"
+      "node frontend/node_modules/eslint/bin/eslint.js --fix --config frontend/eslint.config.js --"
     ],
     "frontend/**/*.{less,css,json,md}": [
-      "cd frontend && prettier --write"
+      "node frontend/node_modules/prettier/bin/prettier.cjs --write --ignore-unknown --"
     ]
   }
 }

@@ -16,6 +16,8 @@ function mapTemplateData(doc) {
     color: data.color,
     gradient: data.gradient,
     isActive: data.isActive,
+    // reportInfo，便于前端展示报告详情；若不存在则返回 null
+    reportInfo: data.reportInfo || null,
     createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
     updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null
   };
@@ -99,7 +101,13 @@ async function saveForm(uid, formData, userInfo = {}) {
     creator: uid,
     creatorName: userInfo.name || userInfo.email || 'Unknown User',
     creatorEmail: userInfo.email || '',
-    updatedAt: now
+    updatedAt: now,
+    // —— 供搜索使用（大小写无关的前缀匹配）——
+    templateNameLower: (templateName || "").toString().toLowerCase(),
+    creatorNameLower:  ((userInfo.name || userInfo.email || "")).toString().toLowerCase(),
+    // -----------------------------------------------------------
+
+
   };
 
   let result;
@@ -283,7 +291,15 @@ async function operateForm(formId, action, uid, role, comment = '') {
 // 获取表单列表（支持按状态过滤：all, draft, pending, declined, approved）
 async function getFormList(uid, role, options = {}) {
   try {
-    const { status, page = 1, pageSize = 10, viewMode } = options;
+    
+    const {
+      status,
+      page = 1,
+      pageSize = 10,
+      viewMode,
+      qFormName,
+      qInspector
+    } = options;
     // 统一为数组或特殊标识 'all'
     const statusList = Array.isArray(status)
       ? status
@@ -295,6 +311,11 @@ async function getFormList(uid, role, options = {}) {
     const pageNum = parseInt(page, 10);
     const pageSizeNum = parseInt(pageSize, 10);
     const offset = (pageNum - 1) * pageSizeNum;
+    // Search
+    const formNameQ  = (qFormName || "").toString().trim().toLowerCase();
+    const inspectorQ = (qInspector || "").toString().trim().toLowerCase();
+
+
 
     let q = db.collection("forms");
 
@@ -332,6 +353,26 @@ async function getFormList(uid, role, options = {}) {
           // reviewed: reviewer 是自己，状态是 approved
           q = q.where("status", "==", "approved").where("reviewedBy", "==", uid);
         }
+
+        // 模糊（前缀）搜索：对 lower 字段做 startAt / endAt
+        if (inspectorQ) {
+          // 需要 orderBy 与 startAt/endAt 在同一字段
+          q = q.orderBy("creatorNameLower")
+              .startAt(inspectorQ)
+              .endAt(inspectorQ + "\uf8ff");
+        }
+        if (formNameQ) {
+          // 如果前面已经 orderBy 了别的字段，这里追加一个 where 无法前缀匹配
+          // 因此前缀匹配与排序字段保持一致；
+          // 若两者都传了，优先以 formName 做排序，再在内存里二次过滤（见下）
+          if (!inspectorQ) {
+            q = q.orderBy("templateNameLower")
+                .startAt(formNameQ)
+                .endAt(formNameQ + "\uf8ff");
+          }
+        }
+
+
       } else {
         // 检查员在 inspector 模式下：只能看到自己创建的表单
         q = q.where("creator", "==", uid);
@@ -341,6 +382,12 @@ async function getFormList(uid, role, options = {}) {
           } else {
             q = q.where("status", "==", String(statusList));
           }
+        }
+        // 本人列表的前缀搜索
+        if (formNameQ) {
+          q = q.orderBy("templateNameLower")
+              .startAt(formNameQ)
+              .endAt(formNameQ + "\uf8ff");
         }
       }
     } else {
@@ -354,6 +401,12 @@ async function getFormList(uid, role, options = {}) {
           q = q.where("status", "==", String(statusList));
         }
       }
+      // 移动端 in-progress：按模板名做前缀搜索（小写字段）
+      if (formNameQ) {
+        q = q.orderBy("templateNameLower")
+            .startAt(formNameQ)
+            .endAt(formNameQ + "\uf8ff");
+      }
     }
 
     // 调试查询条件
@@ -366,11 +419,14 @@ async function getFormList(uid, role, options = {}) {
     const total = countSnap.size;
 
     // 获取分页数据
-    const snap = await q
-      .orderBy("createdAt", "desc")
-      .offset(offset)
-      .limit(pageSizeNum)
-      .get();
+    // const snap = await q
+    //   .orderBy("createdAt", "desc")
+    //   .offset(offset)
+    //   .limit(pageSizeNum)
+    //   .get();
+
+    // 注意：上方已对某字段 orderBy 用于前缀搜索，就不要再更换排序字段。
+    const snap = await q.offset(offset).limit(pageSizeNum).get();
 
     const items = snap.docs.map((d) => {
       const data = d.data();
@@ -384,10 +440,19 @@ async function getFormList(uid, role, options = {}) {
       };
     });
 
+    // 若 admin 同时传了 inspector + formName，两者都要命中时，这里做一次窄化（集合已经很小）
+    const filtered = items.filter(it => {
+      const okInspector = inspectorQ ? (it.creatorNameLower || "").startsWith(inspectorQ) : true;
+      const okFormName  = formNameQ  ? (it.templateNameLower || "").startsWith(formNameQ)  : true;
+      return okInspector && okFormName;
+    });   
+
+
     return {
       success: true,
       data: {
-        items,
+        // items,
+        items: filtered,
         pagination: {
           current: pageNum,
           pageSize: pageSizeNum,
